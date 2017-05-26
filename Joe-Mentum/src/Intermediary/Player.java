@@ -5,7 +5,9 @@ Date Modified: May 25th, 2017
 Description: The class used to handle the player's stats and motion
  */
 
-package Logic;
+package intermediary;
+
+import Logic.LivingObject;
 
 public class Player extends LivingObject {
 

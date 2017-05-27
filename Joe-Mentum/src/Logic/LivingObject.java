@@ -58,7 +58,7 @@ public class LivingObject extends Entity {
 	Dependencies: N/A
 	Exceptions: N/A
 	Date Created: May 25th, 2017
-	Date Modified: May 26th, 2017
+	Date Modified: May 27th, 2017
 	 */
 	public void moveSide(boolean side) {
 		
@@ -68,8 +68,12 @@ public class LivingObject extends Entity {
 		
 		//V2 = V1 + at
 		//Handles character acceleration
-		if (this.getXSpeed() != maxSpeed)
+		if (this.getXSpeed() != maxSpeed) //Accelerates if not already at top speed
 			this.setXSpeed(this.getXSpeed() + ACC);
+		
+		if (directionMultiplier * this.getXSpeed() < 0) { //If the intended direction and the current direction do not match, turn around.
+			this.setXSpeed(this.getXSpeed() * -1);
+		}
 		
 		this.x = this.getX() + (side * this.getXSpeed());
 	}

@@ -75,8 +75,9 @@ public class LivingObject extends Entity {
 			this.setXSpeed(this.getXSpeed() * -1);
 		}
 		
-		this.x = this.getX() + (side * this.getXSpeed());
+		this.x = (int) (this.getX() + (getDirectionVal(side) * this.getXSpeed())); //TODO Verify if this needs better rounding
 	}
+	
 	
 	/*
 	Name: jump
@@ -106,6 +107,24 @@ public class LivingObject extends Entity {
 	 */
 	public void kill() {
 		//TODO
+	}
+	
+	
+	/*
+	Name: getDirectionVal
+	Description: Converts the boolean direction into a treatable double value
+	Parameters: One boolean value
+	Return Value/Type: One double
+	Dependencies: N/A
+	Exceptions: N/A
+	Date Created: May 29th, 2017
+	Date Modified: May 29th, 2017
+	 */
+	private double getDirectionVal(boolean direction)  {
+		if (direction)
+			return 1.0;
+		else
+			return -1.0;
 	}
 	
 }

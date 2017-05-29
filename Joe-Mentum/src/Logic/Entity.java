@@ -16,15 +16,15 @@ public class Entity extends Rectangle {
 	private Image[] sprite;//the images, frame by frame, for the objet's animation
 	private String collideType = "Solid";//used in collision() to determine the appropriate handling
 	private int frame = 0;//the preceding image in the animation
-	private int xSpeed = 0;//the horizontal speed of the object
-	private int ySpeed = 0;//the vertical speed of the object
+	private double xSpeed = 0;//the horizontal speed of the object
+	private double ySpeed = 0;//the vertical speed of the object
 	
 	/**** Getters & Setters ****/
 	public void setCollide(String collideType){this.collideType = collideType;}
-	public int getXSpeed(){return xSpeed;}
-	public void setXSpeed(int xSpeed){this.xSpeed = xSpeed;}
-	public int getYSpeed(){return this.ySpeed;}
-	public void setYSpeed(int ySpeed){this.ySpeed = ySpeed;}
+	public double getXSpeed(){return xSpeed;}
+	public void setXSpeed(double xSpeed){this.xSpeed = xSpeed;}
+	public double getYSpeed(){return this.ySpeed;}
+	public void setYSpeed(double ySpeed){this.ySpeed = ySpeed;}
 	
 	//public Image getAnimation(){//TODO
 		//if(this.frame<this.sprite.length)this.frame++;

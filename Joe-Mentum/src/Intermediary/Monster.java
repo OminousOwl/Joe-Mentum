@@ -5,7 +5,7 @@ Date Modified: May 26th, 2017
 Description: The class used to handle enemy AI
  */
 
-package intermediary;
+package Intermediary;
 
 import Logic.LivingObject;
 
@@ -14,6 +14,7 @@ public class Monster extends LivingObject {
 	private static final char RUSH = 'r';
 	private static final char WANDER = 'w';
 	
+	private Monster nextnode;
 	private char aiState;
 	
 	public Monster(int health, int attack, double maxSpeed, char AIstate) {
@@ -32,7 +33,7 @@ public class Monster extends LivingObject {
 		switch(aiState) {
 		case RUSH:
 			boolean direction = true;
-			if (joe.getX() < this.getX()) //TODO Update w/ actual Joe object
+			if (Joe.getX() < this.getX()) //TODO Update w/ actual Joe object
 				direction = false;
 			this.moveSide(direction);
 			break;

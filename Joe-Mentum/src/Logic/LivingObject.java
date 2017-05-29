@@ -11,7 +11,7 @@ public class LivingObject extends Entity {
 	
 	//TODO Move these constants to Entity.Java
 	private static final double ACC = 0.5; //Constant used to define acceleration rate
-	private static final double GRAV = -2.0; //Constant used as gravitational acceleration
+	public static final double GRAV = -2.0; //Constant used as gravitational acceleration
 	private static final double INIT_JUMP = 3.0; //Constant used to define initial jump speed
 
 	private int health; 
@@ -92,21 +92,6 @@ public class LivingObject extends Entity {
 	public void jump() {
 		if (this.getYSpeed() == 0)
 			this.setYSpeed(INIT_JUMP);
-	}
-	
-	
-	/*
-	Name: kill
-	Description: Removes the entity
-	Parameters:
-	Return Value/Type: N/A
-	Dependencies: N/A
-	Exceptions: N/A
-	Date Created:
-	Date Modified:
-	 */
-	public void kill() {
-		//TODO
 	}
 	
 	

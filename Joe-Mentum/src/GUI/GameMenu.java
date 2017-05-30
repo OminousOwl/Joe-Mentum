@@ -11,6 +11,9 @@ import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 
+import Intermediary.Player;
+import Logic.LivingObject;
+
 /*
  *       __
  * 	 ___( o)> quack
@@ -19,6 +22,11 @@ import javax.swing.JFrame;
  */
 
 public class GameMenu extends JFrame implements ActionListener, Runnable {
+	
+	
+	public static final Player Joe = new Player();
+	
+	
 	// images
 	Graphics g;
 	BufferedImage bg1 = null;
@@ -33,7 +41,7 @@ public class GameMenu extends JFrame implements ActionListener, Runnable {
 	JButton exit = new JButton("Exit");
 
 	public static void main(String[] args) {
-		// TODO ------ new GameMenu();
+		new GameMenu();
 		
 	}
 
@@ -47,11 +55,11 @@ public class GameMenu extends JFrame implements ActionListener, Runnable {
 
 		// importing images for background
 		try {
-			bg1 = ImageIO.read(new File("1.png"));
-			bg2 = ImageIO.read(new File("2.png"));
-			bg3 = ImageIO.read(new File("3.png"));
-			bg4 = ImageIO.read(new File("4.png"));
-			bg5 = ImageIO.read(new File("5.png"));
+			bg1 = ImageIO.read(new File("images/1.png"));
+			bg2 = ImageIO.read(new File("images/2.png"));
+			bg3 = ImageIO.read(new File("images/3.png"));
+			bg4 = ImageIO.read(new File("images/4.png"));
+			bg5 = ImageIO.read(new File("images/5.png"));
 		} catch (IOException e) {
 			System.out.println("Error found:\n" + e);
 		}
@@ -78,4 +86,5 @@ public class GameMenu extends JFrame implements ActionListener, Runnable {
 		// TODO Auto-generated method stub
 
 	}
+
 }

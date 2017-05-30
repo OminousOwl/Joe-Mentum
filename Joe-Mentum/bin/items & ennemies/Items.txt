@@ -1,0 +1,25 @@
+Sprinting Boots
+20
+20
+true
+S
+Spiked Boots
+20
+20
+true
+D
+Jump Boots
+20
+20
+true
+J
+Armor
+20
+20
+true
+A
+Bomb
+20
+20
+false
+E

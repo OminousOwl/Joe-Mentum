@@ -1,0 +1,8 @@
+Skeleton
+20
+40
+Solid
+5
+1
+10
+Sprinting Boots

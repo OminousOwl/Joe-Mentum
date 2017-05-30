@@ -11,7 +11,7 @@ import java.awt.event.KeyListener;
 public class KeyControl implements KeyListener {
 	/**
 	 *Title:
-	 * Input Manager
+	 *keyPressed
 	 *Author:
 	 * Olivier J Hébert
 	 *Date Created:
@@ -26,8 +26,8 @@ public class KeyControl implements KeyListener {
 	 * N/A
 	 *Description: this object is a listener that manages all keyboard input
 	 */
-	private void inputManager(KeyEvent e){
-		if(e.equals('w') || e.equals(' ')){//Player jumps when spacebar/the 'w' key is pressed
+	public void keyPressed(KeyEvent e) {
+			if(e.equals('w') || e.equals(' ')){//Player jumps when spacebar/the 'w' key is pressed
 			Player.jump();
 		}//end if
 		if(e.equals('d')){//Player moves right when the 'd' key is pressed
@@ -42,5 +42,17 @@ public class KeyControl implements KeyListener {
 		if(e.equals('e')){
 			//use item
 		}//end if
-	}//end inputManager
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
 }//end class

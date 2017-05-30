@@ -14,7 +14,6 @@ public class Monster extends LivingObject {
 	private static final char RUSH = 'r';
 	private static final char WANDER = 'w';
 	
-	private String name;
 	private Monster nextnode;
 	private char aiState;
 	

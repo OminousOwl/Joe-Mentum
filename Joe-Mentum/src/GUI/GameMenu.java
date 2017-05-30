@@ -23,6 +23,10 @@ import Logic.LivingObject;
 
 public class GameMenu extends JFrame implements ActionListener, Runnable {
 	
+	
+	public static final Player Joe = new Player();
+	
+	
 	// images
 	Graphics g;
 	BufferedImage bg1 = null;

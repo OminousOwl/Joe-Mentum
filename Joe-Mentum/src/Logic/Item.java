@@ -10,4 +10,5 @@ public class Item extends Entity {
 	/**** Variables ****/
 	public boolean isPassive;//the flag to determine the type of item (consumable/equipment)
 	public char effect;//the reference to the list of item effects
+	public String description;//a description of an item's effect
 }

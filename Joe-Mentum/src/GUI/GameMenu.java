@@ -10,6 +10,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 /*
  *       __
@@ -18,14 +19,14 @@ import javax.swing.JFrame;
  *    `---' 
  */
 
-public class GameMenu extends JFrame implements ActionListener, Runnable {
+@SuppressWarnings("serial")
+public class GameMenu extends JPanel implements ActionListener, Runnable {
 	// images
-	Graphics g;
-	BufferedImage bg1 = null;
-	BufferedImage bg2 = null;
-	BufferedImage bg3 = null;
-	BufferedImage bg4 = null;
-	BufferedImage bg5 = null;
+	BufferedImage bg1;
+	BufferedImage bg2;
+	BufferedImage bg3;
+	BufferedImage bg4;
+	BufferedImage bg5;
 
 	// menu stuff
 	JButton play = new JButton("Play");
@@ -34,7 +35,7 @@ public class GameMenu extends JFrame implements ActionListener, Runnable {
 
 	public static void main(String[] args) {
 		// TODO ------ new GameMenu();
-		
+		new GameMenu();
 	}
 
 	public GameMenu() {
@@ -47,25 +48,34 @@ public class GameMenu extends JFrame implements ActionListener, Runnable {
 
 		// importing images for background
 		try {
-			bg1 = ImageIO.read(new File("1.png"));
-			bg2 = ImageIO.read(new File("2.png"));
-			bg3 = ImageIO.read(new File("3.png"));
-			bg4 = ImageIO.read(new File("4.png"));
-			bg5 = ImageIO.read(new File("5.png"));
+			bg1 = ImageIO.read(new File("images/1.png"));
+			bg2 = ImageIO.read(new File("images/2.png"));
+			bg3 = ImageIO.read(new File("images/3.png"));
+			bg4 = ImageIO.read(new File("images/4.png"));
+			bg5 = ImageIO.read(new File("images/5.png"));
 		} catch (IOException e) {
 			System.out.println("Error found:\n" + e);
 		}
 		
 		guiFrame.setVisible(true);
-		paint(g);
+		repaint();
 	}
 
 	public void paint(Graphics g) {
-		g.drawImage(bg1, 0, 0, null);
-		g.drawImage(bg2, 0, 0, null);
-		g.drawImage(bg3, 0, 0, null);
-		g.drawImage(bg4, 0, 0, null);
-		g.drawImage(bg5, 0, 0, null);
+		int x = 0, x2 = 0, x3 = 0, x4 = 0, x5 = 0;
+		while(true){
+			g.drawImage(bg1, x, 0, null);
+			g.drawImage(bg2, x2, 0, null);
+			g.drawImage(bg3, x3, 0, null);
+			g.drawImage(bg4, x4, 0, null);
+			g.drawImage(bg5, x5, 0, null);
+			
+			x2 += 10;
+			x3 += 7;
+			x4 += 5;
+			x5 += 3;
+			repaint();
+		}
 	}
 
 	@Override

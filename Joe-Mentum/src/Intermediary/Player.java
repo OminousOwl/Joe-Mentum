@@ -23,4 +23,10 @@ public class Player extends LivingObject {
 		this.setSpeed(0);
 	}
 	
+	public void pickupItem(){//TODO
+		//determine if colliding with an object. if colliding & object is of type item...
+			//if passive, add to inventory
+			//otherwise if Joe has no active item move the item to his active item slot
+				//otherwise swap the items (move the colliding item to inventory & the other to the outside)
+	}//end pickupItem
 }

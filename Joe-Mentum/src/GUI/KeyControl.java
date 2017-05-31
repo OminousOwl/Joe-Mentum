@@ -9,7 +9,8 @@ import java.awt.event.KeyListener;
  *Date Edited: 29/05/2017
  *Description: This is the interface for the keyboard that handles all player input.
  */
-public class KeyControl implements KeyListener {
+public class KeyControl implements KeyListener{
+	
 	/**
 	 *Title:
 	 * Key Pressed
@@ -18,7 +19,7 @@ public class KeyControl implements KeyListener {
 	 *Date Created:
 	 * 29/05/2017
 	 *Date Edited:
-	 * 29/05/2017
+	 * 30/05/2017
 	 *Parameters:
 	 * N/A
 	 *Dependencies: 
@@ -29,22 +30,30 @@ public class KeyControl implements KeyListener {
 	 */
 	@Override
 	public void keyPressed(KeyEvent e) {
-		if(e.equals('w') || e.equals(' ')){//Player jumps when spacebar/the 'w' key is pressed
-			Joe.jump();
+		if(e.getKeyChar() == 'w' || e.getKeyChar() == ' '){//Player jumps when spacebar/the 'w' key is pressed
+			Player.jump();
 		}//end if
-		if(e.equals('d')){//Player moves right when the 'd' key is pressed
-			moveSide(Joe.getSpeed() > 0);
+		
+		if(e.getKeyChar() == 'd'){//Player moves right when the 'd' key is pressed
+			moveSide(Player.getSpeed() > 0);
 		}//end if
-		if(e.equals('a')){//Player moves left when the 'a' key is pressed
-			moveSide(Joe.getSpeed() > 0);
+		
+		if(e.getKeyChar() == 'a'){//Player moves left when the 'a' key is pressed
+			moveSide(Player.getSpeed() > 0);
 		}//end if
-		if(e.equals('s')){
-			Joe.pickupItem();
+		
+		if(e.getKeyChar() == 's'){//
+			Player.pickupItem();
 		}//end if
-		if(e.equals('e')){
+		
+		if(e.getKeyChar() == 'e'){//picks up an item
 			//use item
 		}//end if
-	}
+		
+		if(e.getKeyChar() == 'p'){//pauses the game
+			MainGame.setState(1);
+		}//end if
+	}//end keyPressed
 
 	@Override
 	public void keyReleased(KeyEvent e) {

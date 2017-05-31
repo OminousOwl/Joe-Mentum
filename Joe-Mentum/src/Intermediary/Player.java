@@ -11,8 +11,8 @@ import Logic.LivingObject;
 
 public class Player extends LivingObject {
 
-	private int EXP = 0;
-	private int level = 1;
+	private static int EXP = 0;
+	private static int level = 1;
 	//private Item passiveItems;
 	//private Item activeItem;
 	
@@ -21,7 +21,7 @@ public class Player extends LivingObject {
 		this.setAttack(0);
 		this.setHealth(0);
 		this.setSpeed(0);
-	}
+	}//end constructor
 	
 	public void pickupItem(){//TODO
 		//determine if colliding with an object. if colliding & object is of type item...

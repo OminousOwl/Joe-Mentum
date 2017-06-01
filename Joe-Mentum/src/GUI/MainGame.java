@@ -44,7 +44,7 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 
 	//TODO get this POS out of our code
 	public static void main(String[] args) { 
-		MainGame test = new MainGame();
+		new MainGame();
 	}
 	
 	public MainGame() {
@@ -171,7 +171,7 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 			joe.moveSide(false);
 		}
 		
-		if(key == KeyEvent.VK_S){//
+		if(key == KeyEvent.VK_Q){//
 			joe.pickupItem();
 		}
 		
@@ -193,9 +193,13 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 		}
 	}
 
-	@Override
+	
 	public void keyTyped(KeyEvent e) {
-		// TODO Auto-generated method stub
+		int key = e.getKeyCode();
+		//TODO this shit don't work
+		if(key == KeyEvent.VK_S){//Player fastfalls when the 's' key is pressed
+			joe.fastFall();
+		}
 		
 	}
 

@@ -13,6 +13,7 @@ public class LivingObject extends Entity {
 	private static final double ACC = 1.5; //Constant used to define acceleration rate
 	public static final double GRAV = 0.2; //Constant used as gravitational acceleration
 	private static final double INIT_JUMP = -4.2; //Constant used to define initial jump speed
+	private static final double FF = 3.0; //Constant used to define initial fast fall speed
 
 	private int health; 
 	private int attack;
@@ -92,6 +93,21 @@ public class LivingObject extends Entity {
 	public void jump() {
 		if (this.getYSpeed() == 0)
 			this.setYSpeed(INIT_JUMP);
+	}
+	
+	/*
+	Name: jump
+	Description: Handles initial jumps, adding vertical speed to the entity
+	Parameters:
+	Return Value/Type: N/A
+	Dependencies: N/A
+	Exceptions: N/A
+	Date Created: June 1st, 2017
+	Date Modified: June 1st, 2017
+	 */
+	public void fastFall() {
+		if (this.getYSpeed() < FF)
+			this.setYSpeed(FF);
 	}
 	
 	

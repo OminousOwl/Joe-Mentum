@@ -75,15 +75,12 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 
 		addKeyListener(this);
 		
-		Graphics2D g = null;
-		paint(g);
-		
 		while(true)
 			run();
 			
 	}
 	
-	public void paint(Graphics2D g) {
+	public void paint(Graphics g) {
 		//TODO update with image
 		g.setColor(Color.WHITE);
 		g.fillRect(0, 0, 768, 432);
@@ -98,7 +95,7 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 		gravity(joe);
 		move(joe);
 		checkCollision(joe, floor);
-		//repaint();
+		repaint();
 		try {
 			Thread.sleep(40);
 		} catch (InterruptedException e) {

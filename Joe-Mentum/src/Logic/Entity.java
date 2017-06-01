@@ -20,7 +20,7 @@ public class Entity extends Rectangle {
 	private double ySpeed = 0;//the vertical speed of the object
 	
 	/**** Getters & Setters ****/
-	public void setCollide(String collideType){this.collideType = collideType;}
+	public void setCollide(String collideType){this.setCollideType(collideType);}
 	public double getXSpeed(){return xSpeed;}
 	public void setXSpeed(double xSpeed){this.xSpeed = xSpeed;}
 	public double getYSpeed(){return this.ySpeed;}
@@ -44,4 +44,10 @@ public class Entity extends Rectangle {
 			this.ySpeed = (ySpeed*-1)/2;
 		}//end if
 	}//end collide
+	public String getCollideType() {
+		return collideType;
+	}
+	public void setCollideType(String collideType) {
+		this.collideType = collideType;
+	}
 }//end Class

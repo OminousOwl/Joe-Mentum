@@ -38,8 +38,8 @@ public class GameMenu extends JPanel implements ActionListener {
 	BufferedImage i4;
 	BufferedImage i5;
 	// GUI components
-	JButton Play;
-	JButton Exit;
+	JButton play;
+	JButton exit;
 	JFrame guiFrame;
 
 	public static void main(String[] args) {
@@ -85,16 +85,16 @@ public class GameMenu extends JPanel implements ActionListener {
 										// guiFrame
 
 		// declaring buttons
-		Play = new JButton("Play");
-		Exit = new JButton("Pause");
+		play = new JButton("Play");
+		exit = new JButton("Pause");
 
 		// add action listeners
-		Play.addActionListener(this);
-		Exit.addActionListener(this);
+		play.addActionListener(this);
+		exit.addActionListener(this);
 
 		// adding button pane to the guiFrame, and packing.
 		JPanel buttonPane = new JPanel(new GridLayout(1, 2));
-		buttonPane.add(Play);
+		buttonPane.add(play);
 		guiFrame.add(buttonPane, BorderLayout.CENTER);
 		guiFrame.setVisible(true);
 	}
@@ -102,7 +102,7 @@ public class GameMenu extends JPanel implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
-		if (e.getSource() == Play) {
+		if (e.getSource() == play) {
 			guiFrame.dispose();
 			// TODO THIS SHIT DON'T LOAD/WORK
 			new MainGame();

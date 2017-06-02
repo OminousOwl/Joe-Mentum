@@ -20,7 +20,7 @@ public class Player extends LivingObject {
 		//TODO Update Values
 		this.setAttack(0);
 		this.setHealth(0);
-		this.setSpeed(2.0);
+		this.setSpeed(2.4);
 	}//end constructor
 	
 	public void pickupItem(){//TODO

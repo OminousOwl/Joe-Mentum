@@ -141,7 +141,7 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 	 */
 	public void checkCollision(Entity a, Entity b) {
 		if (a.intersects(b)) {
-			a.collide(b.getCollideType());
+			a.collide(b);
 		}
 	}
 

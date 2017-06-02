@@ -13,6 +13,7 @@ import java.awt.Image.*;
 public class Entity extends Rectangle {
 	/**** Variables ****/
 	private Rectangle hitbox;//the rectangle object indicating the physical edges of the object
+	private Rectangle floorBox; //The rectangle defining the top surface of an object
 	private Image[] sprite;//the images, frame by frame, for the objet's animation
 	private String collideType = "Solid";//used in collision() to determine the appropriate handling
 	private int frame = 0;//the preceding image in the animation
@@ -33,17 +34,17 @@ public class Entity extends Rectangle {
 	//}//end getAnimation
 	
 	/**** Methods ****/
-	public void collide(String type){//TODO
-		if(type == "Solid"){
+	public void collide(Entity b){
+		if(b.getCollideType() == "Solid"){
 			this.ySpeed = 0;
-		}//end if
-		if(type == "Bounce"){
+		}
+		if(b.getCollideType() == "Bounce"){
 			this.ySpeed = (ySpeed*-1);
-		}//end if
-		if(type == "Skip"){
+		}
+		if(b.getCollideType() == "Skip"){
 			this.ySpeed = (ySpeed*-1)/2;
-		}//end if
-	}//end collide
+		}
+	}
 	public String getCollideType() {
 		return collideType;
 	}

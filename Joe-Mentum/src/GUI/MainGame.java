@@ -177,7 +177,7 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 		} // end if
 
 		if (e.getActionCommand().equals("Quit")) {
-			// terminate game
+			//MainGame.dispose(); causes errors because apparently you 'Cannot make a static reference to the non-static method dispose() from the type Window'
 		} // end if
 	}// end actionPerformed
 

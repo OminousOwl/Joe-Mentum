@@ -103,9 +103,9 @@ public class GameMenu extends JPanel implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		if (e.getSource() == play) {
-			guiFrame.dispose();
 			// TODO THIS SHIT DON'T LOAD/WORK
 			new MainGame();
+			guiFrame.dispose();
 		}
 	}
 

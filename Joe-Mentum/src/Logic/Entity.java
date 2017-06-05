@@ -24,6 +24,8 @@ public class Entity extends Rectangle {
 	private Rectangle hitbox;//the rectangle object indicating the physical edges of the object
 	private Rectangle floorbox;//the rectangle object defining the surface of an object
 	public Rectangle[] ledges = new Rectangle[2]; //The ledges of an object
+	public boolean ledgeFlag = true; //A flag used to prevent autosnap to a ledge immediately after jumping form one
+	public int resetCounter; //Used to countdown frames until the ledgeFlag resets
 	private Image[] sprite;//the images, frame by frame, for the objet's animation
 	private char collideType = SOLID;//used in collision() to determine the appropriate handling
 	private int frame = 0;//the preceding image in the animation
@@ -48,8 +50,8 @@ public class Entity extends Rectangle {
 		if (collideType == FLOOR || collideType == WALL)
 			floorbox = new Rectangle(this.x, this.y + 2, this.width, this.height - 2); //Defining the floorbox on the very surface of the object causes some jumps to be ignored
 		if (collideType == WALL) {
-			ledges[0] = new Rectangle(this.x - 35, this.y + 3, 35, this.height/4);
-			ledges[1] = new Rectangle(this.x + this.width, this.y + 1, 35, this.height/4);
+			ledges[0] = new Rectangle(this.x - 35, this.y + 3, 35, this.height/3);
+			ledges[1] = new Rectangle(this.x + this.width, this.y + 1, 35, this.height/3);
 		}
 	}
 	
@@ -76,7 +78,7 @@ public class Entity extends Rectangle {
 	Dependencies: None
 	Exceptions: N/A
 	Date Created: May 29th, 2017
-	Date Modified: June 4th, 2017
+	Date Modified: June 5th, 2017
 	 */
 	public void collide(Entity b){
 		if(b.getCollideType() == SOLID){
@@ -90,19 +92,26 @@ public class Entity extends Rectangle {
 		else if(b.getCollideType() == WALL){
 				
 			if (this.intersects(b.ledges[0]) || this.intersects(b.ledges[1])) {
-				this.xSpeed = 0;
-				this.ySpeed = 0;
-				this.y = b.ledges[0].y;
 				
-				//TODO prevent Joe from moving horizontally while grabbing a ledge
-				//TODO let Joe jump on a ledge
-				
-				/*if (this.intersects(b.ledges[0])) {
-					this.x = b.ledges[0].x + 5;
+				if (b.ledgeFlag) {
+					if (this.ySpeed <= LivingObject.INIT_JUMP + 2*LivingObject.GRAV) {
+						b.ledgeFlag = false;
+						b.resetCounter = 40;
+					}
+					else {
+						//System.out.println("Triggered at " + System.currentTimeMillis());
+						this.xSpeed = 0;
+						this.ySpeed = 0;
+						this.y = b.ledges[0].y;
+						
+						if (this.intersects(b.ledges[0])) {
+							this.x = b.ledges[0].x + 6;
+						}
+						else
+							this.x = b.ledges[1].x - 1;
+						
+					}
 				}
-				else
-					this.x = b.ledges[1].x;
-					*/
 			}
 				
 

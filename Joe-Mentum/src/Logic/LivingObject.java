@@ -12,7 +12,7 @@ public class LivingObject extends Entity {
 	//TODO Move these constants to Entity.Java
 	private static final double ACC = 1.0; //Constant used to define acceleration rate
 	public static final double GRAV = 0.2; //Constant used as gravitational acceleration
-	private static final double INIT_JUMP = -7.2; //Constant used to define initial jump speed
+	static final double INIT_JUMP = -7.2; //Constant used to define initial jump speed
 	private static final double FF = 7.0; //Constant used to define initial fast fall speed
 	private static final double FF_ACC = 0.4; //Constant used to add gravitational acceleration when fastfalling
 

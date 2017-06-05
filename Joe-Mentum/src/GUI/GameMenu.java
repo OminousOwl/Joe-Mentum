@@ -43,11 +43,14 @@ public class GameMenu extends JPanel implements ActionListener {
 	JFrame guiFrame;
 
 	public static void main(String[] args) {
-		SwingUtilities.invokeLater(new Runnable() {
+		
+		new GameMenu();
+		
+		/*SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				new GameMenu();
+				
 			}
-		});
+		});*/
 	}
 
 	public GameMenu() {
@@ -81,8 +84,7 @@ public class GameMenu extends JPanel implements ActionListener {
 				System.out.println(guiFrame.getWidth() + ", " + guiFrame.getHeight());
 			}
 		};
-		guiFrame.setContentPane(pane); // added this to the background of the
-										// guiFrame
+		guiFrame.setContentPane(pane); // added this to the background of the guiFrame
 
 		// declaring buttons
 		play = new JButton("Play");
@@ -103,9 +105,10 @@ public class GameMenu extends JPanel implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		if (e.getSource() == play) {
+			guiFrame.dispose();
 			// TODO THIS SHIT DON'T LOAD/WORK
 			new MainGame();
-			guiFrame.dispose();
+			
 		}
 	}
 

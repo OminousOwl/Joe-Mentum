@@ -1,12 +1,12 @@
 /**
  *@Name Cosmin Baciu, Quinn Fisher, Olivier Hébert
  *@DateCreated: May 30th, 2017
- *@DateModified: June 4th, 2017
+ *@DateModified: June 5th, 2017
  *@Description: The class used to handle the actual game physics and gameplay
  */
 
 //TODO Known bugs:
-//A fall at fast enough speeds will lodge Joe in the floor, requiring a jump to get free
+
 
 package GUI;
 
@@ -35,22 +35,22 @@ import Logic.LivingObject;
 public class MainGame extends JFrame implements Runnable, EventListener, KeyListener {
 
 	/**** Constants ****/
-	private static final int RUNNING = 0;// the ID# for the game's running state.
-	private static final int PAUSED_MENU = 1;// the ID# for the game's paused state with the basic menu.
-	private static final int PAUSED_OPTIONS = 2;// the ID# for the game's paused state with the options menu.
+	private final int RUNNING = 0;// the ID# for the game's running state.
+	private final int PAUSED_MENU = 1;// the ID# for the game's paused state with the basic menu.
+	private final int PAUSED_OPTIONS = 2;// the ID# for the game's paused state with the options menu.
 	
 	private final Set<Integer> pressed = new HashSet<Integer>(); //Stores all currently pressed keys. This allows momentum to be maintained when releasing A or D when holding the other
 
 	/**** Variables ****/
-	private static int state = RUNNING;// the flag that triggers different behaviors in the program
+	private int state = RUNNING;// the flag that triggers different behaviors in the program
 	public static final Player joe = new Player(); // The man, the myth, the legend himself, Joe
 	private Entity floor = new Entity(0, 332, 768, 100, 'f');
 	private Entity wall = new Entity(468, 232, 100, 100, 'w');
 
 	// TODO get this POS out of our code
-	public static void main(String[] args) {
+	/*public static void main(String[] args) {
 		new MainGame();
-	}
+	}*/
 
 	public MainGame() {
 		super("Joe-Mentum");
@@ -70,13 +70,15 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 		repaint();
 
 		addKeyListener(this);
+		
 
 		while (true) {
-			run();
+			if (this.state == 0)
+				run();
 			try {
 				Thread.sleep(10);
 			} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
+				System.out.println("A thing broke");
 			}
 		}
 		
@@ -90,9 +92,10 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 		g.fillRect((int) floor.getX(), (int) floor.getY(), (int) floor.getWidth(), (int) floor.getHeight());
 		g.setColor(Color.BLUE);
 		g.fillRect((int) wall.getX(), (int) wall.getY(), (int) wall.getWidth(), (int) wall.getHeight());
-		g.setColor(Color.GREEN);
+		/*g.setColor(Color.GREEN);
 		g.fillRect((int) wall.ledges[0].getX(), (int) wall.ledges[0].getY(), (int) wall.ledges[0].getWidth(), (int) wall.ledges[0].getHeight());
 		g.fillRect((int) wall.ledges[1].getX(), (int) wall.ledges[1].getY(), (int) wall.ledges[1].getWidth(), (int) wall.ledges[1].getHeight());
+		*/
 		g.setColor(Color.RED);
 		g.fillRect((int) joe.getX(), (int) joe.getY(), (int) joe.getWidth(), (int) joe.getHeight());
 	}
@@ -113,6 +116,7 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 		//TODO Make an actual checkCollision algorithm
 		checkCollision(joe, floor);
 		checkCollision(joe, wall);
+		manageCD(wall);
 		repaint();
 
 	}
@@ -162,6 +166,25 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 			a.collide(b);
 		}
 	}
+	
+	/*
+	 Name: manageCD 
+	 Description: Manages ledge cooldowns, reducing them on each frame
+	 Parameters: One Entity
+	 Return Value/Type: N/A 
+	 Dependencies: Logic.Entity 
+	 Exceptions: N/A 
+	 Date Created: June 5th, 2017
+	 Date Modified: June 5th, 2017
+	 */
+	public void manageCD (Entity a) {
+		if (!a.ledgeFlag) {
+			a.resetCounter--;
+			if (a.resetCounter == 0) {
+				a.ledgeFlag = true;
+			}
+		}
+	}
 
 	public void setState(int newState) {
 		state = newState;
@@ -189,13 +212,11 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 			joe.jump();
 		}
 
-		if (key == KeyEvent.VK_D) {// Player moves right when the 'd' key is
-									// pressed
+		if (key == KeyEvent.VK_D) {// Player moves right when the 'd' key is pressed
 			joe.moveSide(true);
 		}
 
-		else if (key == KeyEvent.VK_A) {// Player moves left when the 'a' key is
-									// pressed
+		else if (key == KeyEvent.VK_A) {// Player moves left when the 'a' key is pressed
 			joe.moveSide(false);
 		}
 
@@ -203,7 +224,6 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 			joe.pickupItem();
 		}
 		
-		//TODO Fix bug with fastfalling allowing you to clip through floors
 		if (key == KeyEvent.VK_S) {// Player fastfalls when the 's' key is pressed
 			joe.fastFall();
 		}
@@ -214,7 +234,12 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 		}
 
 		if (key == KeyEvent.VK_P) {// pauses the game
-			// MainGame.setState(1);
+			if (this.state == 0) {
+				this.setState(1);
+			}
+			else {
+				this.setState(0);
+			}
 		}
 		run();
 	}// end keyPressed

@@ -7,14 +7,14 @@ Description: The class used to handle the player's stats and motion
 
 package Intermediary;
 
+import Logic.Item;
 import Logic.LivingObject;
 
 public class Player extends LivingObject {
 
 	private static int EXP = 0;
 	private static int level = 1;
-	//private Item passiveItems;
-	//private Item activeItem;
+	private static Item active; //We don't need a passive slot as it is included in LivingObject
 	
 	public Player() {
 		//TODO Update Values

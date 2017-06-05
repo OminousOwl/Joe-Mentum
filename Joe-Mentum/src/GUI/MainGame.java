@@ -1,7 +1,7 @@
 /**
  *@Name Cosmin Baciu, Quinn Fisher, Olivier Hébert
  *@DateCreated: May 30th, 2017
- *@DateModified: June 2nd, 2017
+ *@DateModified: June 4th, 2017
  *@Description: The class used to handle the actual game physics and gameplay
  */
 
@@ -15,6 +15,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.*;
 import java.util.EventListener;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Timer;
 
 import javax.swing.*;
@@ -36,11 +38,14 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 	private static final int RUNNING = 0;// the ID# for the game's running state.
 	private static final int PAUSED_MENU = 1;// the ID# for the game's paused state with the basic menu.
 	private static final int PAUSED_OPTIONS = 2;// the ID# for the game's paused state with the options menu.
+	
+	private final Set<Integer> pressed = new HashSet<Integer>(); //Stores all currently pressed keys. This allows momentum to be maintained when releasing A or D when holding the other
 
 	/**** Variables ****/
 	private static int state = RUNNING;// the flag that triggers different behaviors in the program
 	public static final Player joe = new Player(); // The man, the myth, the legend himself, Joe
-	private Entity floor = new Entity();
+	private Entity floor = new Entity(0, 332, 768, 100, 'f');
+	private Entity wall = new Entity(468, 232, 100, 100, 'w');
 
 	// TODO get this POS out of our code
 	public static void main(String[] args) {
@@ -49,19 +54,11 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 
 	public MainGame() {
 		super("Joe-Mentum");
-		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		// Sets up the game panel
 		setSize(768, 432);
 		JPanel game = new JPanel();
-
-		floor.x = 0;
-		floor.width = 768;
-
-		floor.y = 332;
-		floor.height = 100;
-
-		floor.setCollide("Solid");
 
 		joe.x = 100;
 		joe.y = 100;
@@ -74,8 +71,15 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 
 		addKeyListener(this);
 
-		while (true)
+		while (true) {
 			run();
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			}
+		}
+		
 	}
 
 	public void paint(Graphics g) {
@@ -84,6 +88,11 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 		g.fillRect(0, 0, 768, 432);
 		g.setColor(Color.BLACK);
 		g.fillRect((int) floor.getX(), (int) floor.getY(), (int) floor.getWidth(), (int) floor.getHeight());
+		g.setColor(Color.BLUE);
+		g.fillRect((int) wall.getX(), (int) wall.getY(), (int) wall.getWidth(), (int) wall.getHeight());
+		g.setColor(Color.GREEN);
+		g.fillRect((int) wall.ledges[0].getX(), (int) wall.ledges[0].getY(), (int) wall.ledges[0].getWidth(), (int) wall.ledges[0].getHeight());
+		g.fillRect((int) wall.ledges[1].getX(), (int) wall.ledges[1].getY(), (int) wall.ledges[1].getWidth(), (int) wall.ledges[1].getHeight());
 		g.setColor(Color.RED);
 		g.fillRect((int) joe.getX(), (int) joe.getY(), (int) joe.getWidth(), (int) joe.getHeight());
 	}
@@ -96,18 +105,16 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 	 Dependencies: Joe (Entity.Player object(
 	 Exceptions: N/A 
 	 Date Created: May 30th, 2017
-	 Date Modified: June 2nd, 2017
+	 Date Modified: June 4th, 2017
 	 */
 	public void run() {
 		gravity(joe);
-		checkCollision(joe, floor);
 		move(joe);
+		//TODO Make an actual checkCollision algorithm
+		checkCollision(joe, floor);
+		checkCollision(joe, wall);
 		repaint();
-		try {
-			Thread.sleep(40);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-		}
+
 	}
 
 	/*
@@ -125,7 +132,18 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 		e.y += e.getYSpeed();
 	}
 
+	/*
+	 Name: gravity 
+	 Description: Handles the horizontal motion of an object
+	 Parameters: One LivingObject 
+	 Return Value/Type: N/A 
+	 Dependencies: Logic.LivingObject 
+	 Exceptions: N/A 
+	 Date Created: May 30th, 2017
+	 Date Modified: May 30th, 2017
+	 */
 	public void move(LivingObject e) {
+		//System.out.println(e.getXSpeed());
 		e.x += e.getXSpeed();
 	}
 
@@ -164,7 +182,9 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 	}// end actionPerformed
 
 	public void keyPressed(KeyEvent e) {
+		
 		int key = e.getKeyCode(); // Tracks the key pressed
+		pressed.add(key);
 		if (key == KeyEvent.VK_W || key == KeyEvent.VK_SPACE) {// Player jumps when spacebar/the 'w' key is pressed
 			joe.jump();
 		}
@@ -174,7 +194,7 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 			joe.moveSide(true);
 		}
 
-		if (key == KeyEvent.VK_A) {// Player moves left when the 'a' key is
+		else if (key == KeyEvent.VK_A) {// Player moves left when the 'a' key is
 									// pressed
 			joe.moveSide(false);
 		}
@@ -199,10 +219,11 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 		run();
 	}// end keyPressed
 
-	@Override
+
 	public void keyReleased(KeyEvent e) {
 		int key = e.getKeyCode();
-		if (key == KeyEvent.VK_D || key == KeyEvent.VK_A) {
+		pressed.remove(key);
+		if (key == KeyEvent.VK_D && !pressed.contains(KeyEvent.VK_A) || key == KeyEvent.VK_A && !pressed.contains(KeyEvent.VK_D)) {
 			joe.setXSpeed(0);
 		}
 	}

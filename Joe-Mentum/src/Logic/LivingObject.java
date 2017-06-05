@@ -1,7 +1,7 @@
 /*
 Name: Quinn Fisher
 Date Created: May 25th, 2017
-Date Modified: June 2nd, 2017
+Date Modified: June 4th, 2017
 Description: The class containing data and methods to handle moving entities in game (Player, bosses, enemies, etc.)
  */
 
@@ -10,10 +10,10 @@ package Logic;
 public class LivingObject extends Entity {
 	
 	//TODO Move these constants to Entity.Java
-	private static final double ACC = 1.5; //Constant used to define acceleration rate
-	public static final double GRAV = 2.2; //Constant used as gravitational acceleration
-	private static final double INIT_JUMP = -4.2; //Constant used to define initial jump speed
-	private static final double FF = 3.0; //Constant used to define initial fast fall speed
+	private static final double ACC = 1.0; //Constant used to define acceleration rate
+	public static final double GRAV = 0.2; //Constant used as gravitational acceleration
+	private static final double INIT_JUMP = -7.2; //Constant used to define initial jump speed
+	private static final double FF = 7.0; //Constant used to define initial fast fall speed
 	private static final double FF_ACC = 0.4; //Constant used to add gravitational acceleration when fastfalling
 
 	private int health; 
@@ -60,7 +60,7 @@ public class LivingObject extends Entity {
 	Dependencies: N/A
 	Exceptions: N/A
 	Date Created: May 25th, 2017
-	Date Modified: May 27th, 2017
+	Date Modified: June 4th, 2017
 	 */
 	public void moveSide(boolean side) {
 		
@@ -70,10 +70,11 @@ public class LivingObject extends Entity {
 		
 		//V2 = V1 + at
 		//Handles character acceleration
-		if (this.getXSpeed() != maxSpeed) //Accelerates if not already at top speed
-			this.setXSpeed(this.getXSpeed() + ACC);
+		if (Math.abs(this.getXSpeed()) <= maxSpeed) //Accelerates if not already at top speed
+			this.setXSpeed(this.getXSpeed() + directionMultiplier * ACC);
 		
 		if (directionMultiplier * this.getXSpeed() < 0) { //If the intended direction and the current direction do not match, turn around.
+			//System.out.println("Turn at " + System.currentTimeMillis());
 			this.setXSpeed(this.getXSpeed() * -1);
 		}
 		
@@ -92,6 +93,7 @@ public class LivingObject extends Entity {
 	Date Modified: May 26th, 2017
 	 */
 	public void jump() {
+		//System.out.println("Jump " + System.currentTimeMillis()); //TODO reimplement as debug tool
 		if (this.getYSpeed() == 0)
 			this.setYSpeed(INIT_JUMP);
 	}

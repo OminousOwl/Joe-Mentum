@@ -30,7 +30,7 @@ import Logic.LivingObject;
  *    `---' 
  */
 
-public class MainGame extends JFrame implements Runnable, EventListener, KeyListener {
+public class MainGame extends JFrame implements KeyListener {
 
 	/**** Constants ****/
 	private final int RUNNING = 0;// the ID# for the game's running state.
@@ -64,8 +64,8 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 		joe.height = 30;
 
 		add(game);
-		setVisible(true);
-		repaint();
+		//setVisible(true);
+		this.repaint();
 
 		addKeyListener(this);
 		
@@ -115,8 +115,8 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 		checkCollision(joe, floor);
 		checkCollision(joe, wall);
 		manageCD(wall);
+		//System.out.println(joe.y);
 		repaint();
-
 	}
 
 	/*
@@ -207,6 +207,7 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 		int key = e.getKeyCode(); // Tracks the key pressed
 		pressed.add(key);
 		if (key == KeyEvent.VK_W || key == KeyEvent.VK_SPACE) {// Player jumps when spacebar/the 'w' key is pressed
+			 System.out.println("Jump");
 			joe.jump();
 		}
 

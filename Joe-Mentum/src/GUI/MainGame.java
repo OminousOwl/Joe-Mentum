@@ -12,12 +12,10 @@ package GUI;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.event.*;
 import java.util.EventListener;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.Timer;
 
 import javax.swing.*;
 
@@ -256,5 +254,4 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 	public void keyTyped(KeyEvent e) {
 
 	}
-
 }// end class

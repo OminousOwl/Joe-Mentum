@@ -19,7 +19,10 @@ import java.util.Set;
 
 import javax.swing.*;
 
+import Intermediary.LinkedEntity;
+import Intermediary.LinkedList;
 import Intermediary.Player;
+
 import Logic.Entity;
 import Logic.LivingObject;
 
@@ -30,7 +33,7 @@ import Logic.LivingObject;
  *    `---' 
  */
 
-public class MainGame extends JFrame implements KeyListener {
+public class MainGame extends JFrame implements Runnable, EventListener, KeyListener {
 
 	/**** Constants ****/
 	private final int RUNNING = 0;// the ID# for the game's running state.
@@ -42,8 +45,8 @@ public class MainGame extends JFrame implements KeyListener {
 	/**** Variables ****/
 	private int state = RUNNING;// the flag that triggers different behaviors in the program
 	public static final Player joe = new Player(); // The man, the myth, the legend himself, Joe
-	private Entity floor = new Entity(0, 332, 768, 100, 'f');
-	private Entity wall = new Entity(468, 232, 100, 100, 'w');
+	private LinkedList theLevel = new LinkedList(0, 332, 768, 100, Color.BLACK, 'f');
+	
 
 	// TODO get this POS out of our code
 	/*public static void main(String[] args) {
@@ -62,10 +65,12 @@ public class MainGame extends JFrame implements KeyListener {
 		joe.y = 100;
 		joe.width = 30;
 		joe.height = 30;
+		
+		theLevel.add(new LinkedEntity(468, 232, 100, 100, Color.BLACK, 'w'));//this is only temporary, the linked list will eventually be used to read all of it's entities in from a file
 
 		add(game);
-		//setVisible(true);
-		this.repaint();
+		setVisible(true);
+		repaint();
 
 		addKeyListener(this);
 		
@@ -115,8 +120,8 @@ public class MainGame extends JFrame implements KeyListener {
 		checkCollision(joe, floor);
 		checkCollision(joe, wall);
 		manageCD(wall);
-		//System.out.println(joe.y);
 		repaint();
+
 	}
 
 	/*
@@ -207,7 +212,6 @@ public class MainGame extends JFrame implements KeyListener {
 		int key = e.getKeyCode(); // Tracks the key pressed
 		pressed.add(key);
 		if (key == KeyEvent.VK_W || key == KeyEvent.VK_SPACE) {// Player jumps when spacebar/the 'w' key is pressed
-			 System.out.println("Jump");
 			joe.jump();
 		}
 

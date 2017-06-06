@@ -7,7 +7,7 @@ public class LinkedList {
 	private LinkedEntity tail;//the last node in the list
 	
 	public LinkedList(int x, int y, int width, int height,Color colour, char collision){
-		head = new LinkedEntity(x,y,width,height,collision);
+		head = new LinkedEntity(x,y,width,height,colour,collision);
 	}//end constructor
 	
 	public LinkedList(){

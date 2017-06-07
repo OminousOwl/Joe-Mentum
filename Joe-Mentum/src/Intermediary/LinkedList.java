@@ -14,13 +14,16 @@ public class LinkedList {
 		head = null;
 	}//end constructor
 	
+	public LinkedEntity getHead(){return this.head;}
+	
+	public LinkedEntity getTail(){return this.tail;}
+	
 	public void add(LinkedEntity node){//adds a node to the list
-		if(head.equals(null)){//Handle empty list
-			head = node;
+		if(head.equals(null) == true){//Handle empty list
+			tail = head = node;
 		}//end if
 		else{
-			tail.next = node;
-			tail = node;
+			tail.next = tail = node;
 		}//end else
 	}//end add
 	

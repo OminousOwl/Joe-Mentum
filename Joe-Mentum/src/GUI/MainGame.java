@@ -34,7 +34,10 @@ import Logic.LivingObject;
  */
 
 public class MainGame extends JFrame implements Runnable, EventListener, KeyListener {
-
+	public static void main(String[] args){
+		new MainGame();
+	}//end main
+	
 	/**** Constants ****/
 	private final int RUNNING = 0;// the ID# for the game's running state.
 	private final int PAUSED_MENU = 1;// the ID# for the game's paused state with the basic menu.
@@ -88,20 +91,26 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 	}
 
 	public void paint(Graphics g) {
+		LinkedEntity runner = theLevel.getHead();
+		int i = 1;//the element in the list being drawn
+		
 		// TODO update with image
-		g.setColor(Color.WHITE);
-		g.fillRect(0, 0, 768, 432);
-		g.setColor(Color.BLACK);
-		g.fillRect((int) floor.getX(), (int) floor.getY(), (int) floor.getWidth(), (int) floor.getHeight());
-		g.setColor(Color.BLUE);
-		g.fillRect((int) wall.getX(), (int) wall.getY(), (int) wall.getWidth(), (int) wall.getHeight());
-		/*g.setColor(Color.GREEN);
+		do{
+			g.setColor(runner.colour);
+			g.fillRect(runner.x, runner.y, runner.width, runner.height);
+			i++;
+			runner = theLevel.search(i);
+		}while(runner.equals(theLevel.getTail()));
+		
+		/*
+		g.setColor(Color.GREEN);
 		g.fillRect((int) wall.ledges[0].getX(), (int) wall.ledges[0].getY(), (int) wall.ledges[0].getWidth(), (int) wall.ledges[0].getHeight());
 		g.fillRect((int) wall.ledges[1].getX(), (int) wall.ledges[1].getY(), (int) wall.ledges[1].getWidth(), (int) wall.ledges[1].getHeight());
 		*/
+		
 		g.setColor(Color.RED);
 		g.fillRect((int) joe.getX(), (int) joe.getY(), (int) joe.getWidth(), (int) joe.getHeight());
-	}
+	}//end paint
 
 	/*
 	 Name: run 
@@ -114,12 +123,18 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 	 Date Modified: June 4th, 2017
 	 */
 	public void run() {
+		LinkedEntity runner;
+		int i = 1;
+		
 		gravity(joe);
 		move(joe);
 		//TODO Make an actual checkCollision algorithm
-		checkCollision(joe, floor);
-		checkCollision(joe, wall);
-		manageCD(wall);
+		do{
+			runner = theLevel.search(i);
+			checkCollision(joe, runner);
+			manageCD(runner);
+		}while(runner.equals(theLevel.getTail()));
+		
 		repaint();
 
 	}

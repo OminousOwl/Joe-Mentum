@@ -19,7 +19,7 @@ public class LinkedList {
 	public LinkedEntity getTail(){return this.tail;}
 	
 	public void add(LinkedEntity node){//adds a node to the list
-		LinkedEntity runner;
+		LinkedEntity runner;//the pointer used for the current object in the list
 		
 		if(head.equals(null) == true){//Handle empty list
 			tail = head = node;
@@ -27,7 +27,7 @@ public class LinkedList {
 		else{
 			runner = head;
 			while(runner.next.equals(null) == false)runner = runner.next;
-			node = runner;
+			runner.next = node;
 		}//end else
 	}//end add
 	

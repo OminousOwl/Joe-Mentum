@@ -24,8 +24,12 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import Intermediary.Player;
+import Intermediary.LinkedEntity;
+import Intermediary.LinkedList;
+
 import Logic.Entity;
 import Logic.LivingObject;
+
 import jaco.mp3.player.MP3Player;
 
 /*
@@ -47,8 +51,7 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 	/**** Variables ****/
 	private int state = RUNNING;// the flag that triggers different behaviors in the program
 	public static final Player joe = new Player(); // The man, the myth, the legend himself, Joe
-	private Entity floor = new Entity(0, 332, 768, 100, 'f');
-	private Entity wall = new Entity(468, 232, 100, 100, 'w');
+	private LinkedList theLevel = new LinkedList();
 	MP3Player spagoogi = new MP3Player();
 
 	public static void main(String[] args) {
@@ -69,6 +72,9 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 		joe.y = 100;
 		joe.width = 30;
 		joe.height = 30;		
+		
+		theLevel.add(new LinkedEntity(0, 332, 768, 100, Color.BLACK, 'f'));
+		theLevel.add(new LinkedEntity(468, 232, 100, 100, Color.BLACK, 'w'));
 		
 		game.setDoubleBuffered(true);
 		add(game);
@@ -93,9 +99,15 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 	}
 
 	public void paint(Graphics g) {
+		LinkedEntity runner = theLevel.getHead();
 		// TODO update with image;
 		g.setColor(Color.WHITE);
-		g.fillRect(0, 0, 768, 432);
+		g.fillRect(0, 0, this.getWidth(), this.getHeight());
+		
+		while(runner.equals(null) == false){
+			
+		}//end while
+		
 		g.setColor(Color.BLACK);
 		g.fillRect((int) floor.getX(), (int) floor.getY(), (int) floor.getWidth(), (int) floor.getHeight());
 		g.setColor(Color.BLUE);
@@ -104,6 +116,7 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 		g.fillRect((int) wall.ledges[0].getX(), (int) wall.ledges[0].getY(), (int) wall.ledges[0].getWidth(), (int) wall.ledges[0].getHeight());
 		g.fillRect((int) wall.ledges[1].getX(), (int) wall.ledges[1].getY(), (int) wall.ledges[1].getWidth(), (int) wall.ledges[1].getHeight());
 		*/
+		
 		g.setColor(Color.RED);
 		g.fillRect((int) joe.getX(), (int) joe.getY(), (int) joe.getWidth(), (int) joe.getHeight());
 	}

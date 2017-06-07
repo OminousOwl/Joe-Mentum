@@ -12,20 +12,21 @@ package GUI;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.event.*;
-import java.awt.image.BufferedImage;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.File;
-import java.io.IOException;
 import java.util.EventListener;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.imageio.ImageIO;
-import javax.swing.*;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 import Intermediary.Player;
 import Logic.Entity;
 import Logic.LivingObject;
+import jaco.mp3.player.MP3Player;
 
 /*
  *       __
@@ -48,6 +49,7 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 	public static final Player joe = new Player(); // The man, the myth, the legend himself, Joe
 	private Entity floor = new Entity(0, 332, 768, 100, 'f');
 	private Entity wall = new Entity(468, 232, 100, 100, 'w');
+	MP3Player spagoogi = new MP3Player();
 
 	public static void main(String[] args) {
 		new MainGame();
@@ -71,8 +73,11 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 		add(game);
 		setVisible(true);
 		repaint();
-
 		addKeyListener(this);
+		spagoogi.addToPlayList(new File("music/StabCrabV2Orchestra.mp3"));
+		spagoogi.skipForward();
+		spagoogi.play();
+		
 		
 		while (true) {
 			if (this.state == 0)

@@ -8,6 +8,7 @@ package GUI;
  */
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -30,9 +31,31 @@ import javax.swing.SwingUtilities;
  */
 
 @SuppressWarnings("serial")
-public class GameMenu extends JPanel implements ActionListener {
+public class GameMenu extends JFrame implements ActionListener{
+	
+	public static MainGame ech;
+	
+	JButton play = new JButton("pls work");
+	
+	public GameMenu() {
+		JPanel pane = new JPanel();
+		setContentPane(pane);
+		pane.add(play);
+		play.addActionListener(this);
+		setVisible(true);
+		setSize(new Dimension(500, 500));
+		
+		ech = new MainGame();
+		ech.setVisible(false);
+	}
+
+	
+	public static void main (String[] args) {
+		new GameMenu();
+		
+	}
 	// images
-	BufferedImage i1;
+	/*BufferedImage i1;
 	BufferedImage i2;
 	BufferedImage i3;
 	BufferedImage i4;
@@ -50,7 +73,7 @@ public class GameMenu extends JPanel implements ActionListener {
 			public void run() {
 				
 			}
-		});*/
+		});
 	}
 
 	public GameMenu() {
@@ -99,16 +122,16 @@ public class GameMenu extends JPanel implements ActionListener {
 		buttonPane.add(play);
 		guiFrame.add(buttonPane, BorderLayout.CENTER);
 		guiFrame.setVisible(true);
-	}
+	} */
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		if (e.getSource() == play) {
-			guiFrame.dispose();
+			//guiFrame.dispose();
 			// TODO THIS SHIT DON'T LOAD/WORK
-			new MainGame();
-			
+			//new MainGame();
+			ech.setVisible(true);
 		}
 	}
 

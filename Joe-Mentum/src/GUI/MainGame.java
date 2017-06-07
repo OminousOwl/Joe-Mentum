@@ -59,6 +59,7 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 	public MainGame() {
 		super("Joe-Mentum");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setResizable(false);
 		
 		// Sets up the game panel
 		setSize(768, 432);

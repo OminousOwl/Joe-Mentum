@@ -13,10 +13,14 @@ package GUI;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.EventListener;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 
 import Intermediary.Player;
@@ -45,15 +49,15 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 	private Entity floor = new Entity(0, 332, 768, 100, 'f');
 	private Entity wall = new Entity(468, 232, 100, 100, 'w');
 
-	// TODO get this POS out of our code
-	/*public static void main(String[] args) {
+	public static void main(String[] args) {
 		new MainGame();
-	}*/
+	}
 
+	@SuppressWarnings("serial")
 	public MainGame() {
 		super("Joe-Mentum");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
+		
 		// Sets up the game panel
 		setSize(768, 432);
 		JPanel game = new JPanel();
@@ -61,15 +65,15 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 		joe.x = 100;
 		joe.y = 100;
 		joe.width = 30;
-		joe.height = 30;
-
+		joe.height = 30;		
+		
+		game.setDoubleBuffered(true);
 		add(game);
 		setVisible(true);
 		repaint();
 
 		addKeyListener(this);
 		
-
 		while (true) {
 			if (this.state == 0)
 				run();
@@ -83,7 +87,7 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 	}
 
 	public void paint(Graphics g) {
-		// TODO update with image
+		// TODO update with image;
 		g.setColor(Color.WHITE);
 		g.fillRect(0, 0, 768, 432);
 		g.setColor(Color.BLACK);

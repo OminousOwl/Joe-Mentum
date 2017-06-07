@@ -34,10 +34,14 @@ import Logic.LivingObject;
  */
 
 public class MainGame extends JFrame implements Runnable, EventListener, KeyListener {
+<<<<<<< HEAD
 	public static void main(String[] args){
 		new MainGame();
 	}//end main
 	
+=======
+
+>>>>>>> parent of 4f4615f... kill me (At least we know what not to do to display the MainGame?)
 	/**** Constants ****/
 	private final int RUNNING = 0;// the ID# for the game's running state.
 	private final int PAUSED_MENU = 1;// the ID# for the game's paused state with the basic menu.
@@ -129,12 +133,18 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 		gravity(joe);
 		move(joe);
 		//TODO Make an actual checkCollision algorithm
+<<<<<<< HEAD
 		do{
 			runner = theLevel.search(i);
 			checkCollision(joe, runner);
 			manageCD(runner);
 		}while(runner.equals(theLevel.getTail()));
 		
+=======
+		checkCollision(joe, floor);
+		checkCollision(joe, wall);
+		manageCD(wall);
+>>>>>>> parent of 4f4615f... kill me (At least we know what not to do to display the MainGame?)
 		repaint();
 
 	}

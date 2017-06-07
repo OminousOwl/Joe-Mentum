@@ -19,11 +19,15 @@ public class LinkedList {
 	public LinkedEntity getTail(){return this.tail;}
 	
 	public void add(LinkedEntity node){//adds a node to the list
+		LinkedEntity runner;
+		
 		if(head.equals(null) == true){//Handle empty list
 			tail = head = node;
 		}//end if
 		else{
-			tail.next = tail = node;
+			runner = head;
+			while(runner.next.equals(null) == false)runner = runner.next;
+			node = runner;
 		}//end else
 	}//end add
 	

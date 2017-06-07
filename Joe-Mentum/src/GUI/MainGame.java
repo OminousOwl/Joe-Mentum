@@ -35,11 +35,14 @@ import Logic.LivingObject;
 
 public class MainGame extends JFrame implements Runnable, EventListener, KeyListener {
 <<<<<<< HEAD
+<<<<<<< HEAD
 	public static void main(String[] args){
 		new MainGame();
 	}//end main
 	
 =======
+=======
+>>>>>>> parent of 4f4615f... kill me (At least we know what not to do to display the MainGame?)
 
 >>>>>>> parent of 4f4615f... kill me (At least we know what not to do to display the MainGame?)
 	/**** Constants ****/
@@ -144,6 +147,9 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 		checkCollision(joe, floor);
 		checkCollision(joe, wall);
 		manageCD(wall);
+<<<<<<< HEAD
+>>>>>>> parent of 4f4615f... kill me (At least we know what not to do to display the MainGame?)
+=======
 >>>>>>> parent of 4f4615f... kill me (At least we know what not to do to display the MainGame?)
 		repaint();
 

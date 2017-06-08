@@ -57,6 +57,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 	private boolean muted = false;
 	public static final Player joe = new Player(); // The man, the myth, the legend himself, Joe
 	private LinkedList theLevel;
+	private Monster enemies;
 	GraphicsConsole gc = new GraphicsConsole();
 	MP3Player spagoogi = new MP3Player();
 	

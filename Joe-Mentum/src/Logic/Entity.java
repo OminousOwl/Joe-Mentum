@@ -22,7 +22,7 @@ public class Entity extends Rectangle {
 	
 	/**** Variables ****/
 	private Rectangle hitbox;//the rectangle object indicating the physical edges of the object
-	private Rectangle floorbox;//the rectangle object defining the surface of an object
+	public Rectangle floorbox;//the rectangle object defining the surface of an object
 	public Rectangle[] ledges = new Rectangle[2]; //The ledges of an object
 	public boolean ledgeFlag = true; //A flag used to prevent autosnap to a ledge immediately after jumping form one
 	public int resetCounter; //Used to countdown frames until the ledgeFlag resets
@@ -47,6 +47,9 @@ public class Entity extends Rectangle {
 		this.width = width;
 		this.height = height;
 		this.colour = colour;
+		
+		ledges[0] = new Rectangle(0, 0, 0, 0);
+		ledges[1] = new Rectangle(0, 0, 0, 0);
 		
 		if (collideType == FLOOR || collideType == WALL)
 			floorbox = new Rectangle(this.x, this.y + 2, this.width, this.height - 2); //Defining the floorbox on the very surface of the object causes some jumps to be ignored

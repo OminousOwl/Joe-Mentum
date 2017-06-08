@@ -11,7 +11,7 @@
 package GUI;
 
 import java.awt.Color;
-import java.awt.Graphics2D;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -28,6 +28,7 @@ import javax.swing.JPanel;
 
 import Intermediary.LinkedEntity;
 import Intermediary.LinkedList;
+import Intermediary.Monster;
 import Intermediary.Player;
 import Logic.Entity;
 import Logic.LivingObject;
@@ -47,11 +48,13 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 	private final int RUNNING = 0;// the ID# for the game's running state.
 	private final int PAUSED = 1;// the ID# for the game's paused state with the basic menu.
 	private final int PAUSED_OPTIONS = 2;// the ID# for the game's paused state with the options menu.
+	private final int GAME_OVER = 3;
 	
 	private final Set<Integer> pressed = new HashSet<Integer>(); //Stores all currently pressed keys. This allows momentum to be maintained when releasing A or D when holding the other
 
 	/**** Variables ****/
 	private int state = RUNNING;// the flag that triggers different behaviors in the program
+	private boolean muted = false;
 	public static final Player joe = new Player(); // The man, the myth, the legend himself, Joe
 	private LinkedList theLevel;
 	GraphicsConsole gc = new GraphicsConsole();
@@ -73,12 +76,13 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		super("Joe-Mentum");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setResizable(false);
+		setSize(768, 432);
+		gc.setSize(650, 432);
 		
 		// Sets up the game panel
-		setSize(768, 432);
 		JPanel game = new JPanel();
 
-		joe.x = 100;
+		joe.x = gc.getWidth()/2;
 		joe.y = 100;
 		joe.width = 30;
 		joe.height = 30;		
@@ -87,15 +91,18 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		
 		theLevel.add(new LinkedEntity(0, 332, 768, 100, Color.BLACK, 'f'));
 		theLevel.add(new LinkedEntity(468, 232, 100, 100, Color.BLUE, 'w'));
+		theLevel.add(new LinkedEntity(800, 175, 100, 100, Color.BLUE, 'w'));
 		
 		game.setDoubleBuffered(true);
 		add(game);
 		setVisible(false);
 		setState(PAUSED);
 		
-		
+		gc.setFont(new Font("Baskerville Old Face", Font.BOLD, 24));
 		gc.addKeyListener(this);
 		gc.setVisible(false);
+		
+		enemies = new Monster(850, 100, 15, 15, 3, 2, 0.5, Monster.LgWANDER);
 		
 		spagoogi.addToPlayList(new File("music/StabCrabV2Orchestra.mp3"));
 		spagoogi.skipForward();
@@ -144,9 +151,15 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 			
 			paintLevelComponent(theLevel.getHead());
 			
+			gc.setColor(Color.GREEN);
+			gc.fillRect(enemies.x, enemies.y, enemies.width, enemies.height);
+			
 			gc.setColor(Color.RED);
 			gc.fillRect((int) joe.getX(), (int) joe.getY(), (int) joe.getWidth(), (int) joe.getHeight());
 			
+			if (this.state == GAME_OVER) {
+				gc.drawString("GAME OVER", gc.getWidth()/2 - 50, gc.getHeight()/2);
+			}
 			
 			/*//Outdated Debug Code
 			gc.setColor(Color.GREEN);
@@ -181,9 +194,20 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 	 */
 	public void run() {
 		gravity(joe);
+		gravity(enemies);
 		move(joe);
+		move(enemies);
 		checkLevelCollision(joe, theLevel.getHead());
+		checkLevelCollision(enemies, theLevel.getHead());
+		enemies.behave(joe);
 		manageCD(theLevel.getHead());
+		scroll(joe, theLevel.getHead());
+		scroll(joe, enemies);
+		joe.x = gc.getWidth()/2;
+		deathCheck(joe);
+		
+		
+		//Always keep animate() as the last function
 		animate();
 	}//end run
 
@@ -254,6 +278,36 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 	}
 	
 	/*
+	 Name: checkLevelCollision 
+	 Description: Checks to see if any entities collide
+	 Parameters: Two entities 
+	 Return Value/Type: N/A 
+	 Dependencies: Logic.Entity 
+	 Exceptions: N/A 
+	 Date Created: June 8th, 2017 
+	 Date Modified: June 8th, 2017 
+	 */
+	public void checkLevelCollision (Monster a, LinkedEntity b) {
+		if (a == null) {
+			return;
+		}
+		else {
+			if (b == null) {
+				return;
+			}
+			else {
+				checkCollision(a, b);
+				if (a.associatedTerrain == null && a.intersects(b)) {
+					a.setAssociatedTerrain(b);
+				}
+				checkLevelCollision(a, b.next);
+			}
+		}
+		checkLevelCollision(a.next, b);
+		
+	}
+	
+	/*
 	 Name: manageCD 
 	 Description: Manages ledge cooldowns, reducing them on each frame
 	 Parameters: One Entity
@@ -275,6 +329,66 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		}
 		manageCD(a.next);
 	}
+	
+	
+	/*
+	 Name: scroll 
+	 Description: Scrolls all objects on screen in relation to Joe's current location
+	 Parameters: One Player and One LinkedEntity
+	 Return Value/Type: N/A 
+	 Dependencies: Logic.Entity 
+	 Exceptions: N/A 
+	 Date Created: June 8th, 2017
+	 Date Modified: June 8th, 2017
+	 */
+	public void scroll(Player joe, LinkedEntity a) {
+		if (a == null) {
+			return;
+		}
+		
+		a.x -= joe.x - gc.getWidth()/2;
+		a.floorbox.x -= joe.x - gc.getWidth()/2;
+		a.ledges[0].x -= joe.x - gc.getWidth()/2;
+		a.ledges[1].x -= joe.x - gc.getWidth()/2;
+		scroll(joe, a.next);
+	}
+	
+	/*
+	 Name: scroll 
+	 Description: Scrolls all objects on screen in relation to Joe's current location
+	 Parameters: One Player and One Monster
+	 Return Value/Type: N/A 
+	 Dependencies: Logic.Entity 
+	 Exceptions: N/A 
+	 Date Created: June 8th, 2017
+	 Date Modified: June 8th, 2017
+	 */
+	public void scroll(Player joe, Monster a) {
+		if (a == null) {
+			return;
+		}
+		
+		a.x -= joe.x - gc.getWidth()/2;
+		scroll(joe, a.next);
+	}
+	
+	/*
+	 Name: deathCheck 
+	 Description: Checks to see if a game over state is needed in response to Joe's death
+	 Parameters: One Player
+	 Return Value/Type: N/A 
+	 Dependencies: Logic.Entity 
+	 Exceptions: N/A 
+	 Date Created: June 8th, 2017
+	 Date Modified: June 8th, 2017
+	 */
+	public void deathCheck(Player joe) {
+		if (joe.y >= gc.getHeight() + gc.getHeight()/6 || joe.getHealth() == 0) {
+			this.setState(GAME_OVER);
+		}
+	}
+	
+	
 
 	public void setState(int newState) {
 		state = newState;
@@ -332,7 +446,16 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 			}
 		}
 		
-		run(); //TODO remove when menu works
+		if (key == KeyEvent.VK_M) { //Mute
+			muted = !muted;
+			if (muted) {
+				spagoogi.pause();
+			}
+			else {
+				spagoogi.play();
+			}
+				
+		}
 	}// end keyPressed
 
 

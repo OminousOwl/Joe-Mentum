@@ -21,22 +21,22 @@ public class LinkedList {
 	public void add(LinkedEntity node){//adds a node to the list
 		LinkedEntity runner;//the pointer used for the current object in the list
 		
-		if(head.equals(null) == true){//Handle empty list
+		if(head != null){//Handle empty list
 			tail = head = new LinkedEntity(node.x,node.y,node.width,node.height,node.colour,node.getCollideType());
 		}//end if
 		else{
 			runner = head;
-			while(runner.next.equals(null) == false)runner = runner.next;//skip existing objects
-			 tail = runner.next = new LinkedEntity(node.x,node.y,node.width,node.height,node.colour,node.getCollideType());
+			while(runner != null)runner = runner.next;//skip existing objects
+			 tail = runner = new LinkedEntity(node.x,node.y,node.width,node.height,node.colour,node.getCollideType());
 		}//end else
 	}//end add
 	
 	public LinkedEntity search(int n){//searches for the n'th object in the list
 		LinkedEntity runner = head;//the node that iterates through the list
 		
-		if(runner.equals(null) == false){
+		if(runner != null){
 			for(int i=0;i<n;i++){
-				if(runner.next.equals(null) == false)runner = runner.next;
+				if(runner.next != null)runner = runner.next;
 				else return null;
 			}//end for
 			return runner;

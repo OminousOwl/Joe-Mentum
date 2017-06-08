@@ -104,7 +104,7 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 		g.setColor(Color.WHITE);
 		g.fillRect(0, 0, this.getWidth(), this.getHeight());
 		
-		while(runner.equals(null) == false){
+		while(runner != null){
 			g.setColor(runner.colour);
 			g.fillRect(runner.x, runner.y, runner.width, runner.height);
 			runner = runner.next;
@@ -137,7 +137,7 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 		move(joe);
 		
 		//TODO Make an actual checkCollision algorithm
-		while(runner.equals(null) == false){
+		while(runner != null){
 			checkCollision(joe, runner);
 			manageCD(runner);
 			runner = runner.next;

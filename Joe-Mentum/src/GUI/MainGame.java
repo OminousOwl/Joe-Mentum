@@ -11,15 +11,18 @@
 package GUI;
 
 import java.awt.Color;
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.util.EventListener;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
@@ -53,6 +56,12 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 	private LinkedList theLevel;
 	GraphicsConsole gc = new GraphicsConsole();
 	MP3Player spagoogi = new MP3Player();
+	
+	BufferedImage i1;
+	BufferedImage i2;
+	BufferedImage i3;
+	BufferedImage i4;
+	BufferedImage i5;
 
 	public static void main(String[] args) {
 		new MainGame().startGame();
@@ -92,6 +101,16 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		spagoogi.skipForward();
 		spagoogi.play();
 		
+		try {
+			i1 = ImageIO.read(new File("images/1.png"));
+			i2 = ImageIO.read(new File("images/2.png"));
+			i3 = ImageIO.read(new File("images/3.png"));
+			i4 = ImageIO.read(new File("images/4.png"));
+			i5 = ImageIO.read(new File("images/5.png"));
+		} catch (IOException e) {
+			// catch
+		}
+		
 		animate();
 		
 		new GameMenu(this);
@@ -104,7 +123,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 			if (this.state == 0)
 				run();
 			try {
-				Thread.sleep(10);
+				Thread.sleep(1);
 			} catch (InterruptedException e) {
 				System.out.println("A thing broke");
 			}
@@ -115,13 +134,19 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		
 		synchronized(gc) {
 			gc.clear();
-			gc.setColor(Color.WHITE);
-			gc.fillRect(0, 0, this.getWidth(), this.getHeight());
+			
+			
+			gc.drawImage(i1, 0, 0, gc.getWidth(), gc.getHeight());
+			gc.drawImage(i2, 0, 0, gc.getWidth(), gc.getHeight());
+			gc.drawImage(i3, 0, 0, gc.getWidth(), gc.getHeight());
+			gc.drawImage(i4, 0, 0, gc.getWidth(), gc.getHeight());
+			gc.drawImage(i5, 0, 0, gc.getWidth(), gc.getHeight());
 			
 			paintLevelComponent(theLevel.getHead());
 			
 			gc.setColor(Color.RED);
 			gc.fillRect((int) joe.getX(), (int) joe.getY(), (int) joe.getWidth(), (int) joe.getHeight());
+			
 			
 			/*//Outdated Debug Code
 			gc.setColor(Color.GREEN);

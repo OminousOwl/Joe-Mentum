@@ -50,7 +50,7 @@ public class GraphicsConsole extends JFrame implements MouseListener, MouseMotio
 	private static final int DEFAULT_HEIGHT = 500;
 	private static final int DEFAULT_WIDTH = 650;
 	private static final int DEFAULT_FONTSIZE = 12;
-	private static final String DEFAULT_NAME = "HSA2 Graphics Console";
+	private static final String DEFAULT_NAME = "Joe-Mentum";
 
 	// The main drawing surface
 	private ConsoleCanvas canvas;

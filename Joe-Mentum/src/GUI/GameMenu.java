@@ -71,18 +71,8 @@ public class GameMenu extends JFrame implements ActionListener{
 	JButton exit;
 	JFrame guiFrame;
 
-	public static void main(String[] args) {
-		
-		new GameMenu();
-		
-		/*SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				
-			}
-		});*/
-	}
-
-	public GameMenu() {
+	public GameMenu(MainGame game) {
+		ech = game;
 		try {
 			i1 = ImageIO.read(new File("images/1.png"));
 			i2 = ImageIO.read(new File("images/2.png"));
@@ -137,12 +127,11 @@ public class GameMenu extends JFrame implements ActionListener{
 
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
-		//if (e.getSource() == play) {
+		if (e.getSource() == play) {
 			this.dispose();
-			//ech.setVisible(true);
-			//new Thread(new MainGame()).start();
-			new MainGame();
-		//}
+			ech.gc.setVisible(true);
+			ech.setState(0);
+		}
 	}
 
 }

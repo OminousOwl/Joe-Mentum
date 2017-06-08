@@ -42,7 +42,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 
 	/**** Constants ****/
 	private final int RUNNING = 0;// the ID# for the game's running state.
-	private final int PAUSED_MENU = 1;// the ID# for the game's paused state with the basic menu.
+	private final int PAUSED = 1;// the ID# for the game's paused state with the basic menu.
 	private final int PAUSED_OPTIONS = 2;// the ID# for the game's paused state with the options menu.
 	
 	private final Set<Integer> pressed = new HashSet<Integer>(); //Stores all currently pressed keys. This allows momentum to be maintained when releasing A or D when holding the other
@@ -51,7 +51,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 	private int state = RUNNING;// the flag that triggers different behaviors in the program
 	public static final Player joe = new Player(); // The man, the myth, the legend himself, Joe
 	private LinkedList theLevel;
-	private GraphicsConsole gc = new GraphicsConsole();
+	GraphicsConsole gc = new GraphicsConsole();
 	MP3Player spagoogi = new MP3Player();
 
 	public static void main(String[] args) {
@@ -81,15 +81,20 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		
 		game.setDoubleBuffered(true);
 		add(game);
-		setVisible(true);
-		repaint();
+		setVisible(false);
+		setState(PAUSED);
+		
+		
 		gc.addKeyListener(this);
+		gc.setVisible(false);
 		
 		spagoogi.addToPlayList(new File("music/StabCrabV2Orchestra.mp3"));
 		spagoogi.skipForward();
 		spagoogi.play();
 		
 		animate();
+		
+		new GameMenu(this);
 		
 	
 	}

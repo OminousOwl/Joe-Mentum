@@ -39,7 +39,7 @@ import jaco.mp3.player.MP3Player;
  *    `---' 
  */
 
-public class MainGame extends JFrame implements Runnable, EventListener, KeyListener {
+public class MainGame extends JFrame implements EventListener, KeyListener {
 
 	/**** Constants ****/
 	private final int RUNNING = 0;// the ID# for the game's running state.
@@ -51,11 +51,12 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 	/**** Variables ****/
 	private int state = RUNNING;// the flag that triggers different behaviors in the program
 	public static final Player joe = new Player(); // The man, the myth, the legend himself, Joe
-	private LinkedList theLevel = new LinkedList();
+	private LinkedList theLevel;
 	MP3Player spagoogi = new MP3Player();
 
 	public static void main(String[] args) {
-		new MainGame();
+		new MainGame().startGame();
+		
 	}
 
 	@SuppressWarnings("serial")
@@ -73,19 +74,25 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 		joe.width = 30;
 		joe.height = 30;		
 		
+		theLevel = new LinkedList();
+		
 		theLevel.add(new LinkedEntity(0, 332, 768, 100, Color.BLACK, 'f'));
-		theLevel.add(new LinkedEntity(468, 232, 100, 100, Color.BLACK, 'w'));
+		theLevel.add(new LinkedEntity(468, 232, 100, 100, Color.BLUE, 'w'));
 		
 		game.setDoubleBuffered(true);
 		add(game);
 		setVisible(true);
 		repaint();
 		addKeyListener(this);
+		
+		//TODO Reimplement before push
+		
 		spagoogi.addToPlayList(new File("music/StabCrabV2Orchestra.mp3"));
 		spagoogi.skipForward();
 		spagoogi.play();
-		
-		
+	}
+	
+	public void startGame() {
 		while (true) {
 			if (this.state == 0)
 				run();
@@ -95,20 +102,14 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 				System.out.println("A thing broke");
 			}
 		}
-		
 	}
 
 	public void paint(Graphics g) {
-		LinkedEntity runner = theLevel.getHead();
 		// TODO update with image;
 		g.setColor(Color.WHITE);
 		g.fillRect(0, 0, this.getWidth(), this.getHeight());
 		
-		while(runner != null){
-			g.setColor(runner.colour);
-			g.fillRect(runner.x, runner.y, runner.width, runner.height);
-			runner = runner.next;
-		}//end while
+		paintLevelComponent(g, theLevel.getHead());
 		
 		/*//Outdated Debug Code
 		g.setColor(Color.GREEN);
@@ -119,6 +120,17 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 		g.setColor(Color.RED);
 		g.fillRect((int) joe.getX(), (int) joe.getY(), (int) joe.getWidth(), (int) joe.getHeight());
 	}
+	
+	public void paintLevelComponent (Graphics g, LinkedEntity activeEntity) {
+		if (activeEntity == null) {
+			return;
+		}
+		else {
+			g.setColor(activeEntity.colour);
+			g.fillRect(activeEntity.x, activeEntity.y, activeEntity.width, activeEntity.height);
+			paintLevelComponent(g, activeEntity.next);
+		}
+	}
 
 	/*
 	 Name: run 
@@ -128,21 +140,14 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 	 Dependencies: Joe (Entity.Player object(
 	 Exceptions: N/A 
 	 Date Created: May 30th, 2017
-	 Date Modified: June 4th, 2017
+	 Date Modified: June 7th, 2017
 	 */
 	public void run() {
-		LinkedEntity runner = theLevel.getHead();
-		
 		gravity(joe);
 		move(joe);
-		
-		//TODO Make an actual checkCollision algorithm
-		while(runner != null){
-			checkCollision(joe, runner);
-			manageCD(runner);
-			runner = runner.next;
-		}//end while
-		repaint();
+		checkLevelCollision(joe, theLevel.getHead());
+		manageCD(theLevel.getHead());
+		this.repaint();
 	}//end run
 
 	/*
@@ -192,6 +197,26 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 	}
 	
 	/*
+	 Name: checkLevelCollision 
+	 Description: Checks to see if any entities collide
+	 Parameters: Two entities 
+	 Return Value/Type: N/A 
+	 Dependencies: Logic.Entity 
+	 Exceptions: N/A 
+	 Date Created: June 7th, 2017 
+	 Date Modified: June 7th, 2017 
+	 */
+	public void checkLevelCollision (Entity a, LinkedEntity b) {
+		if (b == null) {
+			return;
+		}
+		else {
+			checkCollision(a, b);
+			checkLevelCollision(a, b.next);
+		}
+	}
+	
+	/*
 	 Name: manageCD 
 	 Description: Manages ledge cooldowns, reducing them on each frame
 	 Parameters: One Entity
@@ -199,15 +224,19 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 	 Dependencies: Logic.Entity 
 	 Exceptions: N/A 
 	 Date Created: June 5th, 2017
-	 Date Modified: June 5th, 2017
+	 Date Modified: June 7th, 2017
 	 */
-	public void manageCD (Entity a) {
-		if (!a.ledgeFlag) {
+	public void manageCD (LinkedEntity a) {
+		if (a == null){
+			return;
+		}
+		else if (!a.ledgeFlag) {
 			a.resetCounter--;
 			if (a.resetCounter == 0) {
 				a.ledgeFlag = true;
 			}
 		}
+		manageCD(a.next);
 	}
 
 	public void setState(int newState) {
@@ -278,6 +307,6 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 	}
 
 	public void keyTyped(KeyEvent e) {
-
+		
 	}
 }// end class

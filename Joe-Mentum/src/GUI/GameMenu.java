@@ -33,15 +33,22 @@ import javax.swing.SwingUtilities;
 @SuppressWarnings("serial")
 public class GameMenu extends JFrame implements ActionListener{
 	
-	public static MainGame ech;
+	private static MainGame ech;
 	
-	JButton play = new JButton("pls work");
+	private static JButton play;
 	
 	public GameMenu() {
+		
+
+		
+		
 		JPanel pane = new JPanel();
 		setContentPane(pane);
+		
+		play = new JButton("pls work");
 		pane.add(play);
 		play.addActionListener(this);
+		
 		setVisible(true);
 		setSize(new Dimension(500, 500));
 		
@@ -124,15 +131,14 @@ public class GameMenu extends JFrame implements ActionListener{
 		guiFrame.setVisible(true);
 	} */
 
-	@Override
+
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
-		if (e.getSource() == play) {
-			//guiFrame.dispose();
-			// TODO THIS SHIT DON'T LOAD/WORK
-			//new MainGame();
+		//if (e.getSource() == play) {
+			this.dispose();
 			ech.setVisible(true);
-		}
+			//ech.startGame();
+		//}
 	}
 
 }

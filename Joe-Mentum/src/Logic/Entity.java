@@ -40,12 +40,13 @@ public class Entity extends Rectangle {
 	}
 	
 	//Constructor June 4
-	public Entity(int x, int y, int width, int height, char collision) {
+	public Entity(int x, int y, int width, int height, Color colour, char collision) {
 		collideType = collision;
 		this.x = x;
 		this.y = y;
 		this.width = width;
 		this.height = height;
+		this.colour = colour;
 		
 		if (collideType == FLOOR || collideType == WALL)
 			floorbox = new Rectangle(this.x, this.y + 2, this.width, this.height - 2); //Defining the floorbox on the very surface of the object causes some jumps to be ignored
@@ -54,9 +55,10 @@ public class Entity extends Rectangle {
 			ledges[1] = new Rectangle(this.x + this.width, this.y + 1, 35, this.height/3);
 		}
 	}
-	
+
+
 	/**** Getters & Setters ****/
-	public void setCollide(char collideType){this.setCollideType(collideType);}
+	public void setCollide(char collideType){this.collideType = collideType;}
 	public double getXSpeed(){return xSpeed;}
 	public void setXSpeed(double xSpeed){this.xSpeed = xSpeed;}
 	public double getYSpeed(){return this.ySpeed;}
@@ -139,9 +141,7 @@ public class Entity extends Rectangle {
 	public char getCollideType() {
 		return collideType;
 	}
-	public void setCollideType(char collideType) {
-		this.collideType = collideType;
-	}
+
 	
 	
 	/*

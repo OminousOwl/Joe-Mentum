@@ -3,7 +3,7 @@ package GUI;
 /**
  *@Name Cosmin Baciu, Quinn Fisher, Olivier Hébert
  *@DateCreated: May 30th, 2017
- *@DateModified: June 1st, 2017
+ *@DateModified: June 8th, 2017
  *@Description: This Class is the main menu, which loads the game, and allows quick changes to the game's settings
  */
 
@@ -35,7 +35,7 @@ public class GameMenu extends JFrame implements ActionListener{
 	
 	private static MainGame ech;
 	
-	private static JButton play;
+	/*private static JButton play;
 	
 	public GameMenu() {
 		
@@ -52,17 +52,16 @@ public class GameMenu extends JFrame implements ActionListener{
 		setVisible(true);
 		setSize(new Dimension(500, 500));
 		
-		ech = new MainGame();
-		ech.setVisible(false);
+		
 	}
 
 	
 	public static void main (String[] args) {
 		new GameMenu();
 		
-	}
+	} */
 	// images
-	/*BufferedImage i1;
+	BufferedImage i1;
 	BufferedImage i2;
 	BufferedImage i3;
 	BufferedImage i4;
@@ -80,7 +79,7 @@ public class GameMenu extends JFrame implements ActionListener{
 			public void run() {
 				
 			}
-		});
+		});*/
 	}
 
 	public GameMenu() {
@@ -98,11 +97,13 @@ public class GameMenu extends JFrame implements ActionListener{
 		guiFrame.setResizable(false);
 		guiFrame.setLayout(new BorderLayout());
 		guiFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		guiFrame.setSize(1191, 816);
+		guiFrame.setSize(1080, 720);
 
 		// ================== DRAWING THE BACKGROUND ==========================
 		final JPanel pane = new JPanel() { // TODO make images become endless
 											// background + parallax
+			
+			
 			protected void paintComponent(Graphics g) {
 				Graphics g2 = g.create();
 				g2.drawImage(i1, 0, 0, guiFrame.getWidth(), guiFrame.getHeight(), null);
@@ -113,9 +114,11 @@ public class GameMenu extends JFrame implements ActionListener{
 				g2.dispose();
 				System.out.println(guiFrame.getWidth() + ", " + guiFrame.getHeight());
 			}
+			
+			
 		};
 		guiFrame.setContentPane(pane); // added this to the background of the guiFrame
-
+		
 		// declaring buttons
 		play = new JButton("Play");
 		exit = new JButton("Pause");
@@ -129,15 +132,16 @@ public class GameMenu extends JFrame implements ActionListener{
 		buttonPane.add(play);
 		guiFrame.add(buttonPane, BorderLayout.CENTER);
 		guiFrame.setVisible(true);
-	} */
+	}
 
 
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		//if (e.getSource() == play) {
 			this.dispose();
-			ech.setVisible(true);
-			//ech.startGame();
+			//ech.setVisible(true);
+			//new Thread(new MainGame()).start();
+			new MainGame();
 		//}
 	}
 

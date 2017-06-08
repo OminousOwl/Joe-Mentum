@@ -1,7 +1,7 @@
 /**
  *@Name Cosmin Baciu, Quinn Fisher, Olivier Hébert
  *@DateCreated: May 30th, 2017
- *@DateModified: June 5th, 2017
+ *@DateModified: June 8th, 2017
  *@Description: The class used to handle the actual game physics and gameplay
  */
 
@@ -23,13 +23,12 @@ import java.util.Set;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import Intermediary.Player;
 import Intermediary.LinkedEntity;
 import Intermediary.LinkedList;
-
+import Intermediary.Player;
 import Logic.Entity;
 import Logic.LivingObject;
-
+import hsa2.GraphicsConsole;
 import jaco.mp3.player.MP3Player;
 
 /*
@@ -52,6 +51,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 	private int state = RUNNING;// the flag that triggers different behaviors in the program
 	public static final Player joe = new Player(); // The man, the myth, the legend himself, Joe
 	private LinkedList theLevel;
+	private GraphicsConsole gc = new GraphicsConsole();
 	MP3Player spagoogi = new MP3Player();
 
 	public static void main(String[] args) {
@@ -83,13 +83,15 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		add(game);
 		setVisible(true);
 		repaint();
-		addKeyListener(this);
-		
-		//TODO Reimplement before push
+		gc.addKeyListener(this);
 		
 		spagoogi.addToPlayList(new File("music/StabCrabV2Orchestra.mp3"));
 		spagoogi.skipForward();
 		spagoogi.play();
+		
+		animate();
+		
+	
 	}
 	
 	public void startGame() {
@@ -104,31 +106,36 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		}
 	}
 
-	public void paint(Graphics g) {
-		// TODO update with image;
-		g.setColor(Color.WHITE);
-		g.fillRect(0, 0, this.getWidth(), this.getHeight());
+	public void animate() {
 		
-		paintLevelComponent(g, theLevel.getHead());
+		synchronized(gc) {
+			gc.clear();
+			gc.setColor(Color.WHITE);
+			gc.fillRect(0, 0, this.getWidth(), this.getHeight());
+			
+			paintLevelComponent(theLevel.getHead());
+			
+			gc.setColor(Color.RED);
+			gc.fillRect((int) joe.getX(), (int) joe.getY(), (int) joe.getWidth(), (int) joe.getHeight());
+			
+			/*//Outdated Debug Code
+			gc.setColor(Color.GREEN);
+			gc.fillRect((int) wall.ledges[0].getX(), (int) wall.ledges[0].getY(), (int) wall.ledges[0].getWidth(), (int) wall.ledges[0].getHeight());
+			gc.fillRect((int) wall.ledges[1].getX(), (int) wall.ledges[1].getY(), (int) wall.ledges[1].getWidth(), (int) wall.ledges[1].getHeight());
+			*/
+		}
 		
-		/*//Outdated Debug Code
-		g.setColor(Color.GREEN);
-		g.fillRect((int) wall.ledges[0].getX(), (int) wall.ledges[0].getY(), (int) wall.ledges[0].getWidth(), (int) wall.ledges[0].getHeight());
-		g.fillRect((int) wall.ledges[1].getX(), (int) wall.ledges[1].getY(), (int) wall.ledges[1].getWidth(), (int) wall.ledges[1].getHeight());
-		*/
 		
-		g.setColor(Color.RED);
-		g.fillRect((int) joe.getX(), (int) joe.getY(), (int) joe.getWidth(), (int) joe.getHeight());
 	}
 	
-	public void paintLevelComponent (Graphics g, LinkedEntity activeEntity) {
+	public void paintLevelComponent (LinkedEntity activeEntity) {
 		if (activeEntity == null) {
 			return;
 		}
 		else {
-			g.setColor(activeEntity.colour);
-			g.fillRect(activeEntity.x, activeEntity.y, activeEntity.width, activeEntity.height);
-			paintLevelComponent(g, activeEntity.next);
+			gc.setColor(activeEntity.colour);
+			gc.fillRect(activeEntity.x, activeEntity.y, activeEntity.width, activeEntity.height);
+			paintLevelComponent(activeEntity.next);
 		}
 	}
 
@@ -147,7 +154,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		move(joe);
 		checkLevelCollision(joe, theLevel.getHead());
 		manageCD(theLevel.getHead());
-		this.repaint();
+		animate();
 	}//end run
 
 	/*
@@ -253,7 +260,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		} // end if
 
 		if (e.getActionCommand().equals("Quit")) {
-			//MainGame.dispose(); causes errors because apparently you 'Cannot make a static reference to the non-static method dispose() from the type Window'
+			this.dispose();
 		} // end if
 	}// end actionPerformed
 
@@ -294,7 +301,8 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 				this.setState(0);
 			}
 		}
-		run();
+		
+		run(); //TODO remove when menu works
 	}// end keyPressed
 
 

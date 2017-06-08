@@ -51,17 +51,4 @@ public class LinkedList {
 		}
 		
 	}
-	
-	public LinkedEntity search(int n){//searches for the n'th object in the list
-		LinkedEntity runner = root;//the node that iterates through the list
-		
-		if(runner != null){
-			for(int i=0;i<n;i++){
-				if(runner.next != null)runner = runner.next;
-				else return null;
-			}//end for
-			return runner;
-		}//end if
-		return null;
-	}//end search
 }//end class

@@ -22,12 +22,12 @@ public class LinkedList {
 		LinkedEntity runner;//the pointer used for the current object in the list
 		
 		if(head.equals(null) == true){//Handle empty list
-			tail = head = node;
+			tail = head = new LinkedEntity(node.x,node.y,node.width,node.height,node.colour,node.getCollideType());
 		}//end if
 		else{
 			runner = head;
-			while(runner.next.equals(null) == false)runner = runner.next;
-			runner.next = node;
+			while(runner.next.equals(null) == false)runner = runner.next;//skip existing objects
+			 tail = runner.next = new LinkedEntity(node.x,node.y,node.width,node.height,node.colour,node.getCollideType());
 		}//end else
 	}//end add
 	

@@ -105,14 +105,13 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 		g.fillRect(0, 0, this.getWidth(), this.getHeight());
 		
 		while(runner.equals(null) == false){
-			
+			g.setColor(runner.colour);
+			g.fillRect(runner.x, runner.y, runner.width, runner.height);
+			runner = runner.next;
 		}//end while
 		
-		g.setColor(Color.BLACK);
-		g.fillRect((int) floor.getX(), (int) floor.getY(), (int) floor.getWidth(), (int) floor.getHeight());
-		g.setColor(Color.BLUE);
-		g.fillRect((int) wall.getX(), (int) wall.getY(), (int) wall.getWidth(), (int) wall.getHeight());
-		/*g.setColor(Color.GREEN);
+		/*//Outdated Debug Code
+		g.setColor(Color.GREEN);
 		g.fillRect((int) wall.ledges[0].getX(), (int) wall.ledges[0].getY(), (int) wall.ledges[0].getWidth(), (int) wall.ledges[0].getHeight());
 		g.fillRect((int) wall.ledges[1].getX(), (int) wall.ledges[1].getY(), (int) wall.ledges[1].getWidth(), (int) wall.ledges[1].getHeight());
 		*/
@@ -132,15 +131,19 @@ public class MainGame extends JFrame implements Runnable, EventListener, KeyList
 	 Date Modified: June 4th, 2017
 	 */
 	public void run() {
+		LinkedEntity runner = theLevel.getHead();
+		
 		gravity(joe);
 		move(joe);
+		
 		//TODO Make an actual checkCollision algorithm
-		checkCollision(joe, floor);
-		checkCollision(joe, wall);
-		manageCD(wall);
+		while(runner.equals(null) == false){
+			checkCollision(joe, runner);
+			manageCD(runner);
+			runner = runner.next;
+		}//end while
 		repaint();
-
-	}
+	}//end run
 
 	/*
 	 Name: gravity 

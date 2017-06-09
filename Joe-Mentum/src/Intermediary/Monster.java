@@ -26,6 +26,7 @@ public class Monster extends LivingObject {
 	private char aiState;
 	private int moveFrames;
 	public Entity associatedTerrain;
+	public int damageCD;
 	
 	boolean direction = true;
 	

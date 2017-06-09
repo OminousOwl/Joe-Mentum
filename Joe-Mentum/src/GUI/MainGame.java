@@ -200,8 +200,10 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		move(enemies);
 		checkLevelCollision(joe, theLevel.getHead());
 		checkLevelCollision(enemies, theLevel.getHead());
+		checkEnemyCollision(joe, enemies);
 		enemies.behave(joe);
 		manageCD(theLevel.getHead());
+		manageCD(enemies);
 		scroll(joe, theLevel.getHead());
 		scroll(joe, enemies);
 		joe.x = gc.getWidth()/2;
@@ -308,6 +310,26 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		
 	}
 	
+	public void checkEnemyCollision(Player joe, Monster enemy) {
+		if (enemy == null) {
+			return;
+		}
+		else {
+			if (joe.intersects(enemy) && enemy.damageCD == 0) {
+				if (joe.getYSpeed() >= 0.4) {
+					enemy.damage(joe.getAttack());
+					System.out.println("Enemy got rekt");
+				}
+				else {
+					joe.damage(enemy.getAttack());
+					System.out.println("Joe got rekt");
+				}
+				enemy.damageCD = 40;
+			}
+			checkEnemyCollision(joe, enemy.next);
+		}
+	}
+	
 	/*
 	 Name: manageCD 
 	 Description: Manages ledge cooldowns, reducing them on each frame
@@ -327,6 +349,26 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 			if (a.resetCounter == 0) {
 				a.ledgeFlag = true;
 			}
+		}
+		manageCD(a.next);
+	}
+	
+	/*
+	 Name: manageCD 
+	 Description: Manages damage cooldowns, preventing any hit from one-shoting Joe
+	 Parameters: One Monster
+	 Return Value/Type: N/A 
+	 Dependencies: Logic.Entity 
+	 Exceptions: N/A 
+	 Date Created: June 8th, 2017
+	 Date Modified: June 8th, 2017
+	 */
+	public void manageCD (Monster a) {
+		if (a == null){
+			return;
+		}
+		else if (a.damageCD > 0) {
+			a.damageCD--;
 		}
 		manageCD(a.next);
 	}
@@ -384,7 +426,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 	 Date Modified: June 8th, 2017
 	 */
 	public void deathCheck(Player joe) {
-		if (joe.y >= gc.getHeight() + gc.getHeight()/6 || joe.getHealth() == 0) {
+		if (joe.y >= gc.getHeight() + gc.getHeight()/6 || joe.getHealth() <= 0) {
 			this.setState(GAME_OVER);
 		}
 	}

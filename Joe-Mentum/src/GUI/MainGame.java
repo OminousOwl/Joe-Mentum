@@ -32,6 +32,7 @@ import Intermediary.Monster;
 import Intermediary.Player;
 import Logic.Entity;
 import Logic.LivingObject;
+import anim.Spritesheet;
 import hsa2.GraphicsConsole;
 import jaco.mp3.player.MP3Player;
 
@@ -66,6 +67,9 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 	BufferedImage i3;
 	BufferedImage i4;
 	BufferedImage i5;
+	
+	private String filepath = "SpriteSheets/idle.png";
+	private Spritesheet spritesheet = new Spritesheet(filepath, 21, 35);
 
 	public static void main(String[] args) {
 		new MainGame().startGame();
@@ -85,14 +89,14 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 
 		joe.x = gc.getWidth()/2;
 		joe.y = 100;
-		joe.width = 30;
-		joe.height = 30;		
+		joe.width = 42;
+		joe.height = 70;
 		
 		theLevel = new LinkedList();
 		
 		theLevel.add(new LinkedEntity(0, 332, 768, 100, Color.BLACK, 'f'));
-		theLevel.add(new LinkedEntity(468, 232, 100, 100, Color.BLUE, 'w'));
-		theLevel.add(new LinkedEntity(800, 175, 100, 100, Color.BLUE, 'w'));
+		theLevel.add(new LinkedEntity(468, 182, 100, 150, Color.BLUE, 'w'));
+		theLevel.add(new LinkedEntity(800, 175, 160, 100, Color.BLUE, 'w'));
 		
 		game.setDoubleBuffered(true);
 		add(game);
@@ -156,7 +160,8 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 			gc.fillRect(enemies.x, enemies.y, enemies.width, enemies.height);
 			
 			gc.setColor(Color.RED);
-			gc.fillRect((int) joe.getX(), (int) joe.getY(), (int) joe.getWidth(), (int) joe.getHeight());
+			gc.drawImage(joe.getCurrentFrame(), (int) joe.getX(), (int) joe.getY(), (int) joe.getWidth(), (int) joe.getHeight());
+			//gc.fillRect((int) joe.getX(), (int) joe.getY(), (int) joe.getWidth(), (int) joe.getHeight());
 			
 			if (this.state == GAME_OVER) {
 				gc.drawString("GAME OVER", gc.getWidth()/2 - 50, gc.getHeight()/2);
@@ -319,12 +324,13 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 				if (joe.getYSpeed() >= 0.4) {
 					enemy.damage(joe.getAttack());
 					System.out.println("Enemy got rekt");
+					joe.setYSpeed(-6.0);
 				}
 				else {
 					joe.damage(enemy.getAttack());
 					System.out.println("Joe got rekt");
 				}
-				enemy.damageCD = 40;
+				enemy.damageCD = 70;
 			}
 			checkEnemyCollision(joe, enemy.next);
 		}
@@ -453,18 +459,28 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 
 	public void keyPressed(KeyEvent e) {
 		
+		joe.height = 70;
+		
 		int key = e.getKeyCode(); // Tracks the key pressed
 		pressed.add(key);
 		if (key == KeyEvent.VK_W || key == KeyEvent.VK_SPACE) {// Player jumps when spacebar/the 'w' key is pressed
 			joe.jump();
+			joe.setAnimState(Player.VERT);
 		}
 
 		if (key == KeyEvent.VK_D) {// Player moves right when the 'd' key is pressed
 			joe.moveSide(true);
+			joe.setDirection(true);
+			if (joe.getYSpeed() == 0)
+				joe.setAnimState(Player.MOVE);
+			
 		}
 
 		else if (key == KeyEvent.VK_A) {// Player moves left when the 'a' key is pressed
 			joe.moveSide(false);
+			joe.setDirection(false);
+			if (joe.getYSpeed() == 0)
+				joe.setAnimState(Player.MOVE);
 		}
 
 		if (key == KeyEvent.VK_Q) {//
@@ -507,6 +523,9 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		pressed.remove(key);
 		if (key == KeyEvent.VK_D && !pressed.contains(KeyEvent.VK_A) || key == KeyEvent.VK_A && !pressed.contains(KeyEvent.VK_D)) {
 			joe.setXSpeed(0);
+			if (joe.getYSpeed() == 0) {
+				joe.setAnimState(Player.IDLE);
+			}
 		}
 	}
 

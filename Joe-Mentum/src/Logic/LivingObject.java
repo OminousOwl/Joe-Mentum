@@ -1,11 +1,19 @@
 /*
 Name: Quinn Fisher
 Date Created: May 25th, 2017
-Date Modified: June 4th, 2017
+Date Modified: June 10th, 2017
 Description: The class containing data and methods to handle moving entities in game (Player, bosses, enemies, etc.)
  */
 
 package Logic;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+
+import javax.swing.Timer;
+
+import anim.Spritesheet;
 
 public class LivingObject extends Entity {
 	
@@ -22,6 +30,10 @@ public class LivingObject extends Entity {
 	private boolean attackState;
 	private Item item;
 	
+	protected BufferedImage currentFrame;
+	protected int frame;
+	protected boolean direction = true;
+	
 	public int getHealth() { return health; }
 	public void setHealth (int health) { this.health = health; };
 	
@@ -34,8 +46,14 @@ public class LivingObject extends Entity {
 	public boolean getAttackState() { return attackState; }
 	public void setAttackState(boolean attackState) { this.attackState = attackState; }
 	
+	public boolean getDirection() { return direction; }
+	public void setDirection(boolean direction) { this.direction = direction; }
+	
+	public BufferedImage getCurrentFrame() { return currentFrame; }
+	public void setCurrentFrame(BufferedImage currentFrame) { this.currentFrame = currentFrame;}
+	
 	public LivingObject() {
-		
+
 	}
 	
 	/*
@@ -132,5 +150,6 @@ public class LivingObject extends Entity {
 		else
 			return -1.0;
 	}
+
 	
 }

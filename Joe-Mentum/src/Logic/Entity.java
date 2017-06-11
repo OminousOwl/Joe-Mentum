@@ -11,6 +11,8 @@ import java.awt.Image.*;
  *Description: This class will be the parent for all physics-based objects in the game; characters & level objects.
  */
 
+import Intermediary.Player;
+
 public class Entity extends Rectangle {
 	
 	//Collision type constants
@@ -31,6 +33,8 @@ public class Entity extends Rectangle {
 	private int frame = 0;//the preceding image in the animation
 	private double xSpeed = 0;//the horizontal speed of the object
 	private double ySpeed = 0;//the vertical speed of the object
+	
+	protected int animState = 0;
 	
 	
 	public Color colour = Color.RED;
@@ -64,8 +68,8 @@ public class Entity extends Rectangle {
 	public void setCollide(char collideType){this.collideType = collideType;}
 	public double getXSpeed(){return xSpeed;}
 	public void setXSpeed(double xSpeed){this.xSpeed = xSpeed;}
-	public double getYSpeed(){return this.ySpeed;}
-	public void setYSpeed(double ySpeed){this.ySpeed = ySpeed;}
+	public double getYSpeed(){return this.getySpeed();}
+	public void setYSpeed(double ySpeed){this.setySpeed(ySpeed);}
 	
 	//public Image getAnimation(){//TODO
 		//if(this.frame<this.sprite.length)this.frame++;
@@ -87,7 +91,7 @@ public class Entity extends Rectangle {
 	 */
 	public void collide(Entity b){
 		if(b.getCollideType() == SOLID){
-			this.ySpeed = 0;
+			this.setySpeed(0);
 		}
 		else if(b.getCollideType() == FLOOR){
 			floorCollide(b);
@@ -99,22 +103,24 @@ public class Entity extends Rectangle {
 			if (this.intersects(b.ledges[0]) || this.intersects(b.ledges[1])) {
 				
 				if (b.ledgeFlag) {
-					if (this.ySpeed <= LivingObject.INIT_JUMP + 2*LivingObject.GRAV) {
+					if (this.getySpeed() <= LivingObject.INIT_JUMP + 2*LivingObject.GRAV) {
 						b.ledgeFlag = false;
 						b.resetCounter = 40;
 					}
 					else {
 						//System.out.println("Triggered at " + System.currentTimeMillis());
 						this.xSpeed = 0;
-						this.ySpeed = 0;
-						this.y = b.ledges[0].y;
+						this.setySpeed(0);
+						this.y = b.ledges[0].y - 14;
+						
+						this.animState = Player.LEDGE;
+						this.height = 84;
 						
 						if (this.intersects(b.ledges[0])) {
-							this.x = b.ledges[0].x + 6;
+							this.x = b.ledges[0].x - 6;
 						}
 						else
 							this.x = b.ledges[1].x - 1;
-						
 					}
 				}
 			}
@@ -135,10 +141,10 @@ public class Entity extends Rectangle {
 		}
 		
 		else if(b.getCollideType() == BOUNCE){
-			this.ySpeed = (ySpeed*-1);
+			this.setySpeed((getySpeed()*-1));
 		}
 		else if(b.getCollideType() == SKIP){
-			this.ySpeed = (ySpeed*-1)/2;
+			this.setySpeed((getySpeed()*-1)/2);
 		}
 	}
 	public char getCollideType() {
@@ -158,11 +164,19 @@ public class Entity extends Rectangle {
 	Date Modified: June 4th, 2017
 	 */
 	public void floorCollide(Entity b) {
-		if (this.ySpeed > 0) { //Only collides on drop, otherwise jumping is impossible
-			this.ySpeed = 0;
+		if (this.getySpeed() > 0) { //Only collides on drop, otherwise jumping is impossible
+			this.setySpeed(0);
 			
 			if (this.intersects(b.floorbox))
 				this.y = b.y - this.height;
 		}
+	}
+
+	public double getySpeed() {
+		return ySpeed;
+	}
+
+	public void setySpeed(double ySpeed) {
+		this.ySpeed = ySpeed;
 	}
 }//end Class

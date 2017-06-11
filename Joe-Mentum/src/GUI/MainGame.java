@@ -1,7 +1,7 @@
 /**
  *@Name Cosmin Baciu, Quinn Fisher, Olivier Hébert
  *@DateCreated: May 30th, 2017
- *@DateModified: June 10th, 2017
+ *@DateModified: June 11th, 2017
  *@Description: The class used to handle the actual game physics and gameplay
  */
 
@@ -90,9 +90,12 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		
 		theLevel = new LinkedList();
 		
-		theLevel.add(new LinkedEntity(0, 332, 768, 100, Color.BLACK, 'f'));
+		theLevel.add(new LinkedEntity(0, 332, 755, 100, Color.BLACK, 'f'));
 		theLevel.add(new LinkedEntity(468, 182, 100, 150, Color.BLUE, 'w'));
-		theLevel.add(new LinkedEntity(800, 175, 160, 100, Color.BLUE, 'w'));
+		theLevel.add(new LinkedEntity(800, 175, 160, 100, Color.BLUE, 'w')).setYScroll(60, 1.0);
+		theLevel.add(new LinkedEntity(1015, 332, 100, 100, Color.BLACK, 'f'));
+		theLevel.add(new LinkedEntity(1180, 332, 100, 100, Color.BLACK, 'f'));
+		theLevel.add(new LinkedEntity(1325, 700, 100, 100, Color.BLUE, 'w')).setYScroll(-550, -1.0);
 		
 		game.setDoubleBuffered(true);
 		add(game);
@@ -179,8 +182,11 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 			return;
 		}
 		else {
-			gc.setColor(activeEntity.colour);
-			gc.fillRect(activeEntity.x, activeEntity.y, activeEntity.width, activeEntity.height);
+			if (activeEntity.x <= 1000 && activeEntity.x >= -1000) { //Only renders within a certain range to avoid overloading the graphics console
+				gc.setColor(activeEntity.colour);
+				gc.fillRect(activeEntity.x, activeEntity.y, activeEntity.width, activeEntity.height);
+			}
+
 			paintLevelComponent(activeEntity.next);
 		}
 	}
@@ -193,14 +199,14 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 	 Dependencies: Joe (Entity.Player object(
 	 Exceptions: N/A 
 	 Date Created: May 30th, 2017
-	 Date Modified: June 7th, 2017
+	 Date Modified: June 10th, 2017
 	 */
 	public void run() {
-		 System.out.println(joe.getXSpeed());
 		gravity(joe);
 		gravity(enemies);
 		move(joe);
 		move(enemies);
+		platformScroll(theLevel.getHead());
 		checkLevelCollision(joe, theLevel.getHead());
 		checkLevelCollision(enemies, theLevel.getHead());
 		checkEnemyCollision(joe, enemies);
@@ -211,7 +217,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		scroll(joe, enemies);
 		joe.x = gc.getWidth()/2;
 		deathCheck(joe);
-		
+		playerAnimReset(joe);
 		
 		//Always keep animate() as the last function
 		animate();
@@ -420,6 +426,31 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 	}
 	
 	/*
+	 Name: platformScroll 
+	 Description: Handles vertically moving platforms
+	 Parameters: One LinkedEntity
+	 Return Value/Type: N/A 
+	 Dependencies: Logic.Entity 
+	 Exceptions: N/A 
+	 Date Created: June 10th, 2017
+	 Date Modified: June 10th, 2017
+	 */
+	public void platformScroll(LinkedEntity a) {
+		if (a == null)
+			return;
+		if (a.getYScroll() != 0) {
+			a.y += a.getySpeed();
+			a.floorbox.y += a.getySpeed();
+			a.ledges[0].y += a.getySpeed();
+			a.ledges[1].y += a.getySpeed();
+			if (a.y == a.getDefaultY() + a.getYScroll() || a.y == a.getDefaultY()) {
+				a.setySpeed(a.getYSpeed() * -1);
+			}
+		}
+		platformScroll(a.next);
+	}
+	
+	/*
 	 Name: deathCheck 
 	 Description: Checks to see if a game over state is needed in response to Joe's death
 	 Parameters: One Player
@@ -435,8 +466,28 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		}
 	}
 	
+	/*
+	 Name: playerAnimReset 
+	 Description: Fixes any animation inconsistencies
+	 Parameters: One Player
+	 Return Value/Type: N/A 
+	 Dependencies: Logic.Entity 
+	 Exceptions: N/A 
+	 Date Created: June 11th, 2017
+	 Date Modified: June 11th, 2017
+	 */
+	public void playerAnimReset(Player joe) {
+		if (joe.getAnimState() != Player.LEDGE) {
+			if (joe.getXSpeed() == 0 && (joe.getYSpeed() == 0 || joe.getySpeed() == 0.2)) {
+				joe.setAnimState(Player.IDLE);
+			}
+			else if (joe.getYSpeed() == 0 || joe.getySpeed() == 0.2) {
+				joe.setAnimState(Player.MOVE);
+			}
+		}
+		
+	}
 	
-
 	public void setState(int newState) {
 		state = newState;
 	}// end setState

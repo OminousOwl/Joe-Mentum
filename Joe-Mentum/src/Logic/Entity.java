@@ -34,6 +34,9 @@ public class Entity extends Rectangle {
 	private double xSpeed = 0;//the horizontal speed of the object
 	private double ySpeed = 0;//the vertical speed of the object
 	
+	private int yScroll = 0;
+	private int defaultY = 0;
+	
 	protected int animState = 0;
 	
 	
@@ -48,6 +51,7 @@ public class Entity extends Rectangle {
 		collideType = collision;
 		this.x = x;
 		this.y = y;
+		this.defaultY = y;
 		this.width = width;
 		this.height = height;
 		this.colour = colour;
@@ -56,7 +60,7 @@ public class Entity extends Rectangle {
 		ledges[1] = new Rectangle(0, 0, 0, 0);
 		
 		if (collideType == FLOOR || collideType == WALL)
-			floorbox = new Rectangle(this.x, this.y + 2, this.width, this.height - 2); //Defining the floorbox on the very surface of the object causes some jumps to be ignored
+			floorbox = new Rectangle(this.x, this.y + 2, this.width, this.height/6); //Defining the floorbox on the very surface of the object causes some jumps to be ignored
 		if (collideType == WALL) {
 			ledges[0] = new Rectangle(this.x - 35, this.y + 3, 35, this.height/3);
 			ledges[1] = new Rectangle(this.x + this.width, this.y + 1, 35, this.height/3);
@@ -94,7 +98,7 @@ public class Entity extends Rectangle {
 			this.setySpeed(0);
 		}
 		else if(b.getCollideType() == FLOOR){
-			floorCollide(b);
+			solidCollide(b);
 			
 		}
 		
@@ -124,20 +128,7 @@ public class Entity extends Rectangle {
 					}
 				}
 			}
-				
-
-			if (this.y > b.y + 5) { //If collision takes place outside the wall's surface
-				this.xSpeed = 0;
-				if (this.x < b.x + b.width/2) { //Collision from left, judging from mid point
-					this.x = b.x - this.width;
-				}
-				else //Collision from right
-					this.x = b.x + b.width;
-				}
-				
-				else {
-					floorCollide(b);
-				}
+			solidCollide(b);
 		}
 		
 		else if(b.getCollideType() == BOUNCE){
@@ -154,21 +145,34 @@ public class Entity extends Rectangle {
 	
 	
 	/*
-	Name: floorCollide
+	Name: solidCollide
 	Description: Handles collision on a surface to nullify gravity
 	Parameters:
 	Return Value/Type: N/A
 	Dependencies: None
 	Exceptions: N/A
 	Date Created: June 4th, 2017
-	Date Modified: June 4th, 2017
+	Date Modified: June 11th, 2017
 	 */
-	public void floorCollide(Entity b) {
-		if (this.getySpeed() > 0) { //Only collides on drop, otherwise jumping is impossible
-			this.setySpeed(0);
+	public void solidCollide(Entity b) {
+		
+		if (this.y > b.y + 5) { //If collision takes place outside the wall's surface
+			this.xSpeed = 0;
+			if (this.x < b.x + b.width/2) { //Collision from left, judging from mid point
+				this.x = b.x - this.width;
+			}
+			else //Collision from right
+				this.x = b.x + b.width;
+			}
 			
-			if (this.intersects(b.floorbox))
-				this.y = b.y - this.height;
+			else {
+				if (this.getySpeed() > 0) { //Only collides on drop, otherwise jumping is impossible
+					this.setySpeed(0);
+					
+					if (this.intersects(b.floorbox) && this.ySpeed >= -6.6)
+						this.y = b.y - this.height;
+			}
+
 		}
 	}
 
@@ -178,5 +182,18 @@ public class Entity extends Rectangle {
 
 	public void setySpeed(double ySpeed) {
 		this.ySpeed = ySpeed;
+	}
+	
+	public void setYScroll (int yScroll, double ySpeed) {
+		this.yScroll = yScroll;
+		this.ySpeed = ySpeed;
+	}
+
+	public int getYScroll() {
+		return yScroll;
+	}
+
+	public int getDefaultY() {
+		return defaultY;
 	}
 }//end Class

@@ -7,13 +7,9 @@ Description: The class containing data and methods to handle moving entities in 
 
 package Logic;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 
-import javax.swing.Timer;
-
-import anim.Spritesheet;
+import Intermediary.Player;
 
 public class LivingObject extends Entity {
 	
@@ -108,11 +104,11 @@ public class LivingObject extends Entity {
 	Dependencies: N/A
 	Exceptions: N/A
 	Date Created: May 26th, 2017
-	Date Modified: May 26th, 2017
+	Date Modified: June 10th, 2017
 	 */
 	public void jump() {
 		//System.out.println("Jump " + System.currentTimeMillis()); //TODO reimplement as debug tool
-		if (this.getYSpeed() == 0)
+		if (this.getYSpeed() == 0 || this.animState != Player.VERT)
 			this.setYSpeed(INIT_JUMP);
 	}
 	

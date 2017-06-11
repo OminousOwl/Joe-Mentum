@@ -29,11 +29,11 @@ public class LinkedList {
 	Date Created: June 7th, 2017
 	Date Modified: June 7th, 2017
 	 */
-	public void add(LinkedEntity node){//adds a node to the list
+	public LinkedEntity add(LinkedEntity node){//adds a node to the list
 		
 		if (root == null) {
 			root = new LinkedEntity(node.x, node.y, node.width, node.height, node.colour, node.getCollideType());
-			return;
+			return node;
 		}
 		
 		LinkedEntity runner;
@@ -42,7 +42,7 @@ public class LinkedList {
 		while (true) {
 			if (runner.next == null) {
 				runner.setNext(node);
-				return;
+				return node;
 				
 			}
 			else {

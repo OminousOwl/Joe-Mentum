@@ -63,7 +63,7 @@ public class Entity extends Rectangle {
 			floorbox = new Rectangle(this.x, this.y + 2, this.width, this.height/6); //Defining the floorbox on the very surface of the object causes some jumps to be ignored
 		if (collideType == WALL) {
 			ledges[0] = new Rectangle(this.x - 35, this.y + 3, 35, this.height/3);
-			ledges[1] = new Rectangle(this.x + this.width, this.y + 1, 35, this.height/3);
+			ledges[1] = new Rectangle(this.x + this.width, this.y + 3, 35, this.height/3);
 		}
 	}
 

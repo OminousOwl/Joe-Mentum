@@ -29,6 +29,7 @@ import javax.swing.JPanel;
 import Intermediary.LinkedEntity;
 import Intermediary.LinkedList;
 import Intermediary.Monster;
+import Intermediary.MonsterSet;
 import Intermediary.Player;
 import Logic.Entity;
 import Logic.LivingObject;
@@ -57,7 +58,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 	private boolean muted = false;
 	public static final Player joe = new Player(); // The man, the myth, the legend himself, Joe
 	private LinkedList theLevel;
-	private Monster enemies;
+	private MonsterSet enemies = new MonsterSet();
 	GraphicsConsole gc = new GraphicsConsole();
 	MP3Player spagoogi = new MP3Player();
 	
@@ -95,7 +96,8 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		theLevel.add(new LinkedEntity(800, 175, 160, 100, Color.BLUE, 'w')).setYScroll(60, 1.0);
 		theLevel.add(new LinkedEntity(1015, 332, 100, 100, Color.BLACK, 'f'));
 		theLevel.add(new LinkedEntity(1180, 332, 100, 100, Color.BLACK, 'f'));
-		theLevel.add(new LinkedEntity(1325, 700, 100, 100, Color.BLUE, 'w')).setYScroll(-550, -1.0);
+		theLevel.add(new LinkedEntity(1325, 150, 100, 100, Color.BLUE, 'w')).setYScroll(550, 1.0);
+		theLevel.add(new LinkedEntity(1450, 100, 755, 100, Color.BLACK, 'w'));
 		
 		game.setDoubleBuffered(true);
 		add(game);
@@ -106,7 +108,11 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		gc.addKeyListener(this);
 		gc.setVisible(false);
 		
-		enemies = new Monster(850, 100, 15, 15, 3, 2, 0.5, Monster.LgWANDER);
+		enemies.add(new Monster(850, 100, 15, 15, 3, 2, 0.5, Monster.LgWANDER));
+		enemies.add(new Monster(1500, 90, 30, 30, 12, 5, 0.8, Monster.LgWANDER));
+		
+		
+		enemies.add(new Monster(475, 100, 30, 30, 3, 2, 0.5, Monster.WANDER)).setAssociatedTerrain(fetch(theLevel.getHead(), 0)); //Test monster
 		
 		spagoogi.addToPlayList(new File("music/StabCrabV2Orchestra.mp3"));
 		spagoogi.skipForward();
@@ -154,10 +160,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 			gc.drawImage(i5, 0, 0, gc.getWidth(), gc.getHeight());
 			
 			paintLevelComponent(theLevel.getHead());
-			
-			gc.setColor(Color.GREEN);
-			if (enemies.getHealth() > 0)
-				gc.fillRect(enemies.x, enemies.y, enemies.width, enemies.height);
+			paintEnemy(enemies.getHead());
 			
 			gc.setColor(Color.RED);
 			gc.drawImage(joe.getCurrentFrame(), (int) joe.getX(), (int) joe.getY(), (int) joe.getWidth(), (int) joe.getHeight());
@@ -190,6 +193,20 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 			paintLevelComponent(activeEntity.next);
 		}
 	}
+	
+	public void paintEnemy(Monster enemy) {
+		if (enemy == null) {
+			return;
+		}
+		else {
+			if (enemy.x <= 1000 && enemy.x >= -1000 && enemy.getHealth() > 0) { //Only renders within a certain range to avoid overloading the graphics console
+				gc.setColor(Color.RED);
+				gc.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+			}
+
+			paintEnemy(enemy.next);
+		}
+	}
 
 	/*
 	 Name: run 
@@ -199,22 +216,22 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 	 Dependencies: Joe (Entity.Player object(
 	 Exceptions: N/A 
 	 Date Created: May 30th, 2017
-	 Date Modified: June 10th, 2017
+	 Date Modified: June 11th, 2017
 	 */
 	public void run() {
 		gravity(joe);
-		gravity(enemies);
+		gravity(enemies.getHead());
 		move(joe);
-		move(enemies);
+		move(enemies.getHead());
 		platformScroll(theLevel.getHead());
 		checkLevelCollision(joe, theLevel.getHead());
-		checkLevelCollision(enemies, theLevel.getHead());
-		checkEnemyCollision(joe, enemies);
-		enemies.behave(joe);
+		checkLevelCollision(enemies.getHead(), theLevel.getHead());
+		checkEnemyCollision(joe, enemies.getHead());
+		manageEnemyBehavior(enemies.getHead());
 		manageCD(theLevel.getHead());
-		manageCD(enemies);
+		manageCD(enemies.getHead());
 		scroll(joe, theLevel.getHead());
-		scroll(joe, enemies);
+		scroll(joe, enemies.getHead());
 		joe.x = gc.getWidth()/2;
 		deathCheck(joe);
 		playerAnimReset(joe);
@@ -237,9 +254,27 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		e.setYSpeed(e.getYSpeed() + LivingObject.GRAV);
 		e.y += e.getYSpeed();
 	}
-
+	
 	/*
 	 Name: gravity 
+	 Description: Adjusts the ySpeed of an object to cause it to fall 
+	 Parameters: One LivingObject 
+	 Return Value/Type: N/A 
+	 Dependencies: Logic.LivingObject 
+	 Exceptions: N/A 
+	 Date Created: May 29th, 2017 (Created in another class) 
+	 Date Modified: May 29th, 2017
+	 */
+	public void gravity(Monster e) {
+		if (e == null)
+			return;
+		e.setYSpeed(e.getYSpeed() + LivingObject.GRAV);
+		e.y += e.getYSpeed();
+		gravity(e.getNext());
+	}
+
+	/*
+	 Name: move 
 	 Description: Handles the horizontal motion of an object
 	 Parameters: One LivingObject 
 	 Return Value/Type: N/A 
@@ -251,6 +286,24 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 	public void move(LivingObject e) {
 		//System.out.println(e.getXSpeed());
 		e.x += e.getXSpeed();
+	}
+	
+	/*
+	 Name: move 
+	 Description: Handles the horizontal motion of an object
+	 Parameters: One LivingObject 
+	 Return Value/Type: N/A 
+	 Dependencies: Logic.LivingObject 
+	 Exceptions: N/A 
+	 Date Created: May 30th, 2017
+	 Date Modified: May 30th, 2017
+	 */
+	public void move(Monster e) {
+		if (e == null)
+			return;
+		//System.out.println(e.getXSpeed());
+		e.x += e.getXSpeed();
+		move(e.getNext());
 	}
 
 	/*
@@ -336,8 +389,8 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 				}
 				enemy.damageCD = 70;
 			}
-			checkEnemyCollision(joe, enemy.next);
 		}
+		checkEnemyCollision(joe, enemy.next);
 	}
 	
 	/*
@@ -381,6 +434,23 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 			a.damageCD--;
 		}
 		manageCD(a.next);
+	}
+	
+	/*
+	 Name: manageEnemyBehavior 
+	 Description: Triggers ai scripts for all enemies
+	 Parameters: One Monster
+	 Return Value/Type: N/A 
+	 Dependencies: Logic.Entity 
+	 Exceptions: N/A 
+	 Date Created: June 11th, 2017
+	 Date Modified: June 11th, 2017
+	 */
+	public void manageEnemyBehavior(Monster e) {
+		if (e == null)
+			return;
+		e.behave(joe);
+		manageEnemyBehavior(e.getNext());
 	}
 	
 	
@@ -486,6 +556,25 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 			}
 		}
 		
+	}
+	
+	/*
+	Name: fetch
+	Description: Retrieves an element of designated depth from the list
+	Parameters: One LinkedEntity and one integer
+	Return Value/Type: One LinkedEntity
+	Dependencies: Logic.Entity
+	Exceptions: N/A
+	Date Created: June 11th, 2017
+	Date Modified: June 11th, 2017
+	 */
+	public LinkedEntity fetch (LinkedEntity e, int depth) {
+		if (e == null)
+			return null;
+		else if (depth == 0) {
+			return e;
+		}
+		return fetch(e.next, depth--);
 	}
 	
 	public void setState(int newState) {

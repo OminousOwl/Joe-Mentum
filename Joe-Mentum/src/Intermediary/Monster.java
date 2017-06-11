@@ -1,7 +1,7 @@
 /*
 Name: Quinn Fisher
 Date Created: May 26th, 2017
-Date Modified: June 8th, 2017
+Date Modified: June 11th, 2017
 Description: The class used to handle enemy AI
  */
 
@@ -25,7 +25,7 @@ public class Monster extends LivingObject {
 	public Monster next;
 	private char aiState;
 	private int moveFrames;
-	public Entity associatedTerrain;
+	public LinkedEntity associatedTerrain;
 	public int damageCD;
 	
 	boolean direction = true;
@@ -60,18 +60,20 @@ public class Monster extends LivingObject {
 			if (moveFrames > 0) { //If the entity still has frames left to move
 				if (Math.abs(this.getXSpeed()) > 0) { //Move frames in progress
 					moveSide(direction);
+					direction = ledgeGuard(direction);
 				} //Alternative: Do nothing (ergo no code)
+				moveFrames--;
 			}
 			else { //New action should be called
 				if (this.getXSpeed() == 0) {
 					Random rnd = new Random();
 					direction = rnd.nextBoolean();
 					moveSide(direction);
-					moveFrames = randNumber(10, 50);
+					moveFrames = randNumber(15, 60);
 				}
 				else { //Time to stop moving!
 					this.setXSpeed(0);
-					moveFrames = randNumber(10, 50);
+					moveFrames = randNumber(15, 100);
 				}
 			}
 			break;
@@ -86,20 +88,35 @@ public class Monster extends LivingObject {
 		case RtWANDER:
  			break;
 		case LgWANDER:
-			if (!(associatedTerrain == null)) {
-				if (this.x == associatedTerrain.x) {
-				direction = true;
-				}
-				else if (this.x == associatedTerrain.x + associatedTerrain.width - this.width){
-					direction = false;
-				}
-					moveSide(direction);
-				}
+			direction = ledgeGuard(direction);
+			moveSide(direction);
 			break;
 		case BIRD:
 			break;
 		}
 	}
+ 	
+	/*
+	Name: ledgeGuard
+	Description: Returns a direction to prevent a monster from falling off the edge of its platform
+	Parameters: One boolean value
+	Return Value/Type: One boolean value
+	Dependencies: None
+	Exceptions: N/A
+	Date Created: June 11th, 2017
+	Date Modified: June 11th, 2017
+	 */
+ 	public boolean ledgeGuard(boolean oldDirection) {
+		if (!(associatedTerrain == null)) {
+			if (this.x == associatedTerrain.x) {
+				return true;
+			}
+			else if (this.x == associatedTerrain.x + associatedTerrain.width - this.width){
+				return false;
+			}
+		}
+		return oldDirection;
+ 	}
 	
 	/*
 	Name: wander
@@ -147,16 +164,30 @@ public class Monster extends LivingObject {
 	}
 	
 	/*
-	Name: setAssociatedTerrain
-	Description: Assigns a reference to the monster's floor
+	Name: getNext
+	Description: Returns the link
 	Parameters: One Monster
 	Return Value/Type: N/A
 	Dependencies: Logic.Entity
 	Exceptions: N/A
-	Date Created: June 8th, 2017
-	Date Modified: June 8th, 2017
+	Date Created: June 11th, 2017
+	Date Modified: June 11th, 2017
 	 */
-	public void setAssociatedTerrain(Entity terrain) {
+	public Monster getNext() {
+		return this.next;
+	}
+	
+	/*
+	Name: setAssociatedTerrain
+	Description: Assigns a reference to the monster's floor
+	Parameters: One LinkedEntity
+	Return Value/Type: N/A
+	Dependencies: Logic.Entity
+	Exceptions: N/A
+	Date Created: June 8th, 2017
+	Date Modified: June 11th, 2017
+	 */
+	public void setAssociatedTerrain(LinkedEntity terrain) {
 		this.associatedTerrain = terrain;
 	}
 	

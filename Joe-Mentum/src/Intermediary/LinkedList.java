@@ -23,7 +23,7 @@ public class LinkedList {
 	Name: add
 	Description: Adds a node to the list
 	Parameters: One LinkedEntity
-	Return Value/Type: N/A
+	Return Value/Type: One LinkedEntity
 	Dependencies: Logic.Entity
 	Exceptions: N/A
 	Date Created: June 7th, 2017
@@ -51,4 +51,6 @@ public class LinkedList {
 		}
 		
 	}
+	
+
 }//end class

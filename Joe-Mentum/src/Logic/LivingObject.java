@@ -88,7 +88,7 @@ public class LivingObject extends Entity {
 		
 		//V2 = V1 + at
 		//Handles character acceleration
-		if (Math.abs(this.getXSpeed()) <= maxSpeed) //Accelerates if not already at top speed
+		if (Math.abs(this.getXSpeed()) < maxSpeed) //Accelerates if not already at top speed
 			this.setXSpeed(this.getXSpeed() + directionMultiplier * ACC);
 		
 		if (directionMultiplier * this.getXSpeed() < 0) { //If the intended direction and the current direction do not match, turn around.

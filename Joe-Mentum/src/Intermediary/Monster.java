@@ -159,4 +159,5 @@ public class Monster extends LivingObject {
 	public void setAssociatedTerrain(Entity terrain) {
 		this.associatedTerrain = terrain;
 	}
+	
 }

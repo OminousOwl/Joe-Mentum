@@ -1,7 +1,7 @@
 /**
  *@Name Cosmin Baciu, Quinn Fisher, Olivier Hébert
  *@DateCreated: May 30th, 2017
- *@DateModified: June 8th, 2017
+ *@DateModified: June 10th, 2017
  *@Description: The class used to handle the actual game physics and gameplay
  */
 
@@ -32,7 +32,6 @@ import Intermediary.Monster;
 import Intermediary.Player;
 import Logic.Entity;
 import Logic.LivingObject;
-import anim.Spritesheet;
 import hsa2.GraphicsConsole;
 import jaco.mp3.player.MP3Player;
 
@@ -67,9 +66,6 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 	BufferedImage i3;
 	BufferedImage i4;
 	BufferedImage i5;
-	
-	private String filepath = "SpriteSheets/idle.png";
-	private Spritesheet spritesheet = new Spritesheet(filepath, 21, 35);
 
 	public static void main(String[] args) {
 		new MainGame().startGame();
@@ -157,7 +153,8 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 			paintLevelComponent(theLevel.getHead());
 			
 			gc.setColor(Color.GREEN);
-			gc.fillRect(enemies.x, enemies.y, enemies.width, enemies.height);
+			if (enemies.getHealth() > 0)
+				gc.fillRect(enemies.x, enemies.y, enemies.width, enemies.height);
 			
 			gc.setColor(Color.RED);
 			gc.drawImage(joe.getCurrentFrame(), (int) joe.getX(), (int) joe.getY(), (int) joe.getWidth(), (int) joe.getHeight());
@@ -199,6 +196,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 	 Date Modified: June 7th, 2017
 	 */
 	public void run() {
+		 System.out.println(joe.getXSpeed());
 		gravity(joe);
 		gravity(enemies);
 		move(joe);
@@ -319,7 +317,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		if (enemy == null) {
 			return;
 		}
-		else {
+		else if (enemy.getHealth() > 0) {
 			if (joe.intersects(enemy) && enemy.damageCD == 0) {
 				if (joe.getYSpeed() >= 0.4) {
 					enemy.damage(joe.getAttack());
@@ -473,7 +471,6 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 			joe.setDirection(true);
 			if (joe.getYSpeed() == 0)
 				joe.setAnimState(Player.MOVE);
-			
 		}
 
 		else if (key == KeyEvent.VK_A) {// Player moves left when the 'a' key is pressed

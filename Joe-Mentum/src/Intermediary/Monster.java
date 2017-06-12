@@ -29,10 +29,12 @@ public class Monster extends LivingObject {
 	public int damageCD;
 	
 	boolean direction = true;
+	private int sineValue = 0;
 	
 	public Monster(int x, int y, int width, int height, int health, int attack, double maxSpeed, char AIstate) {
 		this.x = x;
 		this.y = y;
+		this.defaultY = y;
 		this.width = width;
 		this.height = height;
 		this.setHealth(health);
@@ -53,45 +55,38 @@ public class Monster extends LivingObject {
  			if (joe.getX() < this.getX()) //TODO Update w/ actual Joe object
  				direction = false;
  			this.moveSide(direction);
+ 			if (Math.abs(joe.x - this.x) > 200)
+				this.setAIState(AgWANDER);
  			break;
-			
+ 			
 		//True wandering, no player detection, 100% passive
  		case WANDER:
-			if (moveFrames > 0) { //If the entity still has frames left to move
-				if (Math.abs(this.getXSpeed()) > 0) { //Move frames in progress
-					moveSide(direction);
-					direction = ledgeGuard(direction);
-				} //Alternative: Do nothing (ergo no code)
-				moveFrames--;
-			}
-			else { //New action should be called
-				if (this.getXSpeed() == 0) {
-					Random rnd = new Random();
-					direction = rnd.nextBoolean();
-					moveSide(direction);
-					moveFrames = randNumber(15, 60);
-				}
-				else { //Time to stop moving!
-					this.setXSpeed(0);
-					moveFrames = randNumber(15, 100);
-				}
-			}
+ 			wander();
 			break;
 		case AgWANDER:
-			
+			wander();
+			if (Math.abs(joe.x - this.x) <= 200)
+				this.setAIState(RUSH);
 			break;
 		case RUN:
 			if (joe.getX() > this.getX()) //TODO Update w/ actual Joe object
 				direction = false;
-				this.moveSide(direction);
+			this.moveSide(direction);
+			if (Math.abs(joe.x - this.x) > 200)
+				this.setAIState(RtWANDER);
 			break;
 		case RtWANDER:
- 			break;
+			wander();
+			if (Math.abs(joe.x - this.x) <= 200)
+				this.setAIState(RUN);
+			break;
 		case LgWANDER:
 			direction = ledgeGuard(direction);
 			moveSide(direction);
 			break;
 		case BIRD:
+			this.setYSpeed(this.getYSpeed() - LivingObject.GRAV + Math.sin(this.x));
+			moveSide(false);
 			break;
 		}
 	}
@@ -125,13 +120,28 @@ public class Monster extends LivingObject {
 	Return Value/Type: N/A
 	Dependencies: None
 	Exceptions: N/A
-	Date Created: June 5th, 2017
-	Date Modified: June 5th, 2017
+	Date Created: June 11th, 2017
+	Date Modified: June 11th, 2017
 	 */
 	public void wander() {
-		if (this.getXSpeed() == 0 && moveFrames <= 0) {
-			
-			
+		if (moveFrames > 0) { //If the entity still has frames left to move
+			if (Math.abs(this.getXSpeed()) > 0) { //Move frames in progress
+				moveSide(direction);
+				direction = ledgeGuard(direction);
+			} //Alternative: Do nothing (ergo no code)
+			moveFrames--;
+		}
+		else { //New action should be called
+			if (this.getXSpeed() == 0) {
+				Random rnd = new Random();
+				direction = rnd.nextBoolean();
+				moveSide(direction);
+				moveFrames = randNumber(15, 60);
+			}
+			else { //Time to stop moving!
+				this.setXSpeed(0);
+				moveFrames = randNumber(15, 100);
+			}
 		}
 	}
 	

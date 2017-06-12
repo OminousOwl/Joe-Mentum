@@ -112,7 +112,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		enemies.add(new Monster(1500, 90, 30, 30, 12, 5, 0.8, Monster.LgWANDER));
 		
 		
-		enemies.add(new Monster(475, 100, 30, 30, 3, 2, 0.5, Monster.WANDER)).setAssociatedTerrain(fetch(theLevel.getHead(), 0)); //Test monster
+		enemies.add(new Monster(475, 100, 30, 30, 3, 2, 0.5, Monster.BIRD)).setAssociatedTerrain(fetch(theLevel.getHead(), 0)); //Test monster
 		
 		spagoogi.addToPlayList(new File("music/StabCrabV2Orchestra.mp3"));
 		spagoogi.skipForward();

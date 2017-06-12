@@ -35,7 +35,7 @@ public class Entity extends Rectangle {
 	private double ySpeed = 0;//the vertical speed of the object
 	
 	private int yScroll = 0;
-	private int defaultY = 0;
+	protected int defaultY = 0;
 	
 	protected int animState = 0;
 	

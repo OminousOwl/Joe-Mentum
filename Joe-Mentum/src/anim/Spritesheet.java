@@ -1,9 +1,21 @@
 package anim;
+/**
+ *@Name Cosmin Baciu
+ *@DateCreated: June 9th, 2017
+ *@DateModified: June 12th, 2017
+ *@Description: This class is used to efficiently split up pictures into animation
+ */
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-
 import javax.imageio.ImageIO;
+
+/*
+ *       __
+ * 	 ___( o)> quack
+ *   \ <_. )
+ *    `---' 
+ */
 
 public class Spritesheet {
 
@@ -63,6 +75,8 @@ public class Spritesheet {
 	}
 
 	public BufferedImage[] getAllSprites() {
+		//takes the original photo, and crops it, once it is cropped, take all
+		// the cropped pictures and put the photos into an array, for easy animation use
 		int cols = getColumnCount();
 		int rows = getRowCount();
 		int frameCount = getFrameCount();

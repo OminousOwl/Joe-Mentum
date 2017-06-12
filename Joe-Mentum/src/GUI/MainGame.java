@@ -62,6 +62,11 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 	GraphicsConsole gc = new GraphicsConsole();
 	MP3Player spagoogi = new MP3Player();
 	
+	private static final String floor = "images/floor.png";
+	private static final String sTile = "images/sTile.png";
+	private static final String lTile = "images/lTile.png";
+	private static final String fTile = "images/floorTile.png";
+	
 	BufferedImage i1;
 	BufferedImage i2;
 	BufferedImage i3;
@@ -91,13 +96,13 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		
 		theLevel = new LinkedList();
 		
-		theLevel.add(new LinkedEntity(0, 332, 755, 100, Color.BLACK, 'f'));
-		theLevel.add(new LinkedEntity(468, 182, 100, 150, Color.BLUE, 'w'));
-		theLevel.add(new LinkedEntity(800, 175, 160, 100, Color.BLUE, 'w')).setYScroll(60, 1.0);
-		theLevel.add(new LinkedEntity(1015, 332, 100, 100, Color.BLACK, 'f'));
-		theLevel.add(new LinkedEntity(1180, 332, 100, 100, Color.BLACK, 'f'));
-		theLevel.add(new LinkedEntity(1325, 150, 100, 100, Color.BLUE, 'w')).setYScroll(550, 1.0);
-		theLevel.add(new LinkedEntity(1450, 100, 755, 100, Color.BLACK, 'w'));
+		theLevel.add(new LinkedEntity(0, 332, 755, 100, Color.BLACK, 's', floor));
+		theLevel.add(new LinkedEntity(468, 195, 100, 150, Color.BLUE, 's', fTile));
+		theLevel.add(new LinkedEntity(800, 175, 160, 100, Color.BLUE, 's', lTile)).setYScroll(60, 1.0);
+		theLevel.add(new LinkedEntity(1015, 332, 100, 100, Color.BLACK, 's', sTile));
+		theLevel.add(new LinkedEntity(1180, 332, 100, 100, Color.BLACK, 's', sTile));
+		theLevel.add(new LinkedEntity(1325, 150, 100, 100, Color.BLUE, 's', lTile)).setYScroll(550, 1.0);
+		theLevel.add(new LinkedEntity(1450, 100, 755, 100, Color.BLACK, 's', floor));
 		
 		game.setDoubleBuffered(true);
 		add(game);
@@ -110,7 +115,6 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		
 		enemies.add(new Monster(850, 100, 15, 15, 3, 2, 0.5, Monster.LgWANDER));
 		enemies.add(new Monster(1500, 90, 30, 30, 12, 5, 0.8, Monster.LgWANDER));
-		
 		
 		enemies.add(new Monster(475, 100, 30, 30, 3, 2, 0.5, Monster.BIRD)).setAssociatedTerrain(fetch(theLevel.getHead(), 0)); //Test monster
 		
@@ -152,7 +156,6 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		synchronized(gc) {
 			gc.clear();
 			
-			
 			gc.drawImage(i1, 0, 0, gc.getWidth(), gc.getHeight());
 			gc.drawImage(i2, 0, 0, gc.getWidth(), gc.getHeight());
 			gc.drawImage(i3, 0, 0, gc.getWidth(), gc.getHeight());
@@ -187,7 +190,12 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		else {
 			if (activeEntity.x <= 1000 && activeEntity.x >= -1000) { //Only renders within a certain range to avoid overloading the graphics console
 				gc.setColor(activeEntity.colour);
-				gc.fillRect(activeEntity.x, activeEntity.y, activeEntity.width, activeEntity.height);
+				if (activeEntity.getTile() != null) {
+					gc.drawImage(activeEntity.getTile(), activeEntity.x, activeEntity.y-4, activeEntity.width, activeEntity.height-4);
+				}
+				else
+					gc.fillRect(activeEntity.x, activeEntity.y, activeEntity.width, activeEntity.height);
+				
 			}
 
 			paintLevelComponent(activeEntity.next);

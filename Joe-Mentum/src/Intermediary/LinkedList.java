@@ -6,8 +6,8 @@ public class LinkedList {
 	private LinkedEntity root;//the first node in the list
 	//private LinkedEntity tail;//the last node in the list
 	
-	public LinkedList(int x, int y, int width, int height,Color colour, char collision){
-		root = new LinkedEntity(x,y,width,height,colour,collision);
+	public LinkedList(int x, int y, int width, int height,Color colour, char collision, String filepath){
+		root = new LinkedEntity(x,y,width,height,colour,collision, filepath);
 	}//end constructor
 	
 	public LinkedList(){
@@ -32,7 +32,7 @@ public class LinkedList {
 	public LinkedEntity add(LinkedEntity node){//adds a node to the list
 		
 		if (root == null) {
-			root = new LinkedEntity(node.x, node.y, node.width, node.height, node.colour, node.getCollideType());
+			root = new LinkedEntity(node.x, node.y, node.width, node.height, node.colour, node.getCollideType(), node.getFilepath());
 			return node;
 		}
 		

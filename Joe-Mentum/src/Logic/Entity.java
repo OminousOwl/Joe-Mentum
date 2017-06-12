@@ -2,14 +2,11 @@ package Logic;
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.Rectangle;
-import java.awt.Image.*;
-/*
- *Project: ICS4U - Final Project - Joe-Mentum
- *Author: Olivier J Hébert
- *Date Created: 25/05/2017
- *Date Edited: 4/06/2017
- *Description: This class will be the parent for all physics-based objects in the game; characters & level objects.
- */
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
 
 import Intermediary.Player;
 
@@ -33,6 +30,9 @@ public class Entity extends Rectangle {
 	private int frame = 0;//the preceding image in the animation
 	private double xSpeed = 0;//the horizontal speed of the object
 	private double ySpeed = 0;//the vertical speed of the object
+
+	private String filepath;
+	private BufferedImage tile;
 	
 	private int yScroll = 0;
 	protected int defaultY = 0;
@@ -47,7 +47,7 @@ public class Entity extends Rectangle {
 	}
 	
 	//Constructor June 4
-	public Entity(int x, int y, int width, int height, Color colour, char collision) {
+	public Entity(int x, int y, int width, int height, Color colour, char collision, String tileFilepath) {
 		collideType = collision;
 		this.x = x;
 		this.y = y;
@@ -56,15 +56,18 @@ public class Entity extends Rectangle {
 		this.height = height;
 		this.colour = colour;
 		
-		ledges[0] = new Rectangle(0, 0, 0, 0);
-		ledges[1] = new Rectangle(0, 0, 0, 0);
 		
-		if (collideType == FLOOR || collideType == WALL)
-			floorbox = new Rectangle(this.x, this.y + 2, this.width, this.height/6); //Defining the floorbox on the very surface of the object causes some jumps to be ignored
-		if (collideType == WALL) {
-			ledges[0] = new Rectangle(this.x - 35, this.y + 3, 35, this.height/3);
-			ledges[1] = new Rectangle(this.x + this.width, this.y + 3, 35, this.height/3);
+		try {
+			filepath = tileFilepath;
+			tile = ImageIO.read(new File(tileFilepath));
+		} catch(IOException e) {
+			
 		}
+		
+		floorbox = new Rectangle(this.x, this.y + 2, this.width, this.height/6); //Defining the floorbox on the very surface of the object causes some jumps to be ignored
+		ledges[0] = new Rectangle(this.x - 35, this.y + 3, 35, this.height/3);
+		ledges[1] = new Rectangle(this.x + this.width, this.y + 3, 35, this.height/3);
+
 	}
 
 
@@ -91,18 +94,10 @@ public class Entity extends Rectangle {
 	Dependencies: None
 	Exceptions: N/A
 	Date Created: May 29th, 2017
-	Date Modified: June 5th, 2017
+	Date Modified: June 12th, 2017
 	 */
 	public void collide(Entity b){
 		if(b.getCollideType() == SOLID){
-			this.setySpeed(0);
-		}
-		else if(b.getCollideType() == FLOOR){
-			solidCollide(b);
-			
-		}
-		
-		else if(b.getCollideType() == WALL){
 				
 			if (this.intersects(b.ledges[0]) || this.intersects(b.ledges[1])) {
 				
@@ -196,4 +191,18 @@ public class Entity extends Rectangle {
 	public int getDefaultY() {
 		return defaultY;
 	}
+
+	public BufferedImage getTile() {
+		return tile;
+	}
+
+	public void setTile(BufferedImage tile) {
+		this.tile = tile;
+	}
+	
+
+	public String getFilepath() {
+		return filepath;
+	}
+	
 }//end Class

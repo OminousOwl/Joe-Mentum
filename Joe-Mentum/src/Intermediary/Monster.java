@@ -7,8 +7,12 @@ Description: The class used to handle enemy AI
 
 package Intermediary;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.util.Random;
+
+import javax.swing.Timer;
 
 import Logic.LivingObject;
 import anim.Spritesheet;
@@ -16,7 +20,7 @@ import anim.Spritesheet;
 public class Monster extends LivingObject {
 
 	public static final int FIGHT = 2;
-	public static final int DIE = 3;
+	public static final int DEAD = 3;
 
 	public static final char RUSH = 'r';
 	public static final char WANDER = 'w';
@@ -36,8 +40,8 @@ public class Monster extends LivingObject {
 	private int moveFrames;
 	public LinkedEntity associatedTerrain;
 	public int damageCD;
+	private boolean deathAnimFlag = false;
 	
-	boolean direction = true;
 	private int sineValue = 0;
 	
 	public Monster(int x, int y, int width, int height, int health, int attack, double maxSpeed, char AIstate, String enemyType) {
@@ -79,6 +83,46 @@ public class Monster extends LivingObject {
 		}
 		if (enemyType != null)
 			setCurrentFrame(sprites[0].getSprite(0));
+		
+		Timer timer = new Timer(100, new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				System.out.println(direction);
+				
+				if (getXSpeed() == 0 && getYSpeed() == 0 && getHealth() > 0) {
+					setAnimState(IDLE);
+				}
+				else if (Math.abs(getXSpeed()) > 0 && getHealth() > 0) {
+					setAnimState(MOVE);
+				}
+				
+				if (getEnemyType() != null) {
+					if (getAnimState() == IDLE) {
+						setCurrentFrame(flipHorizontal(sprites[0].getSprite(frame % sprites[0].getFrameCount())));
+						frame++;
+					}
+					else if (getAnimState() == MOVE) {
+						setCurrentFrame(flipHorizontal(sprites[1].getSprite(frame % sprites[1].getFrameCount())));
+						frame++;
+					}
+					else if (getAnimState() == DEAD) {
+						if (!deathAnimFlag) {
+							setCurrentFrame(flipHorizontal(sprites[3].getSprite(frame % sprites[3].getFrameCount())));
+							frame++;
+							if (frame >= sprites[3].getFrameCount()) {
+								deathAnimFlag = true;
+							}
+						}
+					}
+				}
+				
+
+			}
+				
+		});
+		timer.start();
 
 	}
 	
@@ -91,74 +135,77 @@ public class Monster extends LivingObject {
 	public void setEnemyType(String enemyType) { this.enemyType = enemyType; }
 	
  	public void behave(Player joe) {
- 		switch(aiState) {
- 		case RUSH:
-			direction = true;
- 			if (joe.getX() < this.getX()) //TODO Update w/ actual Joe object
- 				direction = false;
- 			this.moveSide(direction);
- 			if (Math.abs(joe.x - this.x) > 200)
-				this.setAIState(AgWANDER);
- 			break;
+ 		if (animState != DEAD) {
+ 			switch(aiState) {
+ 			case RUSH:
+ 				direction = true;
+ 				if (joe.getX() < this.getX())
+ 					direction = false;
+ 				this.moveSide(direction);
+ 				if (Math.abs(joe.x - this.x) > 200)
+ 					this.setAIState(AgWANDER);
+ 				break;
  			
-		//True wandering, no player detection, 100% passive
- 		case WANDER:
- 			wander();
-			break;
-		case AgWANDER: //Wander triggering rushdown
-			wander();
-			if (Math.abs(joe.x - this.x) <= 200)
-				this.setAIState(RUSH);
-			break;
-		case RUN:
-			if (joe.getX() > this.getX()) //TODO Update w/ actual Joe object
-				direction = false;
-			this.moveSide(direction);
-			if (Math.abs(joe.x - this.x) > 200)
-				this.setAIState(RtWANDER);
-			break;
-		case RtWANDER: //Wander triggering retreat
-			wander();
-			if (Math.abs(joe.x - this.x) <= 200)
-				this.setAIState(RUN);
-			break;
-		case LgWANDER:
-			direction = ledgeGuard(direction);
-			moveSide(direction);
-			break;
-		case BIRD:
-			this.y = this.getDefaultY() + (int)(100 * Math.sin(((2*Math.PI * sineValue)/(150))));
-			sineValue--;
-			moveSide(false);
-			setYSpeed(-0.2);
-			break;
-		case SADBIRD: //Screwed up old bird code that we kept because it's funny
-			this.setYSpeed(this.getYSpeed() - LivingObject.GRAV + Math.sin(this.x));
-			moveSide(false);
-			break;
-		case DWANDER: //Wander triggering fight
-			wander();
-			if (Math.abs(joe.x - this.x) <= 300)
-				this.setAIState(DUEL);
-			break;
-		case DUEL:
-			if (joe.x - this.x >= 100) {
-				moveSide(true);
-			}
-			else if (joe.x - this.x <= -100) {
+ 				//True wandering, no player detection, 100% passive
+	 		case WANDER:
+	 			wander();
+		 		break;
+			case AgWANDER: //Wander triggering rushdown
+				wander();
+				if (Math.abs(joe.x - this.x) <= 200)
+					this.setAIState(RUSH);
+				break;
+			case RUN:
+				if (joe.getX() > this.getX())
+					direction = false;
+				this.moveSide(direction);
+				if (Math.abs(joe.x - this.x) > 200)
+					this.setAIState(RtWANDER);
+				break;
+			case RtWANDER: //Wander triggering retreat
+				wander();
+				if (Math.abs(joe.x - this.x) <= 200)
+					this.setAIState(RUN);
+				break;
+			case LgWANDER:
+				direction = ledgeGuard(direction);
+				moveSide(direction);
+				break;
+			case BIRD:
+				this.y = this.getDefaultY() + (int)(100 * Math.sin(((2*Math.PI * sineValue)/(150))));
+				sineValue--;
 				moveSide(false);
-			}
-			else if (Math.abs(joe.x - this.x) >= 300) {
-				setAIState(DWANDER);
-			}
-			else 
-				this.setAIState(ATTACK);
-			break;
-		case ATTACK: //TODO update with animation code
-			if (this.frame > sprites[3].getFrameCount())
-				this.setAIState(DUEL);
-			break;
-		}
+				setYSpeed(-0.2);
+				break;
+			case SADBIRD: //Screwed up old bird code that we kept because it's funny
+				this.setYSpeed(this.getYSpeed() - LivingObject.GRAV + Math.sin(this.x));
+				moveSide(false);
+				break;
+			case DWANDER: //Wander triggering fight
+				wander();
+				if (Math.abs(joe.x - this.x) <= 300)
+					this.setAIState(DUEL);
+				break;
+			case DUEL:
+				if (joe.x - this.x >= 100) {
+					moveSide(true);
+				}
+				else if (joe.x - this.x <= -100) {
+					moveSide(false);
+				}
+				else if (Math.abs(joe.x - this.x) >= 300) {
+					setAIState(DWANDER);
+				}
+				else 
+					this.setAIState(ATTACK);
+				break;
+			case ATTACK: //TODO update with animation code
+				if (this.frame > sprites[3].getFrameCount())
+					this.setAIState(DUEL);
+				break;
+ 			}
+ 		}
+ 		
 	}
  	
 	/*
@@ -269,6 +316,10 @@ public class Monster extends LivingObject {
 	 */
 	public void setAssociatedTerrain(LinkedEntity terrain) {
 		this.associatedTerrain = terrain;
+	}
+
+	public void setFrame(int i) {
+		frame = i;
 	}
 	
 }

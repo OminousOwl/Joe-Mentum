@@ -113,10 +113,10 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		gc.addKeyListener(this);
 		gc.setVisible(false);
 		
-		enemies.add(new Monster(850, 100, 15, 15, 3, 2, 0.5, Monster.LgWANDER, "skeleton"));
-		enemies.add(new Monster(1500, 90, 40, 70, 12, 5, 0.8, Monster.LgWANDER, "skeleton"));
+		enemies.add(new Monster(850, 100, 20, 30, 3, 2, 0.5, Monster.LgWANDER, "skeleton"));
+		enemies.add(new Monster(1500, 90, 40, 60, 12, 5, 0.8, Monster.LgWANDER, "skeleton"));
 		
-		enemies.add(new Monster(475, 100, 30, 30, 3, 2, 0.5, Monster.BIRD, null)).setAssociatedTerrain(fetch(theLevel.getHead(), 0)); //Test monster
+		enemies.add(new Monster(475, 100, 40, 60, 3, 2, 0.5, Monster.AgWANDER, "skeleton")).setAssociatedTerrain(fetch(theLevel.getHead(), 0)); //Test monster
 		
 		spagoogi.addToPlayList(new File("music/StabCrabV2Orchestra.mp3"));
 		spagoogi.skipForward();
@@ -207,9 +207,9 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 			return;
 		}
 		else {
-			if (enemy.x <= 1000 && enemy.x >= -1000 && enemy.getHealth() > 0) { //Only renders within a certain range to avoid overloading the graphics console
+			if (enemy.x <= 1000 && enemy.x >= -1000) { //Only renders within a certain range to avoid overloading the graphics console
 				if (enemy.getEnemyType() != null) {
-					gc.drawImage(enemy.getCurrentFrame(), enemy.x, enemy.y);
+					gc.drawImage(enemy.getCurrentFrame(), enemy.x, enemy.y, enemy.width, enemy.height);
 				}
 				else {
 					gc.setColor(Color.RED);
@@ -395,6 +395,11 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 					enemy.damage(joe.getAttack());
 					System.out.println("Enemy got rekt");
 					joe.setYSpeed(-6.0);
+					if (enemy.getHealth() <= 0) {
+						enemy.setFrame(0);
+						enemy.setAnimState(Monster.DEAD);
+						enemy.setXSpeed(0);
+					}
 				}
 				else {
 					joe.damage(enemy.getAttack());

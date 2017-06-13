@@ -124,8 +124,8 @@ public class LivingObject extends Entity {
 	}
 	
 	/*
-	Name: jump
-	Description: Handles initial jumps, adding vertical speed to the entity
+	Name: fastFall
+	Description: Handles faster falling, adding extra acceleration to gravity
 	Parameters:
 	Return Value/Type: N/A
 	Dependencies: N/A
@@ -162,7 +162,7 @@ public class LivingObject extends Entity {
 	public void setAnimState(int animState) { this.animState = animState;}
 	
 	public BufferedImage flipHorizontal(BufferedImage source) {
-		if (!direction) {
+		if (!this.direction) {
 			AffineTransform at = AffineTransform.getScaleInstance(-1, 1);
 			at.translate(-source.getWidth(null), 0);
 			AffineTransformOp op = new AffineTransformOp(at, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);

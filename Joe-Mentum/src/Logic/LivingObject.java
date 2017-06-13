@@ -34,6 +34,8 @@ public class LivingObject extends Entity {
 	private boolean attackState;
 	private Item item;
 	
+	private int damageFrames;
+	
 	protected BufferedImage currentFrame;
 	protected int frame;
 	protected boolean direction = true;
@@ -172,6 +174,12 @@ public class LivingObject extends Entity {
 			return source;
 		}
 		
+	}
+	public int getDamageFrames() {
+		return damageFrames;
+	}
+	public void setDamageFrames(int damageFrames) {
+		this.damageFrames = damageFrames;
 	}
 
 	

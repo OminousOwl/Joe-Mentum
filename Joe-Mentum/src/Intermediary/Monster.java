@@ -9,7 +9,6 @@ package Intermediary;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
 import java.util.Random;
 
 import javax.swing.Timer;
@@ -19,6 +18,8 @@ import anim.Spritesheet;
 
 public class Monster extends LivingObject {
 
+
+	private static final long serialVersionUID = -7434225452647913349L;
 	public static final int FIGHT = 2;
 	public static final int DEAD = 3;
 
@@ -89,8 +90,6 @@ public class Monster extends LivingObject {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
-				System.out.println(direction);
-				
 				if (getXSpeed() == 0 && getYSpeed() == 0 && getHealth() > 0) {
 					setAnimState(IDLE);
 				}
@@ -99,7 +98,12 @@ public class Monster extends LivingObject {
 				}
 				
 				if (getEnemyType() != null) {
-					if (getAnimState() == IDLE) {
+					if (getDamageFrames() > 0) {
+						setCurrentFrame(flipHorizontal(sprites[3].getSprite((5 - getDamageFrames()) % sprites[3].getFrameCount())));
+						setDamageFrames(getDamageFrames() -1);
+						setXSpeed(0);
+					}
+					else if (getAnimState() == IDLE) {
 						setCurrentFrame(flipHorizontal(sprites[0].getSprite(frame % sprites[0].getFrameCount())));
 						frame++;
 					}

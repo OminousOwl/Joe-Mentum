@@ -116,7 +116,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		enemies.add(new Monster(850, 100, 20, 30, 3, 2, 0.5, Monster.LgWANDER, "skeleton"));
 		enemies.add(new Monster(1500, 90, 40, 60, 12, 5, 0.8, Monster.LgWANDER, "skeleton"));
 		
-		enemies.add(new Monster(475, 100, 40, 60, 3, 2, 0.5, Monster.AgWANDER, "skeleton")).setAssociatedTerrain(fetch(theLevel.getHead(), 0)); //Test monster
+		enemies.add(new Monster(475, 100, 40, 60, 3, 2, 0.5, Monster.WANDER, "skeleton")).setAssociatedTerrain(fetch(theLevel.getHead(), 0)); //Test monster
 		
 		spagoogi.addToPlayList(new File("music/StabCrabV2Orchestra.mp3"));
 		spagoogi.skipForward();
@@ -400,10 +400,13 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 						enemy.setAnimState(Monster.DEAD);
 						enemy.setXSpeed(0);
 					}
+					else {
+						enemy.setDamageFrames(5);
+					}
 				}
 				else {
 					joe.damage(enemy.getAttack());
-					System.out.println("Joe got rekt");
+					joe.setDamageFrames(5);
 				}
 				enemy.damageCD = 70;
 			}

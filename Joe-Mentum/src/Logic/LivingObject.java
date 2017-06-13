@@ -7,9 +7,12 @@ Description: The class containing data and methods to handle moving entities in 
 
 package Logic;
 
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 
 import Intermediary.Player;
+import anim.Spritesheet;
 
 public class LivingObject extends Entity {
 	
@@ -20,6 +23,11 @@ public class LivingObject extends Entity {
 	private static final double FF = 7.0; //Constant used to define initial fast fall speed
 	private static final double FF_ACC = 0.4; //Constant used to add gravitational acceleration when fastfalling
 
+	
+	public final static int IDLE = 0;
+	public final static int MOVE = 1;
+	
+	
 	private int health; 
 	private int attack;
 	private double maxSpeed;
@@ -29,6 +37,9 @@ public class LivingObject extends Entity {
 	protected BufferedImage currentFrame;
 	protected int frame;
 	protected boolean direction = true;
+	
+	protected Spritesheet[] sprites;
+	protected String[] filepaths;
 	
 	public int getHealth() { return health; }
 	public void setHealth (int health) { this.health = health; };
@@ -145,6 +156,22 @@ public class LivingObject extends Entity {
 			return 1.0;
 		else
 			return -1.0;
+	}
+	
+	public int getAnimState() { return this.animState; }
+	public void setAnimState(int animState) { this.animState = animState;}
+	
+	public BufferedImage flipHorizontal(BufferedImage source) {
+		if (!direction) {
+			AffineTransform at = AffineTransform.getScaleInstance(-1, 1);
+			at.translate(-source.getWidth(null), 0);
+			AffineTransformOp op = new AffineTransformOp(at, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
+			return op.filter(source, null);
+		}
+		else {
+			return source;
+		}
+		
 	}
 
 	

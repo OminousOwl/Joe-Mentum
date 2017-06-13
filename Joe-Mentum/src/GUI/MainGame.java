@@ -113,10 +113,10 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		gc.addKeyListener(this);
 		gc.setVisible(false);
 		
-		enemies.add(new Monster(850, 100, 15, 15, 3, 2, 0.5, Monster.LgWANDER));
-		enemies.add(new Monster(1500, 90, 30, 30, 12, 5, 0.8, Monster.LgWANDER));
+		enemies.add(new Monster(850, 100, 15, 15, 3, 2, 0.5, Monster.LgWANDER, "skeleton"));
+		enemies.add(new Monster(1500, 90, 40, 70, 12, 5, 0.8, Monster.LgWANDER, "skeleton"));
 		
-		enemies.add(new Monster(475, 100, 30, 30, 3, 2, 0.5, Monster.BIRD)).setAssociatedTerrain(fetch(theLevel.getHead(), 0)); //Test monster
+		enemies.add(new Monster(475, 100, 30, 30, 3, 2, 0.5, Monster.BIRD, null)).setAssociatedTerrain(fetch(theLevel.getHead(), 0)); //Test monster
 		
 		spagoogi.addToPlayList(new File("music/StabCrabV2Orchestra.mp3"));
 		spagoogi.skipForward();
@@ -208,8 +208,13 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		}
 		else {
 			if (enemy.x <= 1000 && enemy.x >= -1000 && enemy.getHealth() > 0) { //Only renders within a certain range to avoid overloading the graphics console
-				gc.setColor(Color.RED);
-				gc.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+				if (enemy.getEnemyType() != null) {
+					gc.drawImage(enemy.getCurrentFrame(), enemy.x, enemy.y);
+				}
+				else {
+					gc.setColor(Color.RED);
+					gc.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);	
+				}
 			}
 
 			paintEnemy(enemy.next);

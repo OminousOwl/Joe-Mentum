@@ -1,18 +1,22 @@
 /*
 Name: Quinn Fisher
 Date Created: May 26th, 2017
-Date Modified: June 11th, 2017
+Date Modified: June 12th, 2017
 Description: The class used to handle enemy AI
  */
 
 package Intermediary;
 
+import java.awt.image.BufferedImage;
 import java.util.Random;
 
-import Logic.Entity;
 import Logic.LivingObject;
+import anim.Spritesheet;
 
 public class Monster extends LivingObject {
+
+	public static final int FIGHT = 2;
+	public static final int DIE = 3;
 
 	public static final char RUSH = 'r';
 	public static final char WANDER = 'w';
@@ -21,9 +25,14 @@ public class Monster extends LivingObject {
 	public static final char RtWANDER = 't';
 	public static final char LgWANDER = 'l';
 	public static final char BIRD = 'b';
+	public static final char SADBIRD = 's';
+	public static final char DWANDER = 'd';
+	public static final char DUEL = 'u';
+	public static final char ATTACK = 'a';
 	
 	public Monster next;
 	private char aiState;
+	private String enemyType;
 	private int moveFrames;
 	public LinkedEntity associatedTerrain;
 	public int damageCD;
@@ -31,7 +40,7 @@ public class Monster extends LivingObject {
 	boolean direction = true;
 	private int sineValue = 0;
 	
-	public Monster(int x, int y, int width, int height, int health, int attack, double maxSpeed, char AIstate) {
+	public Monster(int x, int y, int width, int height, int health, int attack, double maxSpeed, char AIstate, String enemyType) {
 		this.x = x;
 		this.y = y;
 		this.defaultY = y;
@@ -41,12 +50,45 @@ public class Monster extends LivingObject {
 		this.setAttack(attack);
 		this.setSpeed(maxSpeed);
 		this.aiState = AIstate;
+		this.setEnemyType(enemyType);
+		
+		this.filepaths = new String[4];
+		this.sprites = new Spritesheet[4];
+		
+		for (int i = 0; i < filepaths.length; i++) {
+			filepaths[i] = "SpriteSheets/";
+			if (enemyType == "skeleton")
+				filepaths[i] += "Skeleton/";
+		}
+		
+		filepaths[0] += "Idle";
+		filepaths[1] += "Walk";
+		filepaths[2] += "Attack";
+		filepaths[3] += "Dead";
+		
+		for (int i = 0; i < filepaths.length; i++) {
+			filepaths[i] += ".png";
+		}
+		
+		System.out.println(filepaths[0]);
+		if (enemyType == "skeleton") {
+				sprites[0] = new Spritesheet(filepaths[0], 264/11, 32);
+				sprites[1] = new Spritesheet(filepaths[1], 286/13, 33);
+				sprites[2] = new Spritesheet(filepaths[2], 774/18, 37);
+				sprites[3] = new Spritesheet(filepaths[3], 495/15, 32);
+		}
+		if (enemyType != null)
+			setCurrentFrame(sprites[0].getSprite(0));
+
 	}
 	
 	//AIState setter/getter (May 26th, 2017)
 	public void setAIState(char newState) { aiState = newState; }
 	public char getAIState() { return aiState ; }
 	
+	public String getEnemyType() { return enemyType; }
+
+	public void setEnemyType(String enemyType) { this.enemyType = enemyType; }
 	
  	public void behave(Player joe) {
  		switch(aiState) {
@@ -63,7 +105,7 @@ public class Monster extends LivingObject {
  		case WANDER:
  			wander();
 			break;
-		case AgWANDER:
+		case AgWANDER: //Wander triggering rushdown
 			wander();
 			if (Math.abs(joe.x - this.x) <= 200)
 				this.setAIState(RUSH);
@@ -75,7 +117,7 @@ public class Monster extends LivingObject {
 			if (Math.abs(joe.x - this.x) > 200)
 				this.setAIState(RtWANDER);
 			break;
-		case RtWANDER:
+		case RtWANDER: //Wander triggering retreat
 			wander();
 			if (Math.abs(joe.x - this.x) <= 200)
 				this.setAIState(RUN);
@@ -85,8 +127,36 @@ public class Monster extends LivingObject {
 			moveSide(direction);
 			break;
 		case BIRD:
+			this.y = this.getDefaultY() + (int)(100 * Math.sin(((2*Math.PI * sineValue)/(150))));
+			sineValue--;
+			moveSide(false);
+			setYSpeed(-0.2);
+			break;
+		case SADBIRD: //Screwed up old bird code that we kept because it's funny
 			this.setYSpeed(this.getYSpeed() - LivingObject.GRAV + Math.sin(this.x));
 			moveSide(false);
+			break;
+		case DWANDER: //Wander triggering fight
+			wander();
+			if (Math.abs(joe.x - this.x) <= 300)
+				this.setAIState(DUEL);
+			break;
+		case DUEL:
+			if (joe.x - this.x >= 100) {
+				moveSide(true);
+			}
+			else if (joe.x - this.x <= -100) {
+				moveSide(false);
+			}
+			else if (Math.abs(joe.x - this.x) >= 300) {
+				setAIState(DWANDER);
+			}
+			else 
+				this.setAIState(ATTACK);
+			break;
+		case ATTACK: //TODO update with animation code
+			if (this.frame > sprites[3].getFrameCount())
+				this.setAIState(DUEL);
 			break;
 		}
 	}

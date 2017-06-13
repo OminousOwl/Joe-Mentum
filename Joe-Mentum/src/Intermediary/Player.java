@@ -9,8 +9,6 @@ package Intermediary;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 
 import javax.swing.Timer;
@@ -24,19 +22,19 @@ public class Player extends LivingObject {
 	private static int EXP = 0;
 	private static int level = 1;
 	private static Item active; //We don't need a passive slot as it is included in LivingObject
-	private static Spritesheet[] sprites = new Spritesheet[5];
-	private static String[] filepaths = new String[5];
 	
-	public final static int IDLE = 0;
-	public final static int MOVE = 1;
 	public final static int VERT = 2;
 	public final static int LEDGE = 3;
 	
 	public Player() {
-		filepaths[0] = "SpriteSheets/idle.png";
-		filepaths[1] = "SpriteSheets/run.png";
-		filepaths[2] = "SpriteSheets/jump.png";
-		filepaths[3] = "SpriteSheets/ledge grab outline.png";
+		
+		this.filepaths = new String[4];
+		this.sprites = new Spritesheet[4];
+		
+		filepaths[0] = "SpriteSheets/Joe/idle.png";
+		filepaths[1] = "SpriteSheets/Joe/run.png";
+		filepaths[2] = "SpriteSheets/Joe/jump.png";
+		filepaths[3] = "SpriteSheets/Joe/ledge grab outline.png";
 		
 		
 		sprites[0] = new Spritesheet(filepaths[0], 21, 35);
@@ -94,21 +92,7 @@ public class Player extends LivingObject {
 		
 	}//end constructor
 	
-	public int getAnimState() { return this.animState; }
-	public void setAnimState(int animState) { this.animState = animState;}
-	
-	private BufferedImage flipHorizontal(BufferedImage source) {
-		if (!direction) {
-			AffineTransform at = AffineTransform.getScaleInstance(-1, 1);
-			at.translate(-source.getWidth(null), 0);
-			AffineTransformOp op = new AffineTransformOp(at, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
-			return op.filter(source, null);
-		}
-		else {
-			return source;
-		}
-		
-	}
+
 	
 	public void pickupItem(){//TODO
 		//determine if colliding with an object. if colliding & object is of type item...

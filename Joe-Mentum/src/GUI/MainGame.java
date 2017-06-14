@@ -1,7 +1,7 @@
 /**
  *@Name Cosmin Baciu, Quinn Fisher, Olivier Hébert
  *@DateCreated: May 30th, 2017
- *@DateModified: June 11th, 2017
+ *@DateModified: June 14th, 2017
  *@Description: The class used to handle the actual game physics and gameplay
  */
 
@@ -45,6 +45,7 @@ import jaco.mp3.player.MP3Player;
 
 public class MainGame extends JFrame implements EventListener, KeyListener {
 
+	private static final long serialVersionUID = 2624305141673616554L;
 	/**** Constants ****/
 	private final int RUNNING = 0;// the ID# for the game's running state.
 	private final int PAUSED = 1;// the ID# for the game's paused state with the basic menu.
@@ -78,7 +79,6 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		
 	}
 
-	@SuppressWarnings("serial")
 	public MainGame() {
 		super("Joe-Mentum");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -114,7 +114,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		gc.setVisible(false);
 		
 		enemies.add(new Monster(850, 100, 20, 30, 3, 2, 0.5, Monster.LgWANDER, "skeleton"));
-		enemies.add(new Monster(1500, 90, 40, 60, 12, 5, 0.8, Monster.LgWANDER, "skeleton"));
+		enemies.add(new Monster(1500, 90, 40, 60, 12, 5, 0.8, Monster.AgWANDER, "skeleton"));
 		
 		enemies.add(new Monster(475, 100, 40, 60, 3, 2, 0.5, Monster.WANDER, "skeleton")).setAssociatedTerrain(fetch(theLevel.getHead(), 0)); //Test monster
 		
@@ -329,7 +329,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 	 Date Created: May 31st, 2017 
 	 Date Modified: May 31st, 2017
 	 */
-	public void checkCollision(Entity a, Entity b) {
+	public void checkCollision(LivingObject a, Entity b) {
 		if (a.intersects(b)) {
 			a.collide(b);
 		}
@@ -345,7 +345,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 	 Date Created: June 7th, 2017 
 	 Date Modified: June 7th, 2017 
 	 */
-	public void checkLevelCollision (Entity a, LinkedEntity b) {
+	public void checkLevelCollision (LivingObject a, LinkedEntity b) {
 		if (b == null) {
 			return;
 		}
@@ -618,27 +618,47 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 
 	public void keyPressed(KeyEvent e) {
 		
-		joe.height = 70;
-		
 		int key = e.getKeyCode(); // Tracks the key pressed
+		
+		if (key == KeyEvent.VK_UP) {
+			key= KeyEvent.VK_W;
+		}
+		if (key == KeyEvent.VK_DOWN) {
+			key= KeyEvent.VK_S;
+		}
+		if (key == KeyEvent.VK_LEFT) {
+			key= KeyEvent.VK_A;
+		}
+		if (key == KeyEvent.VK_RIGHT) {
+			key= KeyEvent.VK_D;
+		}
+		
 		pressed.add(key);
 		if (key == KeyEvent.VK_W || key == KeyEvent.VK_SPACE) {// Player jumps when spacebar/the 'w' key is pressed
+			joe.height = 70;
 			joe.jump();
 			joe.setAnimState(Player.VERT);
 		}
 
 		if (key == KeyEvent.VK_D) {// Player moves right when the 'd' key is pressed
-			joe.moveSide(true);
-			joe.setDirection(true);
-			if (joe.getYSpeed() == 0)
-				joe.setAnimState(Player.MOVE);
+			if (!(joe.getDirection() && joe.getAnimState() == Player.LEDGE)) {
+				joe.height = 70;
+				joe.moveSide(true);
+				joe.setDirection(true);
+				if (joe.getYSpeed() == 0)
+					joe.setAnimState(Player.MOVE);
+			}
+			
 		}
 
 		else if (key == KeyEvent.VK_A) {// Player moves left when the 'a' key is pressed
-			joe.moveSide(false);
-			joe.setDirection(false);
-			if (joe.getYSpeed() == 0)
-				joe.setAnimState(Player.MOVE);
+			if (!(!joe.getDirection() && joe.getAnimState() == Player.LEDGE)) {
+				joe.height = 70;
+				joe.moveSide(false);
+				joe.setDirection(false);
+				if (joe.getYSpeed() == 0)
+					joe.setAnimState(Player.MOVE);
+			}
 		}
 
 		if (key == KeyEvent.VK_Q) {//
@@ -646,7 +666,11 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		}
 		
 		if (key == KeyEvent.VK_S) {// Player fastfalls when the 's' key is pressed
-			joe.fastFall();
+			if (joe.getAnimState() != Player.LEDGE) {
+				joe.height = 70;
+				joe.fastFall();
+			}
+	
 		}
 
 

@@ -73,8 +73,8 @@ public class Entity extends Rectangle {
 
 	/**** Getters & Setters ****/
 	public void setCollide(char collideType){this.collideType = collideType;}
-	public double getXSpeed(){return xSpeed;}
-	public void setXSpeed(double xSpeed){this.xSpeed = xSpeed;}
+	public double getXSpeed(){return getxSpeed();}
+	public void setXSpeed(double xSpeed){this.setxSpeed(xSpeed);}
 	public double getYSpeed(){return this.getySpeed();}
 	public void setYSpeed(double ySpeed){this.setySpeed(ySpeed);}
 	
@@ -85,91 +85,6 @@ public class Entity extends Rectangle {
 	//}//end getAnimation
 	
 	/**** Methods ****/
-	
-	/*
-	Name: collide
-	Description: Handles collision results between any two entities
-	Parameters:
-	Return Value/Type: N/A
-	Dependencies: None
-	Exceptions: N/A
-	Date Created: May 29th, 2017
-	Date Modified: June 12th, 2017
-	 */
-	public void collide(Entity b){
-		if(b.getCollideType() == SOLID){
-				
-			if (this.intersects(b.ledges[0]) || this.intersects(b.ledges[1])) {
-				
-				if (b.ledgeFlag) {
-					if (this.getySpeed() <= LivingObject.INIT_JUMP + 2*LivingObject.GRAV) {
-						b.ledgeFlag = false;
-						b.resetCounter = 40;
-					}
-					else {
-						//System.out.println("Triggered at " + System.currentTimeMillis());
-						this.xSpeed = 0;
-						this.setySpeed(0);
-						this.y = b.ledges[0].y - 14;
-						
-						this.animState = Player.LEDGE;
-						this.height = 84;
-						
-						if (this.intersects(b.ledges[0])) {
-							this.x = b.ledges[0].x - 6;
-						}
-						else
-							this.x = b.ledges[1].x - 1;
-					}
-				}
-			}
-			solidCollide(b);
-		}
-		
-		else if(b.getCollideType() == BOUNCE){
-			this.setySpeed((getySpeed()*-1));
-		}
-		else if(b.getCollideType() == SKIP){
-			this.setySpeed((getySpeed()*-1)/2);
-		}
-	}
-	public char getCollideType() {
-		return collideType;
-	}
-
-	
-	
-	/*
-	Name: solidCollide
-	Description: Handles collision on a surface to nullify gravity
-	Parameters:
-	Return Value/Type: N/A
-	Dependencies: None
-	Exceptions: N/A
-	Date Created: June 4th, 2017
-	Date Modified: June 11th, 2017
-	 */
-	public void solidCollide(Entity b) {
-		
-		if (this.y > b.y + 5) { //If collision takes place outside the wall's surface
-			this.xSpeed = 0;
-			if (this.x < b.x + b.width/2) { //Collision from left, judging from mid point
-				this.x = b.x - this.width;
-			}
-			else //Collision from right
-				this.x = b.x + b.width;
-			}
-			
-			else {
-				if (this.getySpeed() > 0) { //Only collides on drop, otherwise jumping is impossible
-					this.setySpeed(0);
-					
-					if (this.intersects(b.floorbox) && this.ySpeed >= -6.6)
-						this.y = b.y - this.height;
-			}
-
-		}
-	}
 
 	public double getySpeed() {
 		return ySpeed;
@@ -203,6 +118,18 @@ public class Entity extends Rectangle {
 
 	public String getFilepath() {
 		return filepath;
+	}
+	
+	public char getCollideType() {
+		return collideType;
+	}
+
+	public double getxSpeed() {
+		return xSpeed;
+	}
+
+	public void setxSpeed(double xSpeed) {
+		this.xSpeed = xSpeed;
 	}
 	
 }//end Class

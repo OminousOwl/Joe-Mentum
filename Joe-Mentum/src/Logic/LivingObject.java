@@ -1,7 +1,7 @@
 /*
 Name: Quinn Fisher
 Date Created: May 25th, 2017
-Date Modified: June 10th, 2017
+Date Modified: June 14th, 2017
 Description: The class containing data and methods to handle moving entities in game (Player, bosses, enemies, etc.)
  */
 
@@ -95,16 +95,16 @@ public class LivingObject extends Entity {
 		if (!side)
 			directionMultiplier = -1;
 		
-		//V2 = V1 + at
 		//Handles character acceleration
 		if (Math.abs(this.getXSpeed()) < maxSpeed) //Accelerates if not already at top speed
-			this.setXSpeed(this.getXSpeed() + directionMultiplier * ACC);
+			this.setXSpeed(this.getXSpeed() + (directionMultiplier * ACC));
 		
 		if (directionMultiplier * this.getXSpeed() < 0) { //If the intended direction and the current direction do not match, turn around.
 			//System.out.println("Turn at " + System.currentTimeMillis());
 			this.setXSpeed(this.getXSpeed() * -1);
 		}
 		
+		System.out.println(this.getXSpeed());
 		
 	}
 	
@@ -180,6 +180,89 @@ public class LivingObject extends Entity {
 	}
 	public void setDamageFrames(int damageFrames) {
 		this.damageFrames = damageFrames;
+	}
+	
+	
+	/*
+	Name: collide
+	Description: Handles collision results between any two entities
+	Parameters:
+	Return Value/Type: N/A
+	Dependencies: None
+	Exceptions: N/A
+	Date Created: May 29th, 2017
+	Date Modified: June 14th, 2017
+	 */
+	public void collide(Entity b){
+		if(b.getCollideType() == SOLID){
+				
+			if (this.intersects(b.ledges[0]) && this.direction || this.intersects(b.ledges[1]) && !this.direction) {
+				
+				if (this.ledgeFlag && b.ledgeFlag) {
+					if (this.getySpeed() <= LivingObject.INIT_JUMP + 2*LivingObject.GRAV) {
+						b.ledgeFlag = false;
+						b.resetCounter = 40;
+					}
+					else {
+						//System.out.println("Triggered at " + System.currentTimeMillis());
+						this.animState = Player.LEDGE;
+						this.height = 84;
+						this.setxSpeed(0);
+						this.setySpeed(0);
+						this.y = b.ledges[0].y - 14;
+						
+						if (this.intersects(b.ledges[0])) {
+							this.x = b.ledges[0].x - 6;
+						}
+						else
+							this.x = b.ledges[1].x - 1;
+					}
+				}
+			}
+			solidCollide(b);
+		}
+		
+		else if(b.getCollideType() == BOUNCE){
+			this.setySpeed((getySpeed()*-1));
+		}
+		else if(b.getCollideType() == SKIP){
+			this.setySpeed((getySpeed()*-1)/2);
+		}
+	}
+
+
+	
+	
+	/*
+	Name: solidCollide
+	Description: Handles collision on a surface to nullify gravity
+	Parameters:
+	Return Value/Type: N/A
+	Dependencies: None
+	Exceptions: N/A
+	Date Created: June 4th, 2017
+	Date Modified: June 11th, 2017
+	 */
+	public void solidCollide(Entity b) {
+		
+		if (this.y > b.y + 5) { //If collision takes place outside the wall's surface
+			this.setxSpeed(0);
+			if (this.x < b.x + b.width/2) { //Collision from left, judging from mid point
+				this.x = b.x - this.width;
+			}
+			else //Collision from right
+				this.x = b.x + b.width;
+			}
+			
+			else {
+				if (this.getySpeed() > 0) { //Only collides on drop, otherwise jumping is impossible
+					this.setySpeed(0);
+					
+					if (this.intersects(b.floorbox) && this.getySpeed() >= -6.6)
+						this.y = b.y - this.height;
+			}
+
+		}
 	}
 
 	

@@ -1,7 +1,7 @@
 /*
 Name: Quinn Fisher
 Date Created: May 25th, 2017
-Date Modified: June 10th, 2017
+Date Modified: June 14th, 2017
 Description: The class used to handle the player's stats and motion
  */
 
@@ -25,6 +25,8 @@ public class Player extends LivingObject {
 	
 	public final static int VERT = 2;
 	public final static int LEDGE = 3;
+	
+	private static final double ACC = 1.0; //Constant used to define acceleration rate
 	
 	public Player() {
 		
@@ -100,4 +102,35 @@ public class Player extends LivingObject {
 			//otherwise if Joe has no active item move the item to his active item slot
 				//otherwise swap the items (move the colliding item to inventory & the other to the outside)
 	}//end pickupItem
+	
+	/*
+	Name: moveSide
+	Description: Handles movement to either side
+	Parameters: One boolean (direction)
+	Return Value/Type: N/A
+	Dependencies: N/A
+	Exceptions: N/A
+	Date Created: May 25th, 2017
+	Date Modified: June 14th, 2017
+	 */
+	public void moveSide(boolean side) {
+		
+		int directionMultiplier = 1;
+		if (!side)
+			directionMultiplier = -1;
+		
+		//Handles character acceleration
+		if (this.getXSpeed() == 0) {
+			this.setXSpeed(directionMultiplier * 1.4);
+		}
+		else if (Math.abs(this.getXSpeed()) < getSpeed()) //Accelerates if not already at top speed
+			this.setXSpeed(this.getXSpeed() + (directionMultiplier * ACC));
+		
+		if (directionMultiplier * this.getXSpeed() < 0) { //If the intended direction and the current direction do not match, turn around.
+			//System.out.println("Turn at " + System.currentTimeMillis());
+			this.setXSpeed(this.getXSpeed() * -1);
+		}
+		
+	}
+	
 }

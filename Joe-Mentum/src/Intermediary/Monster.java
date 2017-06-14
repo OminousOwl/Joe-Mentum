@@ -1,7 +1,7 @@
 /*
 Name: Quinn Fisher
 Date Created: May 26th, 2017
-Date Modified: June 12th, 2017
+Date Modified: June 14th, 2017
 Description: The class used to handle enemy AI
  */
 
@@ -56,6 +56,7 @@ public class Monster extends LivingObject {
 		this.setSpeed(maxSpeed);
 		this.aiState = AIstate;
 		this.setEnemyType(enemyType);
+		this.ledgeFlag = false;
 		
 		this.filepaths = new String[4];
 		this.sprites = new Spritesheet[4];

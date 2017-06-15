@@ -1,7 +1,7 @@
 /*
 Name: Quinn Fisher
 Date Created: May 25th, 2017
-Date Modified: June 14th, 2017
+Date Modified: June 15th, 2017
 Description: The class containing data and methods to handle moving entities in game (Player, bosses, enemies, etc.)
  */
 
@@ -191,7 +191,7 @@ public class LivingObject extends Entity {
 	Dependencies: None
 	Exceptions: N/A
 	Date Created: May 29th, 2017
-	Date Modified: June 14th, 2017
+	Date Modified: June 15th, 2017
 	 */
 	public void collide(Entity b){
 		if(b.getCollideType() == SOLID){
@@ -241,11 +241,16 @@ public class LivingObject extends Entity {
 	Dependencies: None
 	Exceptions: N/A
 	Date Created: June 4th, 2017
-	Date Modified: June 11th, 2017
+	Date Modified: June 15th, 2017
 	 */
 	public void solidCollide(Entity b) {
 		
-		if (this.y > b.y + 5) { //If collision takes place outside the wall's surface
+		if (this.y >= b.y + b.height - b.height/10) {
+			this.setYSpeed(0);
+			b.ledgeFlag = false;
+			b.resetCounter = 40;
+		}
+		else if (this.y > b.y + 5) { //If collision takes place outside the wall's surface
 			this.setxSpeed(0);
 			if (this.x < b.x + b.width/2) { //Collision from left, judging from mid point
 				this.x = b.x - this.width;

@@ -96,13 +96,29 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		
 		theLevel = new LinkedList();
 		
-		theLevel.add(new LinkedEntity(0, 332, 755, 100, Color.BLACK, 's', floor));
-		theLevel.add(new LinkedEntity(468, 195, 100, 150, Color.BLUE, 's', fTile));
-		theLevel.add(new LinkedEntity(800, 175, 160, 100, Color.BLUE, 's', lTile)).setYScroll(60, 1.0);
-		theLevel.add(new LinkedEntity(1015, 332, 100, 100, Color.BLACK, 's', sTile));
-		theLevel.add(new LinkedEntity(1180, 332, 100, 100, Color.BLACK, 's', sTile));
-		theLevel.add(new LinkedEntity(1325, 150, 100, 100, Color.BLUE, 's', lTile)).setYScroll(550, 1.0);
-		theLevel.add(new LinkedEntity(1450, 100, 755, 100, Color.BLACK, 's', floor));
+		theLevel.add(new LinkedEntity(0, 332, 755, 80, Color.BLACK, 's', "images/floor.png"));
+		theLevel.add(new LinkedEntity(468, 195, 150, 150, Color.BLACK, 's', "images/floorTile.png"));
+		theLevel.add(new LinkedEntity(800, 175, 160, 100, Color.BLACK, 's', "images/lTile.png")).setYScroll(60, 1.0);
+		theLevel.add(new LinkedEntity(1015, 332, 100, 100, Color.BLACK, 's', "images/sTile.png"));
+		theLevel.add(new LinkedEntity(1180, 332, 100, 100, Color.BLACK, 's', "images/sTile.png"));
+		theLevel.add(new LinkedEntity(1325, 150, 100, 100, Color.BLACK, 's', "images/lTile.png")).setYScroll(400, 1.0);
+		theLevel.add(new LinkedEntity(1450, 100, 755, 80, Color.BLACK, 's', "images/floor.png"));
+		theLevel.add(new LinkedEntity(2000, 300, 377, 80, Color.BLACK, 's', "images/floor.png"));
+		theLevel.add(new LinkedEntity(2400, 332, 755, 80, Color.BLACK, 's', "images/floor.png"));
+		theLevel.add(new LinkedEntity(2800, 100, 377, 80, Color.BLACK, 's', "images/floor.png")).setYScroll(100, 1.0);
+		theLevel.add(new LinkedEntity(3300, 100, 95, 80, Color.BLACK, 's', "images/floor.png"));
+		theLevel.add(new LinkedEntity(3200, 332, 189, 80, Color.BLACK, 's', "images/floor.png"));
+		theLevel.add(new LinkedEntity(3400, 200, 189, 80, Color.BLACK, 's', "images/floor.png")).setYScroll(100, 1.0);;
+		theLevel.add(new LinkedEntity(3700, 80, 189, 80, Color.BLACK, 's', "images/floor.png"));
+		theLevel.add(new LinkedEntity(4000, 80, 377, 80, Color.BLACK, 's', "images/floor.png")).setYScroll(100, 1.0);
+		theLevel.add(new LinkedEntity(4500, 350, 189, 80, Color.BLACK, 's', "images/floor.png"));
+		theLevel.add(new LinkedEntity(4200, 332, 755, 80, Color.BLACK, 's', "images/floor.png"));
+		theLevel.add(new LinkedEntity(4800, 100, 189, 80, Color.BLACK, 's', "images/floor.png")).setYScroll(50,1.0);
+		theLevel.add(new LinkedEntity(4900, 332, 189, 80, Color.BLACK, 's', "images/floor.png"));
+		theLevel.add(new LinkedEntity(5000, 100, 377, 80, Color.BLACK, 's', "images/floor.png"));
+		theLevel.add(new LinkedEntity(5600, 332, 189, 80, Color.BLACK, 's', "images/floor.png"));
+		theLevel.add(new LinkedEntity(6000, 332, 755, 80, Color.BLACK, 's', "images/floor.png"));
+		theLevel.add(new LinkedEntity(6755, 332, 755, 80, Color.BLACK, 's', "images/floor.png"));
 		
 		game.setDoubleBuffered(true);
 		add(game);

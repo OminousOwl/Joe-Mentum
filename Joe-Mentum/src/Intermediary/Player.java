@@ -30,6 +30,8 @@ public class Player extends LivingObject {
 	
 	public Player() {
 		
+		this.isJoe = true;
+		
 		this.filepaths = new String[4];
 		this.sprites = new Spritesheet[4];
 		

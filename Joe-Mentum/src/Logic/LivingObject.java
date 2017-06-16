@@ -1,7 +1,7 @@
 /*
 Name: Quinn Fisher
 Date Created: May 25th, 2017
-Date Modified: June 15th, 2017
+Date Modified: June 16th, 2017
 Description: The class containing data and methods to handle moving entities in game (Player, bosses, enemies, etc.)
  */
 
@@ -15,8 +15,9 @@ import Intermediary.Player;
 import anim.Spritesheet;
 
 public class LivingObject extends Entity {
+
+	private static final long serialVersionUID = -2488364476039279905L;
 	
-	//TODO Move these constants to Entity.Java
 	private static final double ACC = 1.0; //Constant used to define acceleration rate
 	public static final double GRAV = 0.2; //Constant used as gravitational acceleration
 	static final double INIT_JUMP = -7.2; //Constant used to define initial jump speed
@@ -33,6 +34,8 @@ public class LivingObject extends Entity {
 	private double maxSpeed;
 	private boolean attackState;
 	private Item item;
+	
+	protected boolean isJoe = false;
 	
 	private int damageFrames;
 	
@@ -104,7 +107,6 @@ public class LivingObject extends Entity {
 			this.setXSpeed(this.getXSpeed() * -1);
 		}
 		
-		System.out.println(this.getXSpeed());
 		
 	}
 	
@@ -120,7 +122,6 @@ public class LivingObject extends Entity {
 	Date Modified: June 10th, 2017
 	 */
 	public void jump() {
-		//System.out.println("Jump " + System.currentTimeMillis()); //TODO reimplement as debug tool
 		if (this.getYSpeed() == 0 || this.animState != Player.VERT)
 			this.setYSpeed(INIT_JUMP);
 	}
@@ -241,30 +242,30 @@ public class LivingObject extends Entity {
 	Dependencies: None
 	Exceptions: N/A
 	Date Created: June 4th, 2017
-	Date Modified: June 15th, 2017
+	Date Modified: June 16th, 2017
 	 */
 	public void solidCollide(Entity b) {
 		
-		if (this.y >= b.y + b.height - b.height/10) {
-			this.setYSpeed(0);
-			b.ledgeFlag = false;
-			b.resetCounter = 40;
+		
+		if (this.y >= b.y + b.height - b.height/10 && this.getYSpeed() < 0.2 && b.resetCounter <= 0) {
+			this.setYSpeed(1.0);
+			b.resetCounter = 10;
 		}
-		else if (this.y > b.y + 5) { //If collision takes place outside the wall's surface
+		else if (this.y > b.y + 5 && b.resetCounter <= 0) { //If collision takes place outside the wall's surface
 			this.setxSpeed(0);
 			if (this.x < b.x + b.width/2) { //Collision from left, judging from mid point
 				this.x = b.x - this.width;
 			}
 			else //Collision from right
 				this.x = b.x + b.width;
-			}
-			
-			else {
-				if (this.getySpeed() > 0) { //Only collides on drop, otherwise jumping is impossible
-					this.setySpeed(0);
+		}
+		
+		else if (b.resetCounter <= 0 || !this.isJoe) {
+			if (this.getySpeed() > 0) { //Only collides on drop, otherwise jumping is impossible
+				this.setySpeed(0);
 					
-					if (this.intersects(b.floorbox) && this.getySpeed() >= -6.6)
-						this.y = b.y - this.height;
+				if (this.intersects(b.floorbox) && this.getySpeed() >= -6.6)
+					this.y = b.y - this.height;
 			}
 
 		}

@@ -76,7 +76,6 @@ public class Monster extends LivingObject {
 			filepaths[i] += ".png";
 		}
 		
-		System.out.println(filepaths[0]);
 		if (enemyType == "skeleton") {
 				sprites[0] = new Spritesheet(filepaths[0], 264/11, 32);
 				sprites[1] = new Spritesheet(filepaths[1], 286/13, 33);

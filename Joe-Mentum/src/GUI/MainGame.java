@@ -1,7 +1,7 @@
 /**
  *@Name Cosmin Baciu, Quinn Fisher, Olivier Hébert
  *@DateCreated: May 30th, 2017
- *@DateModified: June 14th, 2017
+ *@DateModified: June 16th, 2017
  *@Description: The class used to handle the actual game physics and gameplay
  */
 
@@ -68,11 +68,8 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 	private static final String lTile = "images/lTile.png";
 	private static final String fTile = "images/floorTile.png";
 	
-	BufferedImage i1;
-	BufferedImage i2;
-	BufferedImage i3;
-	BufferedImage i4;
-	BufferedImage i5;
+	//BufferedImage bg;
+	BufferedImage hpHeart;
 
 	public static void main(String[] args) {
 		new MainGame().startGame();
@@ -96,29 +93,29 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		
 		theLevel = new LinkedList();
 		
-		theLevel.add(new LinkedEntity(0, 332, 755, 80, Color.BLACK, 's', "images/floor.png"));
-		theLevel.add(new LinkedEntity(468, 195, 150, 150, Color.BLACK, 's', "images/floorTile.png"));
-		theLevel.add(new LinkedEntity(800, 175, 160, 100, Color.BLACK, 's', "images/lTile.png")).setYScroll(60, 1.0);
-		theLevel.add(new LinkedEntity(1015, 332, 100, 100, Color.BLACK, 's', "images/sTile.png"));
-		theLevel.add(new LinkedEntity(1180, 332, 100, 100, Color.BLACK, 's', "images/sTile.png"));
-		theLevel.add(new LinkedEntity(1325, 150, 100, 100, Color.BLACK, 's', "images/lTile.png")).setYScroll(400, 1.0);
-		theLevel.add(new LinkedEntity(1450, 100, 755, 80, Color.BLACK, 's', "images/floor.png"));
-		theLevel.add(new LinkedEntity(2000, 300, 377, 80, Color.BLACK, 's', "images/floor.png"));
-		theLevel.add(new LinkedEntity(2400, 332, 755, 80, Color.BLACK, 's', "images/floor.png"));
-		theLevel.add(new LinkedEntity(2800, 100, 377, 80, Color.BLACK, 's', "images/floor.png")).setYScroll(100, 1.0);
-		theLevel.add(new LinkedEntity(3300, 100, 95, 80, Color.BLACK, 's', "images/floor.png"));
-		theLevel.add(new LinkedEntity(3200, 332, 189, 80, Color.BLACK, 's', "images/floor.png"));
-		theLevel.add(new LinkedEntity(3400, 200, 189, 80, Color.BLACK, 's', "images/floor.png")).setYScroll(100, 1.0);;
-		theLevel.add(new LinkedEntity(3700, 80, 189, 80, Color.BLACK, 's', "images/floor.png"));
-		theLevel.add(new LinkedEntity(4000, 80, 377, 80, Color.BLACK, 's', "images/floor.png")).setYScroll(100, 1.0);
-		theLevel.add(new LinkedEntity(4500, 350, 189, 80, Color.BLACK, 's', "images/floor.png"));
-		theLevel.add(new LinkedEntity(4200, 332, 755, 80, Color.BLACK, 's', "images/floor.png"));
-		theLevel.add(new LinkedEntity(4800, 100, 189, 80, Color.BLACK, 's', "images/floor.png")).setYScroll(50,1.0);
-		theLevel.add(new LinkedEntity(4900, 332, 189, 80, Color.BLACK, 's', "images/floor.png"));
-		theLevel.add(new LinkedEntity(5000, 100, 377, 80, Color.BLACK, 's', "images/floor.png"));
-		theLevel.add(new LinkedEntity(5600, 332, 189, 80, Color.BLACK, 's', "images/floor.png"));
-		theLevel.add(new LinkedEntity(6000, 332, 755, 80, Color.BLACK, 's', "images/floor.png"));
-		theLevel.add(new LinkedEntity(6755, 332, 755, 80, Color.BLACK, 's', "images/floor.png"));
+		theLevel.add(new LinkedEntity(0, 332, 755, 80, Color.BLACK, 's', floor));
+		theLevel.add(new LinkedEntity(468, 195, 150, 150, Color.BLACK, 's', fTile));
+		theLevel.add(new LinkedEntity(800, 175, 160, 100, Color.BLACK, 's', lTile)).setYScroll(60, 1.0);
+		theLevel.add(new LinkedEntity(1015, 332, 100, 100, Color.BLACK, 's', sTile));
+		theLevel.add(new LinkedEntity(1180, 332, 100, 100, Color.BLACK, 's', sTile));
+		theLevel.add(new LinkedEntity(1325, 150, 100, 100, Color.BLACK, 's', lTile)).setYScroll(400, 1.0);
+		theLevel.add(new LinkedEntity(1450, 100, 755, 80, Color.BLACK, 's', floor));
+		theLevel.add(new LinkedEntity(2000, 300, 377, 80, Color.BLACK, 's', floor));
+		theLevel.add(new LinkedEntity(2400, 332, 755, 80, Color.BLACK, 's', floor));
+		theLevel.add(new LinkedEntity(2800, 100, 377, 80, Color.BLACK, 's', floor)).setYScroll(50, 1.0);
+		theLevel.add(new LinkedEntity(3300, 100, 95, 80, Color.BLACK, 's', sTile));
+		theLevel.add(new LinkedEntity(3200, 332, 189, 80, Color.BLACK, 's', floor));
+		theLevel.add(new LinkedEntity(3465, 200, 189, 80, Color.BLACK, 's', floor)).setYScroll(100, 1.0);;
+		theLevel.add(new LinkedEntity(3700, 80, 189, 80, Color.BLACK, 's', floor));
+		theLevel.add(new LinkedEntity(4000, 80, 377, 80, Color.BLACK, 's', floor)).setYScroll(100, 1.0);
+		theLevel.add(new LinkedEntity(4500, 350, 189, 80, Color.BLACK, 's', floor));
+		theLevel.add(new LinkedEntity(4200, 332, 755, 80, Color.BLACK, 's', floor));
+		theLevel.add(new LinkedEntity(4800, 100, 189, 80, Color.BLACK, 's', floor)).setYScroll(50,1.0);
+		theLevel.add(new LinkedEntity(4900, 332, 189, 80, Color.BLACK, 's', floor));
+		theLevel.add(new LinkedEntity(5000, 100, 377, 80, Color.BLACK, 's', floor));
+		theLevel.add(new LinkedEntity(5600, 332, 189, 80, Color.BLACK, 's', floor));
+		theLevel.add(new LinkedEntity(6000, 332, 755, 80, Color.BLACK, 's', floor));
+		theLevel.add(new LinkedEntity(6755, 332, 755, 80, Color.BLACK, 's', floor));
 		
 		game.setDoubleBuffered(true);
 		add(game);
@@ -139,11 +136,9 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		spagoogi.play();
 		
 		try {
-			i1 = ImageIO.read(new File("images/1.png"));
-			i2 = ImageIO.read(new File("images/2.png"));
-			i3 = ImageIO.read(new File("images/3.png"));
-			i4 = ImageIO.read(new File("images/4.png"));
-			i5 = ImageIO.read(new File("images/5.png"));
+			//bg = ImageIO.read(new File("images/bg.png"));
+			hpHeart = ImageIO.read(new File("images/gui/heart.png"));
+
 		} catch (IOException e) {
 			// catch
 		}
@@ -160,7 +155,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 			if (this.state == 0)
 				run();
 			try {
-				Thread.sleep(1);
+				Thread.sleep(5);
 			} catch (InterruptedException e) {
 				System.out.println("A thing broke");
 			}
@@ -172,11 +167,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		synchronized(gc) {
 			gc.clear();
 			
-			gc.drawImage(i1, 0, 0, gc.getWidth(), gc.getHeight());
-			gc.drawImage(i2, 0, 0, gc.getWidth(), gc.getHeight());
-			gc.drawImage(i3, 0, 0, gc.getWidth(), gc.getHeight());
-			gc.drawImage(i4, 0, 0, gc.getWidth(), gc.getHeight());
-			gc.drawImage(i5, 0, 0, gc.getWidth(), gc.getHeight());
+			//gc.drawImage(bg, 0, 0, gc.getWidth(), gc.getHeight());
 			
 			paintLevelComponent(theLevel.getHead());
 			paintEnemy(enemies.getHead());
@@ -194,6 +185,9 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 			gc.fillRect((int) wall.ledges[0].getX(), (int) wall.ledges[0].getY(), (int) wall.ledges[0].getWidth(), (int) wall.ledges[0].getHeight());
 			gc.fillRect((int) wall.ledges[1].getX(), (int) wall.ledges[1].getY(), (int) wall.ledges[1].getWidth(), (int) wall.ledges[1].getHeight());
 			*/
+			
+			//GUI elements
+			gc.drawImage(hpHeart, 20, 20, 50, 50);
 		}
 		
 		
@@ -444,7 +438,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		if (a == null){
 			return;
 		}
-		else if (!a.ledgeFlag) {
+		else if (a.resetCounter > 0) {
 			a.resetCounter--;
 			if (a.resetCounter == 0) {
 				a.ledgeFlag = true;

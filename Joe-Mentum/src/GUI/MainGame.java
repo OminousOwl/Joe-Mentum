@@ -68,7 +68,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 	private static final String lTile = "images/lTile.png";
 	private static final String fTile = "images/floorTile.png";
 	
-	//BufferedImage bg;
+	BufferedImage bg;
 	BufferedImage hpHeart;
 
 	public static void main(String[] args) {
@@ -136,8 +136,8 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		spagoogi.play();
 		
 		try {
-			//bg = ImageIO.read(new File("images/bg.png"));
-			hpHeart = ImageIO.read(new File("images/gui/heart.png"));
+			bg = ImageIO.read(new File("images/bg.png"));
+			hpHeart = ImageIO.read(new File("gui/heart.png"));
 
 		} catch (IOException e) {
 			// catch
@@ -145,9 +145,11 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		
 		animate();
 		
-		new GameMenu(this);
-		
-	
+		//TODO reimplement when GameMenu is remade
+		//new GameMenu(this);
+		gc.setVisible(true);
+		this.state = 0;
+		startGame();
 	}
 	
 	public void startGame() {
@@ -167,7 +169,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		synchronized(gc) {
 			gc.clear();
 			
-			//gc.drawImage(bg, 0, 0, gc.getWidth(), gc.getHeight());
+			gc.drawImage(bg, 0, 0, gc.getWidth(), gc.getHeight());
 			
 			paintLevelComponent(theLevel.getHead());
 			paintEnemy(enemies.getHead());
@@ -187,7 +189,10 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 			*/
 			
 			//GUI elements
-			gc.drawImage(hpHeart, 20, 20, 50, 50);
+			gc.drawImage(hpHeart, 10, 10, 50, 50);
+			
+			gc.setColor(Color.BLACK);
+			gc.drawString(String.valueOf(joe.getHealth()), 22, 40);
 		}
 		
 		

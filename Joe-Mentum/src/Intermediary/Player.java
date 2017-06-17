@@ -148,6 +148,7 @@ public class Player extends LivingObject {
 	 */
 	public void levelUp() {
 		setEXP(getEXP() - 100);
+		level++;
 		
 		int points = randNumber(1, 4);
 		for (int i = 0; i < points; i++) {

@@ -71,6 +71,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 	BufferedImage bg;
 	BufferedImage hpHeart;
 	BufferedImage exp;
+	BufferedImage lvlStar;
 
 	public static void main(String[] args) {
 		new MainGame();
@@ -105,6 +106,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 			bg = ImageIO.read(new File("images/bg.png"));
 			hpHeart = ImageIO.read(new File("gui/heart.png"));
 			exp = ImageIO.read(new File("gui/exp.png"));
+			lvlStar = ImageIO.read(new File("gui/Level.png"));
 
 		} catch (IOException e) {
 			// catch
@@ -201,23 +203,26 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 			*/
 			
 			//GUI elements
-			gc.drawImage(hpHeart, 10, 10, 50, 50);
-			gc.drawImage(exp, 70, 10, 50, 50);
+			gc.drawImage(lvlStar, 10, 10, 50, 50);
+			gc.drawImage(hpHeart, 70, 10, 50, 50);
+			gc.drawImage(exp, 120, 10, 50, 50);
 			
 			gc.setColor(Color.BLACK);
 			if (joe.getHealth() < 10) {
-				gc.drawString(String.valueOf(joe.getHealth()), 29, 40);
+				gc.drawString(String.valueOf(joe.getHealth()), 89, 40);
 			}
 			else {
-				gc.drawString(String.valueOf(joe.getHealth()), 22, 40);
+				gc.drawString(String.valueOf(joe.getHealth()), 82, 40);
 			}
 			
 			if (joe.getEXP() < 10) {
-				gc.drawString(String.valueOf(joe.getEXP()), 89, 40);
+				gc.drawString(String.valueOf(joe.getEXP()), 139, 40);
 			}
 			else {
-				gc.drawString(String.valueOf(joe.getEXP()), 82, 40);
+				gc.drawString(String.valueOf(joe.getEXP()), 132, 40);
 			}
+			
+			gc.drawString(String.valueOf(joe.getLevel()), 28, 40);
 			
 		}
 		

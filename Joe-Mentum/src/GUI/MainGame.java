@@ -164,8 +164,10 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		enemies.add(new Monster(925, 100, 65, 65, 3, 2, 0.5, 25, Monster.BIRD, "bird")).offsetBird(15);
 		
 		narrative = new DialogQueue();
-		narrative.enqueue(new DialogBox(500, "Test Message", "Joe", 300));
-		narrative.enqueue(new DialogBox(500, "Same place, different message", "Joe", 300));
+		narrative.enqueue(new DialogBox(450, "Where am I? How did I get here?", "Joe", 300));
+		narrative.enqueue(new DialogBox(450, "Walk right if you ever want to see", "Disembodied Voice", 300));
+		narrative.enqueue(new DialogBox(450, "your home again.", "Disembodied Voice", 300));
+		narrative.enqueue(new DialogBox(450, "lol ok", "Joe", 300));
 		
 		this.setState(RUNNING);
 	}

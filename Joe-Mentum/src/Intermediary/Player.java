@@ -1,7 +1,7 @@
 /*
 Name: Quinn Fisher
 Date Created: May 25th, 2017
-Date Modified: June 14th, 2017
+Date Modified: June 16th, 2017
 Description: The class used to handle the player's stats and motion
  */
 
@@ -19,9 +19,10 @@ import anim.Spritesheet;
 
 public class Player extends LivingObject {
 
-	private static int EXP = 0;
-	private static int level = 1;
-	private static Item active; //We don't need a passive slot as it is included in LivingObject
+	private int EXP = 0;
+	private int level = 1;
+	private Item active; //We don't need a passive slot as it is included in LivingObject
+	private int maxHealth = 10;
 	
 	public final static int VERT = 2;
 	public final static int LEDGE = 3;
@@ -52,11 +53,11 @@ public class Player extends LivingObject {
 			public void actionPerformed(ActionEvent e) {
 				if (getAnimState() == IDLE) {
 					setCurrentFrame(flipHorizontal(sprites[0].getSprite(frame % sprites[0].getFrameCount())));
-					frame++;
+					frame = overflowProtect(frame + 1);
 				}
 				else if (getAnimState() == MOVE) {
 					setCurrentFrame(flipHorizontal(sprites[1].getSprite(frame % sprites[1].getFrameCount())));
-					frame++;
+					frame = overflowProtect(frame + 1);
 				}
 				else if (getAnimState() == VERT) {
 					if (getySpeed() <= -6.6) {
@@ -80,7 +81,7 @@ public class Player extends LivingObject {
 						frame = 0;
 					setCurrentFrame(flipHorizontal(sprites[3].getSprite(frame % sprites[3].getFrameCount())));
 					if (frame < 4) {
-						frame++;
+						frame = overflowProtect(frame + 1);
 					}
 					
 				}
@@ -91,7 +92,7 @@ public class Player extends LivingObject {
 		
 		//TODO Update Values
 		this.setAttack(3);
-		this.setHealth(10);
+		this.setHealth(maxHealth);
 		this.setSpeed(3.0);
 		
 	}//end constructor
@@ -134,5 +135,50 @@ public class Player extends LivingObject {
 		}
 		
 	}
+	
+	/*
+	Name: levelUp
+	Description: Handles stat increases on level up
+	Parameters: One boolean (direction)
+	Return Value/Type: N/A
+	Dependencies: N/A
+	Exceptions: N/A
+	Date Created: June 16th, 2017
+	Date Modified: June 16th, 2017
+	 */
+	public void levelUp() {
+		setEXP(getEXP() - 100);
+		
+		int points = randNumber(1, 4);
+		for (int i = 0; i < points; i++) {
+			int stat = randNumber(1, 3);
+			switch(stat) {
+			case 1:
+				maxHealth += 5;
+				System.out.println("HP up");
+				break;
+			case 2:
+				this.setAttack(this.getAttack() + 2);
+				System.out.println("Atk up");
+				break;
+			case 3:
+				this.setSpeed(this.getSpeed() + 0.4);
+				System.out.println("Spd up");
+				break;
+			}
+		}
+		
+		this.setHealth(maxHealth);
+		
+	}
+
+
+
+	public int getEXP() { return EXP; }
+	public void setEXP(int eXP) { EXP = eXP; }
+	public int getLevel() { return level; }
+	public void setLevel(int level) { this.level = level;}
+	public Item getActive() { return active; }
+	public void setActive(Item active) { this.active = active; }
 	
 }

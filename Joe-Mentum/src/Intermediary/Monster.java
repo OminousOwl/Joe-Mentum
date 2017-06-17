@@ -1,7 +1,7 @@
 /*
 Name: Quinn Fisher
 Date Created: May 26th, 2017
-Date Modified: June 14th, 2017
+Date Modified: June 16th, 2017
 Description: The class used to handle enemy AI
  */
 
@@ -43,9 +43,11 @@ public class Monster extends LivingObject {
 	public int damageCD;
 	private boolean deathAnimFlag = false;
 	
+	private int expGain;
+	
 	private int sineValue = 0;
 	
-	public Monster(int x, int y, int width, int height, int health, int attack, double maxSpeed, char AIstate, String enemyType) {
+	public Monster(int x, int y, int width, int height, int health, int attack, double maxSpeed, int expVal, char AIstate, String enemyType) {
 		this.x = x;
 		this.y = y;
 		this.defaultY = y;
@@ -54,6 +56,7 @@ public class Monster extends LivingObject {
 		this.setHealth(health);
 		this.setAttack(attack);
 		this.setSpeed(maxSpeed);
+		this.setExpGain(expVal);
 		this.aiState = AIstate;
 		this.setEnemyType(enemyType);
 		this.ledgeFlag = false;
@@ -105,16 +108,16 @@ public class Monster extends LivingObject {
 					}
 					else if (getAnimState() == IDLE) {
 						setCurrentFrame(flipHorizontal(sprites[0].getSprite(frame % sprites[0].getFrameCount())));
-						frame++;
+						frame = overflowProtect(frame + 1);
 					}
 					else if (getAnimState() == MOVE) {
 						setCurrentFrame(flipHorizontal(sprites[1].getSprite(frame % sprites[1].getFrameCount())));
-						frame++;
+						frame = overflowProtect(frame + 1);
 					}
 					else if (getAnimState() == DEAD) {
 						if (!deathAnimFlag) {
 							setCurrentFrame(flipHorizontal(sprites[3].getSprite(frame % sprites[3].getFrameCount())));
-							frame++;
+							frame = overflowProtect(frame + 1);
 							if (frame >= sprites[3].getFrameCount()) {
 								deathAnimFlag = true;
 							}
@@ -265,20 +268,6 @@ public class Monster extends LivingObject {
 			}
 		}
 	}
-	
-	/*
-	 Name: randNumber
-	 Description: Generates a random number
-	 Parameters: Two Integers
-	 Return Value/Type: A random number within the range of the parameters
-	 Dependencies: Java.Math
-	 Creation Date: October 23rd, 2015
-	 Modification Date: April 13th, 2017
-	 Throws: None
-	*/
-	public static int randNumber(int min, int max) {
-		return min + (int) (Math.random() * ((max - min) + 1));
-	}
 
 	/*
 	Name: setNext
@@ -324,6 +313,14 @@ public class Monster extends LivingObject {
 
 	public void setFrame(int i) {
 		frame = i;
+	}
+
+	public int getExpGain() {
+		return expGain;
+	}
+
+	public void setExpGain(int expGain) {
+		this.expGain = expGain;
 	}
 	
 }

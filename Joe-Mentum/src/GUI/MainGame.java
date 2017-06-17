@@ -57,7 +57,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 	/**** Variables ****/
 	private int state = RUNNING;// the flag that triggers different behaviors in the program
 	private boolean muted = false;
-	public static final Player joe = new Player(); // The man, the myth, the legend himself, Joe
+	public static Player joe = new Player(); // The man, the myth, the legend himself, Joe
 	private LinkedList theLevel;
 	private MonsterSet enemies = new MonsterSet();
 	GraphicsConsole gc = new GraphicsConsole();
@@ -70,10 +70,10 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 	
 	BufferedImage bg;
 	BufferedImage hpHeart;
+	BufferedImage exp;
 
 	public static void main(String[] args) {
-		new MainGame().startGame();
-		
+		new MainGame();
 	}
 
 	public MainGame() {
@@ -86,11 +86,47 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		// Sets up the game panel
 		JPanel game = new JPanel();
 
+		
+		game.setDoubleBuffered(true);
+		add(game);
+		setVisible(false);
+		setState(PAUSED);
+		
+		gc.setFont(new Font("Baskerville Old Face", Font.BOLD, 24));
+		gc.addKeyListener(this);
+		gc.setVisible(false);
+		
+		
+		spagoogi.addToPlayList(new File("music/StabCrabV2Orchestra.mp3"));
+		spagoogi.skipForward();
+		spagoogi.play();
+		
+		try {
+			bg = ImageIO.read(new File("images/bg.png"));
+			hpHeart = ImageIO.read(new File("gui/heart.png"));
+			exp = ImageIO.read(new File("gui/exp.png"));
+
+		} catch (IOException e) {
+			// catch
+		}
+		
+		setup();
+		animate();
+		
+		//TODO reimplement when GameMenu is remade
+		//new GameMenu(this);
+		gc.setVisible(true);
+		this.state = 0;
+		startGame();
+	}
+	
+	public void setup() {
+		
+		joe = new Player();
 		joe.x = gc.getWidth()/2;
 		joe.y = 100;
 		joe.width = 42;
 		joe.height = 70;
-		
 		theLevel = new LinkedList();
 		
 		theLevel.add(new LinkedEntity(0, 332, 755, 80, Color.BLACK, 's', floor));
@@ -117,39 +153,14 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		theLevel.add(new LinkedEntity(6000, 332, 755, 80, Color.BLACK, 's', floor));
 		theLevel.add(new LinkedEntity(6755, 332, 755, 80, Color.BLACK, 's', floor));
 		
-		game.setDoubleBuffered(true);
-		add(game);
-		setVisible(false);
-		setState(PAUSED);
 		
-		gc.setFont(new Font("Baskerville Old Face", Font.BOLD, 24));
-		gc.addKeyListener(this);
-		gc.setVisible(false);
+		enemies = new MonsterSet();
+		enemies.add(new Monster(850, 100, 20, 30, 3, 2, 0.5, 50, Monster.LgWANDER, "skeleton"));
+		enemies.add(new Monster(1500, 90, 40, 60, 12, 5, 0.8, 100, Monster.AgWANDER, "skeleton"));
 		
-		enemies.add(new Monster(850, 100, 20, 30, 3, 2, 0.5, Monster.LgWANDER, "skeleton"));
-		enemies.add(new Monster(1500, 90, 40, 60, 12, 5, 0.8, Monster.AgWANDER, "skeleton"));
+		enemies.add(new Monster(475, 100, 40, 60, 3, 2, 0.5, 50, Monster.WANDER, "skeleton")).setAssociatedTerrain(fetch(theLevel.getHead(), 0)); //Test monster
 		
-		enemies.add(new Monster(475, 100, 40, 60, 3, 2, 0.5, Monster.WANDER, "skeleton")).setAssociatedTerrain(fetch(theLevel.getHead(), 0)); //Test monster
-		
-		spagoogi.addToPlayList(new File("music/StabCrabV2Orchestra.mp3"));
-		spagoogi.skipForward();
-		spagoogi.play();
-		
-		try {
-			bg = ImageIO.read(new File("images/bg.png"));
-			hpHeart = ImageIO.read(new File("gui/heart.png"));
-
-		} catch (IOException e) {
-			// catch
-		}
-		
-		animate();
-		
-		//TODO reimplement when GameMenu is remade
-		//new GameMenu(this);
-		gc.setVisible(true);
-		this.state = 0;
-		startGame();
+		this.setState(RUNNING);
 	}
 	
 	public void startGame() {
@@ -179,7 +190,8 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 			//gc.fillRect((int) joe.getX(), (int) joe.getY(), (int) joe.getWidth(), (int) joe.getHeight());
 			
 			if (this.state == GAME_OVER) {
-				gc.drawString("GAME OVER", gc.getWidth()/2 - 50, gc.getHeight()/2);
+				gc.drawString("GAME OVER", gc.getWidth()/2 - 50, gc.getHeight()/2 - 25);
+				gc.drawString("PRESS R TO RESTART", gc.getWidth()/2 - 110, gc.getHeight()/2 + 25);
 			}
 			
 			/*//Outdated Debug Code
@@ -190,9 +202,23 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 			
 			//GUI elements
 			gc.drawImage(hpHeart, 10, 10, 50, 50);
+			gc.drawImage(exp, 70, 10, 50, 50);
 			
 			gc.setColor(Color.BLACK);
-			gc.drawString(String.valueOf(joe.getHealth()), 22, 40);
+			if (joe.getHealth() < 10) {
+				gc.drawString(String.valueOf(joe.getHealth()), 29, 40);
+			}
+			else {
+				gc.drawString(String.valueOf(joe.getHealth()), 22, 40);
+			}
+			
+			if (joe.getEXP() < 10) {
+				gc.drawString(String.valueOf(joe.getEXP()), 89, 40);
+			}
+			else {
+				gc.drawString(String.valueOf(joe.getEXP()), 82, 40);
+			}
+			
 		}
 		
 		
@@ -414,6 +440,10 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 						enemy.setFrame(0);
 						enemy.setAnimState(Monster.DEAD);
 						enemy.setXSpeed(0);
+						joe.setEXP(joe.getEXP() + enemy.getExpGain());
+						if (joe.getEXP() >= 100) {
+							joe.levelUp();
+						}
 					}
 					else {
 						enemy.setDamageFrames(5);
@@ -421,6 +451,9 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 				}
 				else {
 					joe.damage(enemy.getAttack());
+					if (joe.getHealth() < 0) {
+						joe.setHealth(0);
+					}
 					joe.setDamageFrames(5);
 				}
 				enemy.damageCD = 70;
@@ -711,6 +744,10 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 				spagoogi.play();
 			}
 				
+		}
+		
+		if (key == KeyEvent.VK_R && this.state == GAME_OVER) {
+			setup();
 		}
 	}// end keyPressed
 

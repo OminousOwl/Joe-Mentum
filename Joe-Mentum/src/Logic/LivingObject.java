@@ -270,6 +270,42 @@ public class LivingObject extends Entity {
 
 		}
 	}
+	
+	/*
+	Name: overflowProtect
+	Description: Prevents frame counters from exceeding int limitations
+	Parameters: One Integer
+	Return Value/Type: One Integer
+	Dependencies: N/A
+	Exceptions: N/A
+	Date Created: June 16th, 2017
+	Date Modified: June 16th, 2017
+	 */
+	public int overflowProtect(int frame) {
+		if (frame == Integer.MAX_VALUE) {
+			return Integer.MIN_VALUE + 1;
+		}
+		else if (frame == Integer.MIN_VALUE) {
+			return Integer.MAX_VALUE - 1;
+		}
+		else {
+			return frame;
+		}
+	}
+	
+	/*
+	 Name: randNumber
+	 Description: Generates a random number
+	 Parameters: Two Integers
+	 Return Value/Type: A random number within the range of the parameters
+	 Dependencies: Java.Math
+	 Creation Date: October 23rd, 2015
+	 Modification Date: April 13th, 2017
+	 Throws: None
+	*/
+	public static int randNumber(int min, int max) {
+		return min + (int) (Math.random() * ((max - min) + 1));
+	}
 
 	
 }

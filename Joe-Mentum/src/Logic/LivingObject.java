@@ -164,6 +164,7 @@ public class LivingObject extends Entity {
 	public int getAnimState() { return this.animState; }
 	public void setAnimState(int animState) { this.animState = animState;}
 	
+	
 	public BufferedImage flipHorizontal(BufferedImage source) {
 		if (!this.direction) {
 			AffineTransform at = AffineTransform.getScaleInstance(-1, 1);

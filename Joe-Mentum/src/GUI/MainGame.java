@@ -157,10 +157,13 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		
 		
 		enemies = new MonsterSet();
+		//X, Y, Width, Height, Attack Damage, Health, Speed, EXP Reward, AI State, Sprite Type
+		enemies.add(new Monster(475, 100, 40, 60, 3, 2, 0.5, 50, Monster.WANDER, "skeleton")).setAssociatedTerrain(fetch(theLevel.getHead(), 0));
 		enemies.add(new Monster(850, 100, 20, 30, 3, 2, 0.5, 50, Monster.LgWANDER, "skeleton"));
-		enemies.add(new Monster(1500, 90, 40, 60, 12, 5, 0.8, 100, Monster.AgWANDER, "skeleton"));
+		enemies.add(new Monster(1500, 90, 40, 60, 12, 5, 0.8, 100, Monster.AgWANDER, "skeleton")); //OP one
 		
-		enemies.add(new Monster(475, 100, 40, 60, 3, 2, 0.5, 50, Monster.WANDER, "skeleton")).setAssociatedTerrain(fetch(theLevel.getHead(), 0)); //Test monster
+		enemies.add(new Monster(900, 100, 65, 65, 3, 2, 0.5, 25, Monster.BIRD, "bird"));
+		enemies.add(new Monster(925, 100, 65, 65, 3, 2, 0.5, 25, Monster.BIRD, "bird")).offsetBird(15);
 		
 		this.setState(RUNNING);
 	}
@@ -322,7 +325,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 	 Dependencies: Logic.LivingObject 
 	 Exceptions: N/A 
 	 Date Created: May 29th, 2017 (Created in another class) 
-	 Date Modified: May 29th, 2017
+	 Date Modified: June 17th, 2017
 	 */
 	public void gravity(Monster e) {
 		if (e == null)
@@ -330,6 +333,11 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		e.setYSpeed(e.getYSpeed() + LivingObject.GRAV);
 		e.y += e.getYSpeed();
 		gravity(e.getNext());
+		
+		if (e.y > 1500) { //Prevents monsters from falling outside integer range
+			e.y = 1500;
+			e.setYSpeed(0);
+		}
 	}
 
 	/*
@@ -420,9 +428,11 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 				return;
 			}
 			else {
-				checkCollision(a, b);
-				if (a.associatedTerrain == null && a.intersects(b)) {
-					a.setAssociatedTerrain(b);
+				if (a.getEnemyType() != "bird") {
+					checkCollision(a, b);
+					if (a.associatedTerrain == null && a.intersects(b)) {
+						a.setAssociatedTerrain(b);
+					}
 				}
 				checkLevelCollision(a, b.next);
 			}

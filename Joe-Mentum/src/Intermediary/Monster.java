@@ -66,8 +66,13 @@ public class Monster extends LivingObject {
 		
 		for (int i = 0; i < filepaths.length; i++) {
 			filepaths[i] = "SpriteSheets/";
-			if (enemyType == "skeleton")
+			if (enemyType == "skeleton") {
 				filepaths[i] += "Skeleton/";
+			}
+			else if (enemyType == "bird") {
+				filepaths[i] += "Bird/";
+			}
+				
 		}
 		
 		filepaths[0] += "Idle";
@@ -84,6 +89,9 @@ public class Monster extends LivingObject {
 				sprites[1] = new Spritesheet(filepaths[1], 286/13, 33);
 				sprites[2] = new Spritesheet(filepaths[2], 774/18, 37);
 				sprites[3] = new Spritesheet(filepaths[3], 495/15, 32);
+		}
+		else if (enemyType == "bird") {
+			sprites[0] = sprites[1] = sprites[2] = sprites[3] = new Spritesheet(filepaths[1], 3072/6, 512);
 		}
 		if (enemyType != null)
 			setCurrentFrame(sprites[0].getSprite(0));
@@ -179,9 +187,11 @@ public class Monster extends LivingObject {
 				moveSide(direction);
 				break;
 			case BIRD:
+				direction = false;
 				this.y = this.getDefaultY() + (int)(100 * Math.sin(((2*Math.PI * sineValue)/(150))));
 				sineValue--;
-				moveSide(false);
+				if (this.x < 750 && this.x > -750)
+					moveSide(direction); //Prevents birds from rushing you down until you are near their location
 				setYSpeed(-0.2);
 				break;
 			case SADBIRD: //Screwed up old bird code that we kept because it's funny
@@ -321,6 +331,20 @@ public class Monster extends LivingObject {
 
 	public void setExpGain(int expGain) {
 		this.expGain = expGain;
+	}
+	
+	/*
+	Name: offsetBird
+	Description: Offsets a bird's sine value to allow for birds in non-linear groups
+	Parameters: One LinkedEntity
+	Return Value/Type: N/A
+	Dependencies: Logic.Entity
+	Exceptions: N/A
+	Date Created: June 17th, 2017
+	Date Modified: June 17th, 2017
+	 */
+	public void offsetBird(int offsetFactor) {
+		sineValue += offsetFactor;
 	}
 	
 }

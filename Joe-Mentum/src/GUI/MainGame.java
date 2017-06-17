@@ -5,9 +5,6 @@
  *@Description: The class used to handle the actual game physics and gameplay
  */
 
-//TODO Known bugs:
-
-
 package GUI;
 
 import java.awt.Color;
@@ -60,6 +57,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 	public static Player joe = new Player(); // The man, the myth, the legend himself, Joe
 	private LinkedList theLevel;
 	private MonsterSet enemies = new MonsterSet();
+	private DialogQueue narrative;
 	GraphicsConsole gc = new GraphicsConsole();
 	MP3Player spagoogi = new MP3Player();
 	
@@ -165,6 +163,10 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		enemies.add(new Monster(900, 100, 65, 65, 3, 2, 0.5, 25, Monster.BIRD, "bird"));
 		enemies.add(new Monster(925, 100, 65, 65, 3, 2, 0.5, 25, Monster.BIRD, "bird")).offsetBird(15);
 		
+		narrative = new DialogQueue();
+		narrative.enqueue(new DialogBox(500, "Test Message", "Joe", 300));
+		narrative.enqueue(new DialogBox(500, "Same place, different message", "Joe", 300));
+		
 		this.setState(RUNNING);
 	}
 	
@@ -226,6 +228,15 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 			}
 			
 			gc.drawString(String.valueOf(joe.getLevel()), 28, 40);
+			
+			if (narrative.getHead() != null) {
+				if (narrative.getHead().isQueued() && narrative.getHead().getDisplayTime() > 0) {
+					gc.drawImage(narrative.getHead().frame, 10, gc.getHeight() - gc.getHeight()/4 - 10, gc.getWidth() - 20, gc.getHeight()/6);
+					gc.drawString(narrative.getHead().getSpeaker() + ":", 37, gc.getHeight() - gc.getHeight()/6 - 15);
+					gc.drawString(narrative.getHead().getText(), 35, gc.getHeight() - gc.getHeight()/6 + 10);
+				}
+			}
+			
 			
 		}
 		
@@ -294,8 +305,10 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		manageCD(enemies.getHead());
 		scroll(joe, theLevel.getHead());
 		scroll(joe, enemies.getHead());
+		scroll(joe, narrative.getHead());
 		joe.x = gc.getWidth()/2;
 		deathCheck(joe);
+		dialogTriggerCheck(joe);
 		playerAnimReset(joe);
 		
 		//Always keep animate() as the last function
@@ -580,6 +593,26 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 	}
 	
 	/*
+	 Name: scroll 
+	 Description: Scrolls all invisible narrative points in relation to Joe's current location, used to determine triggers
+	 Parameters: One Player and One DialogBox
+	 Return Value/Type: N/A 
+	 Dependencies: Logic.Entity 
+	 Exceptions: N/A 
+	 Date Created: June 17th, 2017
+	 Date Modified: June 17th, 2017
+	 */
+	public void scroll(Player joe, DialogBox a) {
+		if (a == null) {
+			return;
+		}
+		
+		//System.out.println(a.getText());
+		a.x -= joe.x - gc.getWidth()/2;
+		scroll(joe, a.next);
+	}
+	
+	/*
 	 Name: platformScroll 
 	 Description: Handles vertically moving platforms
 	 Parameters: One LinkedEntity
@@ -618,6 +651,53 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		if (joe.y >= gc.getHeight() + gc.getHeight()/6 || joe.getHealth() <= 0) {
 			this.setState(GAME_OVER);
 		}
+	}
+	
+	/*
+	 Name: dialogTriggerCheck 
+	 Description: Checks to see if the next narrative event must be triggered
+	 Parameters: One Player
+	 Return Value/Type: N/A 
+	 Dependencies: Logic.Entity 
+	 Exceptions: N/A 
+	 Date Created: June 17th, 2017
+	 Date Modified: June 17th, 2017
+	 */
+	public void dialogTriggerCheck(Player joe) {
+		if (narrative.getHead() != null) {
+			if (joe.x > narrative.getHead().getX() && !narrative.getHead().isQueued()) {
+				narrative.getHead().setQueued(true);
+			}
+			else if (narrative.getHead().isQueued() && narrative.getHead().getDisplayTime() > 0) {
+				narrative.getHead().setDisplayTime(narrative.getHead().getDisplayTime() - 1);
+				if (narrative.getHead().getNext() != null)
+					dialogTriggerCheck(joe, narrative.getHead().getNext());
+				if (narrative.getHead().getDisplayTime() == 0) {
+					System.out.println("Dialog End");
+					narrative.dequeue();
+				}
+			}
+		}
+	}
+	
+	/*
+	 Name: dialogTriggerCheck 
+	 Description: Checks to see if a non-queued narrative event must be triggered after the current event
+	 Parameters: One Player and one DialogBox
+	 Return Value/Type: N/A 
+	 Dependencies: Logic.Entity 
+	 Exceptions: N/A 
+	 Date Created: June 17th, 2017
+	 Date Modified: June 17th, 2017
+	 */
+	public void dialogTriggerCheck(Player joe, DialogBox notFirst) {
+		if (notFirst == null) {
+			return;
+		}
+		if (joe.x > notFirst.getX() && !notFirst.isQueued()) {
+			notFirst.setQueued(true);
+		}
+		dialogTriggerCheck(joe, notFirst.next);
 	}
 	
 	/*
@@ -661,9 +741,26 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		return fetch(e.next, depth--);
 	}
 	
+	/*
+	Name: boxCount
+	Description: Returns the number of dialog boxes in a dialogQueue. Used as an internal debugging tool
+	Parameters: One DialogBox
+	Return Value/Type: One Integer
+	Dependencies: Logic.Entity
+	Exceptions: N/A
+	Date Created: June 17th, 2017
+	Date Modified: June 17th, 2017
+	 */
 	public void setState(int newState) {
 		state = newState;
 	}// end setState
+	
+	public int boxCount(DialogBox a) {
+		if (a == null) {
+			return 0;
+		}
+		return 1 + boxCount(a.next);
+	}
 
 	public void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand().equals("Back")) {

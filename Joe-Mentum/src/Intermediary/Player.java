@@ -24,6 +24,7 @@ public class Player extends LivingObject {
 	private ItemSet passives = new ItemSet();
 	private Item active; //We don't need a passive slot as it is included in LivingObject
 	private int maxHealth = 10;
+	private boolean grabbing = false;
 	
 	public final static int VERT = 2;
 	public final static int LEDGE = 3;
@@ -193,6 +194,18 @@ public class Player extends LivingObject {
 
 	public void setPassives(ItemSet passives) {
 		this.passives = passives;
+	}
+
+
+
+	public boolean isGrabbing() {
+		return grabbing;
+	}
+
+
+
+	public void setGrabbing(boolean grabbing) {
+		this.grabbing = grabbing;
 	}
 	
 }

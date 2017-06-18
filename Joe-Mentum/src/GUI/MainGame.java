@@ -158,13 +158,14 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		
 		
 		enemies = new MonsterSet();
-		//X, Y, Width, Height, Attack Damage, Health, Speed, EXP Reward, AI State, Sprite Type
+		//X, Y, Width, Height, Health, Attack Damage, Speed, EXP Reward, AI State, Sprite Type
 		enemies.add(new Monster(475, 100, 40, 60, 3, 2, 0.5, 50, Monster.WANDER, "skeleton")).setAssociatedTerrain(fetch(theLevel.getHead(), 0));
 		enemies.add(new Monster(850, 100, 20, 30, 3, 2, 0.5, 50, Monster.LgWANDER, "skeleton"));
 		enemies.add(new Monster(1500, 90, 40, 60, 12, 5, 0.8, 100, Monster.AgWANDER, "skeleton")); //OP one
 		
-		enemies.add(new Monster(900, 100, 65, 65, 3, 2, 0.5, 25, Monster.BIRD, "bird"));
-		enemies.add(new Monster(925, 100, 65, 65, 3, 2, 0.5, 25, Monster.BIRD, "bird")).offsetBird(15);
+		enemies.add(new Monster(900, 100, 65, 65, 3, 1, 0.5, 25, Monster.BIRD, "bird"));
+		enemies.add(new Monster(925, 100, 65, 65, 3, 1, 0.5, 25, Monster.BIRD, "bird")).offsetBird(15);
+		enemies.add(new Monster(950, 100, 65, 65, 3, 1, 0.5, 25, Monster.BIRD, "bird")).offsetBird(30);
 		
 		narrative = new DialogQueue();
 		narrative.enqueue(new DialogBox(450, "Where am I? How did I get here?", "Joe", 300));
@@ -319,6 +320,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		checkLevelCollision(joe, theLevel.getHead());
 		checkLevelCollision(enemies.getHead(), theLevel.getHead());
 		checkEnemyCollision(joe, enemies.getHead());
+		checkItemCollision(joe, levelItems.getHead());
 		manageEnemyBehavior(enemies.getHead());
 		manageCD(theLevel.getHead());
 		manageCD(enemies.getHead());
@@ -502,9 +504,10 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 							System.out.println(enemy.x + ", " + enemy.y);
 							enemy.getDrop().x = enemy.x;
 							enemy.getDrop().y = enemy.y;
-							enemy.getDrop().setItemGenID(levelItems.itemGenIDCounter);
+							levelItems.add(enemy.getDrop(), enemy.getDrop().x, enemy.getDrop().y).setItemGenID(levelItems.itemGenIDCounter);
+							System.out.println(levelItems.itemGenIDCounter);
 							levelItems.itemGenIDCounter++;
-							levelItems.add(enemy.getDrop(), enemy.getDrop().x, enemy.getDrop().y);
+							System.out.println(levelItems.itemGenIDCounter);
 						}
 					}
 					else {
@@ -523,6 +526,22 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 			}
 		}
 		checkEnemyCollision(joe, enemy.next);
+	}
+	
+	public void checkItemCollision(Player joe, Item i) {
+		if (i == null)
+			return;
+		if (joe.intersects(i) && joe.isGrabbing()) {
+			if (i.isActive()) {
+				joe.setActive(i);
+			}
+			else {
+				joe.getPassives().add(i);
+			}
+			levelItems.remove(levelItems.getHead(), i.getItemGenID());
+			joe.setGrabbing(false);
+		}
+		checkItemCollision(joe, i.next);
 	}
 	
 	/*
@@ -896,7 +915,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 
 
 		if (key == KeyEvent.VK_E) {// picks up an item
-			joe.pickupItem();
+			joe.setGrabbing(true);
 		}
 
 		if (key == KeyEvent.VK_P) {// pauses the game
@@ -933,6 +952,9 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 			if (joe.getYSpeed() == 0) {
 				joe.setAnimState(Player.IDLE);
 			}
+		}
+		else if (key == KeyEvent.VK_E) {
+			joe.setGrabbing(false);
 		}
 	}
 

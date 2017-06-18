@@ -15,7 +15,7 @@ public class Item extends Entity {
 	
 	
 	/**** Variables ****/
-	private boolean isActive;//the flag to determine the type of item (consumable/equipment)
+	private boolean active = false;//the flag to determine the type of item (consumable/equipment)
 	private int type;//the reference to the list of item effects
 	private String description;//a description of an item's effect
 	
@@ -28,16 +28,29 @@ public class Item extends Entity {
 	
 	public Item (int itemType) {
 		setType(itemType);
+		this.width = 30;
+		this.height = 30;
 	}
 	
 	public Item (int itemType, int x, int y) {
 		setType(itemType);
 		this.x = x;
 		this.y = y;
+		this.width = 30;
+		this.height = 30;
+	}
+	
+	public Item (int itemType, int x, int y, Item next) {
+		setType(itemType);
+		this.x = x;
+		this.y = y;
+		this.width = 30;
+		this.height = 30;
+		this.next = next;
 	}
 	
 	public void use() {
-		if (isActive && cdRemaining == 0) {
+		if (active && cdRemaining == 0) {
 			
 		}
 	}
@@ -52,7 +65,6 @@ public class Item extends Entity {
 
 	public void setNext(Item node) {
 		this.next = node;
-		
 	}
 
 	public int getItemGenID() {
@@ -62,4 +74,14 @@ public class Item extends Entity {
 	public void setItemGenID(int itemGenID) {
 		this.itemGenID = itemGenID;
 	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+
+
 }

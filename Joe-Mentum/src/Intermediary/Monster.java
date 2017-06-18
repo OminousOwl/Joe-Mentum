@@ -100,7 +100,7 @@ public class Monster extends LivingObject {
 		
 		//Assigns random item drops
 		int itemChance = randNumber(1, 100);
-		if (itemChance < expGain) {
+		if (itemChance < 101) { //TODO RESET with expGain
 			setDrop(new Item(randNumber(1, 2))); //TODO update with actual item values
 		}
 		

@@ -21,6 +21,7 @@ public class Player extends LivingObject {
 
 	private int EXP = 0;
 	private int level = 1;
+	private ItemSet passives = new ItemSet();
 	private Item active; //We don't need a passive slot as it is included in LivingObject
 	private int maxHealth = 10;
 	
@@ -181,5 +182,17 @@ public class Player extends LivingObject {
 	public void setLevel(int level) { this.level = level;}
 	public Item getActive() { return active; }
 	public void setActive(Item active) { this.active = active; }
+
+
+
+	public ItemSet getPassives() {
+		return passives;
+	}
+
+
+
+	public void setPassives(ItemSet passives) {
+		this.passives = passives;
+	}
 	
 }

@@ -23,12 +23,14 @@ import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import Intermediary.ItemSet;
 import Intermediary.LinkedEntity;
 import Intermediary.LinkedList;
 import Intermediary.Monster;
 import Intermediary.MonsterSet;
 import Intermediary.Player;
 import Logic.Entity;
+import Logic.Item;
 import Logic.LivingObject;
 import hsa2.GraphicsConsole;
 import jaco.mp3.player.MP3Player;
@@ -58,6 +60,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 	private LinkedList theLevel;
 	private MonsterSet enemies = new MonsterSet();
 	private DialogQueue narrative;
+	private ItemSet levelItems;
 	GraphicsConsole gc = new GraphicsConsole();
 	MP3Player spagoogi = new MP3Player();
 	
@@ -169,6 +172,8 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		narrative.enqueue(new DialogBox(450, "your home again.", "Disembodied Voice", 300));
 		narrative.enqueue(new DialogBox(450, "lol ok", "Joe", 300));
 		
+		levelItems = new ItemSet();
+		
 		this.setState(RUNNING);
 	}
 	
@@ -193,10 +198,12 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 			
 			paintLevelComponent(theLevel.getHead());
 			paintEnemy(enemies.getHead());
+			paintItems(levelItems.getHead());
 			
 			gc.setColor(Color.RED);
 			gc.drawImage(joe.getCurrentFrame(), (int) joe.getX(), (int) joe.getY(), (int) joe.getWidth(), (int) joe.getHeight());
 			//gc.fillRect((int) joe.getX(), (int) joe.getY(), (int) joe.getWidth(), (int) joe.getHeight());
+			
 			
 			if (this.state == GAME_OVER) {
 				gc.drawString("GAME OVER", gc.getWidth()/2 - 50, gc.getHeight()/2 - 25);
@@ -245,6 +252,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		
 	}
 	
+	
 	public void paintLevelComponent (LinkedEntity activeEntity) {
 		if (activeEntity == null) {
 			return;
@@ -282,6 +290,15 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 			paintEnemy(enemy.next);
 		}
 	}
+	
+	
+	public void paintItems(Item nextItem) {
+		if (nextItem == null)
+			return;
+		gc.setColor(Color.YELLOW);
+		gc.fillRect(nextItem.x, nextItem.y, 30, 30);
+		paintItems(nextItem.next);
+	}
 
 	/*
 	 Name: run 
@@ -308,6 +325,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		scroll(joe, theLevel.getHead());
 		scroll(joe, enemies.getHead());
 		scroll(joe, narrative.getHead());
+		scroll(joe, levelItems.getHead());
 		joe.x = gc.getWidth()/2;
 		deathCheck(joe);
 		dialogTriggerCheck(joe);
@@ -464,21 +482,36 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 			if (joe.intersects(enemy) && enemy.damageCD == 0) {
 				if (joe.getYSpeed() >= 0.4) {
 					enemy.damage(joe.getAttack());
-					System.out.println("Enemy got rekt");
 					joe.setYSpeed(-6.0);
+					
+					//Handles enemy death
 					if (enemy.getHealth() <= 0) {
 						enemy.setFrame(0);
 						enemy.setAnimState(Monster.DEAD);
 						enemy.setXSpeed(0);
+						
+						//Handle EXP rewards & level up
 						joe.setEXP(joe.getEXP() + enemy.getExpGain());
 						if (joe.getEXP() >= 100) {
 							joe.levelUp();
+						}
+						
+						//Drop items
+						if (enemy.getDrop() != null) {
+							System.out.println("Item dropped");
+							System.out.println(enemy.x + ", " + enemy.y);
+							enemy.getDrop().x = enemy.x;
+							enemy.getDrop().y = enemy.y;
+							enemy.getDrop().setItemGenID(levelItems.itemGenIDCounter);
+							levelItems.itemGenIDCounter++;
+							levelItems.add(enemy.getDrop(), enemy.getDrop().x, enemy.getDrop().y);
 						}
 					}
 					else {
 						enemy.setDamageFrames(5);
 					}
 				}
+				//Handles enemy hit
 				else {
 					joe.damage(enemy.getAttack());
 					if (joe.getHealth() < 0) {
@@ -605,6 +638,26 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 	 Date Modified: June 17th, 2017
 	 */
 	public void scroll(Player joe, DialogBox a) {
+		if (a == null) {
+			return;
+		}
+		
+		//System.out.println(a.getText());
+		a.x -= joe.x - gc.getWidth()/2;
+		scroll(joe, a.next);
+	}
+	
+	/*
+	 Name: scroll 
+	 Description: Scrolls all invisible narrative points in relation to Joe's current location, used to determine triggers
+	 Parameters: One Player and One DialogBox
+	 Return Value/Type: N/A 
+	 Dependencies: Logic.Entity 
+	 Exceptions: N/A 
+	 Date Created: June 17th, 2017
+	 Date Modified: June 17th, 2017
+	 */
+	public void scroll(Player joe, Item a) {
 		if (a == null) {
 			return;
 		}

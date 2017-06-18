@@ -101,7 +101,7 @@ public class Monster extends LivingObject {
 		//Assigns random item drops
 		int itemChance = randNumber(1, 100);
 		if (itemChance < expGain) {
-			drop = new Item(randNumber(1, 5)); //TODO update with actual item values
+			setDrop(new Item(randNumber(1, 2))); //TODO update with actual item values
 		}
 		
 		Timer timer = new Timer(100, new ActionListener() {
@@ -339,6 +339,14 @@ public class Monster extends LivingObject {
 
 	public void setExpGain(int expGain) {
 		this.expGain = expGain;
+	}
+	
+	public Item getDrop() {
+		return drop;
+	}
+
+	public void setDrop(Item drop) {
+		this.drop = drop;
 	}
 	
 	/*

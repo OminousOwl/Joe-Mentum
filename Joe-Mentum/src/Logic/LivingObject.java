@@ -33,7 +33,6 @@ public class LivingObject extends Entity {
 	private int attack;
 	private double maxSpeed;
 	private boolean attackState;
-	private Item item;
 	
 	protected boolean isJoe = false;
 	

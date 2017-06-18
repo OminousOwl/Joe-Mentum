@@ -15,6 +15,9 @@ public class Item extends Entity {
 	private int cooldown;
 	private int cdRemaining;
 	
+	public Item (int itemType) {
+		
+	}
 	
 	public void use() {
 		if (isActive && cdRemaining == 0) {

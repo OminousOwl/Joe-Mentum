@@ -824,7 +824,13 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		}
 
 		if (key == KeyEvent.VK_Q) {//
-			joe.pickupItem();
+			if (this.state == GAME_OVER) {
+				this.dispose();
+			}
+			else if (joe.getActive() != null) {
+				joe.getActive().use();
+			}
+			
 		}
 		
 		if (key == KeyEvent.VK_S) {// Player fastfalls when the 's' key is pressed
@@ -837,7 +843,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 
 
 		if (key == KeyEvent.VK_E) {// picks up an item
-			// use item
+			joe.pickupItem();
 		}
 
 		if (key == KeyEvent.VK_P) {// pauses the game

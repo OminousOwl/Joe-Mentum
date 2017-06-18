@@ -13,6 +13,7 @@ import java.util.Random;
 
 import javax.swing.Timer;
 
+import Logic.Item;
 import Logic.LivingObject;
 import anim.Spritesheet;
 
@@ -44,6 +45,7 @@ public class Monster extends LivingObject {
 	private boolean deathAnimFlag = false;
 	
 	private int expGain;
+	private Item drop;
 	
 	private int sineValue = 0;
 	
@@ -95,6 +97,12 @@ public class Monster extends LivingObject {
 		}
 		if (enemyType != null)
 			setCurrentFrame(sprites[0].getSprite(0));
+		
+		//Assigns random item drops
+		int itemChance = randNumber(1, 100);
+		if (itemChance < expGain) {
+			drop = new Item(randNumber(1, 5)); //TODO update with actual item values
+		}
 		
 		Timer timer = new Timer(100, new ActionListener() {
 			

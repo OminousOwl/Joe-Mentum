@@ -309,7 +309,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 	 Dependencies: Joe (Entity.Player object(
 	 Exceptions: N/A 
 	 Date Created: May 30th, 2017
-	 Date Modified: June 11th, 2017
+	 Date Modified: June 19th, 2017
 	 */
 	public void run() {
 		gravity(joe);
@@ -324,6 +324,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		manageEnemyBehavior(enemies.getHead());
 		manageCD(theLevel.getHead());
 		manageCD(enemies.getHead());
+		manageItemCD();
 		scroll(joe, theLevel.getHead());
 		scroll(joe, enemies.getHead());
 		scroll(joe, narrative.getHead());
@@ -500,14 +501,11 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 						
 						//Drop items
 						if (enemy.getDrop() != null) {
-							System.out.println("Item dropped");
 							System.out.println(enemy.x + ", " + enemy.y);
 							enemy.getDrop().x = enemy.x;
 							enemy.getDrop().y = enemy.y;
 							levelItems.add(enemy.getDrop(), enemy.getDrop().x, enemy.getDrop().y).setItemGenID(levelItems.itemGenIDCounter);
-							System.out.println(levelItems.itemGenIDCounter);
 							levelItems.itemGenIDCounter++;
-							System.out.println(levelItems.itemGenIDCounter);
 						}
 					}
 					else {
@@ -532,11 +530,32 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		if (i == null)
 			return;
 		if (joe.intersects(i) && joe.isGrabbing()) {
+			System.out.println(i.getType());
 			if (i.isActive()) {
 				joe.setActive(i);
+				if (i.getType() == Item.HEALTH_POTION) {
+					System.out.println("Got health pot");
+				}
+				else if (i.getType() == Item.WINGS) {
+					System.out.println("Got wings");
+				}
+					
 			}
 			else {
 				joe.getPassives().add(i);
+				if (i.getType() == Item.SWORD) {
+					System.out.println("Got sword");
+					joe.setAttack(joe.getAttack() + 1);
+				}
+				else if (i.getType() == Item.ARMOUR) {
+					System.out.println("Got armour");
+					joe.setMaxHealth(joe.getMaxHealth() + 2);
+					joe.damage(-2);
+				}
+				else if (i.getType() == Item.BOOTS) {
+					System.out.println("Got boots");
+					joe.setSpeed(joe.getSpeed() + 0.1);
+				}
 			}
 			levelItems.remove(levelItems.getHead(), i.getItemGenID());
 			joe.setGrabbing(false);
@@ -585,6 +604,25 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 			a.damageCD--;
 		}
 		manageCD(a.next);
+	}
+	
+	/*
+	 Name: manageItemCD 
+	 Description: Manages item cooldowns, preventing Joe from spamming his actives
+	 Parameters: None
+	 Return Value/Type: N/A 
+	 Dependencies: Logic.Entity 
+	 Exceptions: N/A 
+	 Date Created: June 19th, 2017
+	 Date Modified: June 19th, 2017
+	 */
+	public void manageItemCD () {
+		if (joe.getActive() == null) {
+			return;
+		}
+		else if (joe.getActive().cdRemaining > 0) {
+			joe.getActive().cdRemaining--;
+		}
 	}
 	
 	/*
@@ -900,7 +938,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 				this.dispose();
 			}
 			else if (joe.getActive() != null) {
-				joe.getActive().use();
+				joe.getActive().use(joe);
 			}
 			
 		}

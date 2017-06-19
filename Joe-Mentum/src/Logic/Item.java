@@ -1,4 +1,13 @@
 package Logic;
+
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+
+import Intermediary.Player;
+
 /*
  *Project: ICS4U - Final Project - Joe-Mentum
  *Author: Olivier J Hébert, Quinn Fisher
@@ -8,19 +17,21 @@ package Logic;
  */
 public class Item extends Entity {
 	
-	public static final int SWORD = 0;
-	public static final int ARMOUR = 1;
-	public static final int BOOTS = 2;
-	public static final int HEALTH_POTION = 3;
+	public static final int SWORD = 1;
+	public static final int ARMOUR = 2;
+	public static final int BOOTS = 3;
+	public static final int HEALTH_POTION = 4;
+	public static final int WINGS = 5;
 	
 	
 	/**** Variables ****/
 	private boolean active = false;//the flag to determine the type of item (consumable/equipment)
 	private int type;//the reference to the list of item effects
 	private String description;//a description of an item's effect
+	private BufferedImage icon;
 	
 	private int cooldown;
-	private int cdRemaining;
+	public int cdRemaining;
 	
 	private int itemGenID;
 	
@@ -49,8 +60,32 @@ public class Item extends Entity {
 		this.next = next;
 	}
 	
-	public void use() {
+	/*
+	Name: moveSide
+	Description: Activates an active item and puts it on cooldown
+	Parameters: One Player
+	Return Value/Type: N/A
+	Dependencies: N/A
+	Exceptions: N/A
+	Date Created: June 19th, 2017
+	Date Modified: June 19th, 2017
+	 */
+	public void use(Player joe) {
 		if (active && cdRemaining == 0) {
+			if (this.getType() == Item.HEALTH_POTION) {
+				joe.damage(-3);
+				if (joe.getHealth() > joe.getMaxHealth())
+					joe.setHealth(joe.getMaxHealth());
+			}
+			
+			else if (this.getType() == Item.WINGS) {
+				joe.setySpeed(0);
+				joe.setAnimState(LivingObject.IDLE);
+				joe.jump();
+				joe.setAnimState(Player.VERT);
+			}
+			
+			this.cdRemaining = cooldown;
 			
 		}
 	}
@@ -81,6 +116,37 @@ public class Item extends Entity {
 
 	public void setActive(boolean active) {
 		this.active = active;
+	}
+
+	public void setCooldown(int cd) {
+		this.cooldown = cd;
+	}
+	
+	//June 19
+	public void defineSprite() {
+		try {
+			String filepath = "items/";
+			if (this.type == SWORD) {
+				filepath += "sword.png";
+			}
+			else if (this.type == ARMOUR) {
+				filepath += "armour.png";
+			}
+			else if (this.type == BOOTS) {
+				filepath += "boot.png";
+			}
+			else if (this.type == ARMOUR) {
+				filepath += "healthPotion.png";
+			}
+			else if (this.type == ARMOUR) {
+				filepath += "double_boot.png";
+			}
+			icon = ImageIO.read(new File(filepath));
+		}
+		catch (IOException e) {
+			
+		}
+		
 	}
 
 

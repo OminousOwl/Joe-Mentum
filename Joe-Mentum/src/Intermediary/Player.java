@@ -208,4 +208,12 @@ public class Player extends LivingObject {
 		this.grabbing = grabbing;
 	}
 	
+	public int getMaxHealth() {
+		return maxHealth;
+	}
+	
+	public void setMaxHealth(int newMax) {
+		maxHealth = newMax;
+	}
+	
 }

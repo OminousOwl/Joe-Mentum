@@ -101,7 +101,12 @@ public class Monster extends LivingObject {
 		//Assigns random item drops
 		int itemChance = randNumber(1, 100);
 		if (itemChance < 101) { //TODO RESET with expGain
-			setDrop(new Item(randNumber(1, 2))); //TODO update with actual item values
+			Item newDrop = new Item(randNumber(1, 5));
+			if (newDrop.getType() >= Item.HEALTH_POTION) {
+				newDrop.setActive(true);
+				newDrop.setCooldown(500);
+			}
+			setDrop(newDrop);
 		}
 		
 		Timer timer = new Timer(100, new ActionListener() {

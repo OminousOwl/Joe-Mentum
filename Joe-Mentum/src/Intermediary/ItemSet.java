@@ -25,6 +25,8 @@ public class ItemSet {
 		
 		if (root == null) {
 			root = new Item(node.getType(), node.x, node.y);
+			root.defineActive();
+			root.defineSprite();
 			return node;
 		}
 		
@@ -58,6 +60,8 @@ public class ItemSet {
 		
 		if (root == null) {
 			root = new Item(node.getType(), node.x, node.y);
+			root.defineActive();
+			root.defineSprite();
 			return node;
 		}
 		
@@ -105,6 +109,8 @@ public class ItemSet {
 				else if (runner == root) {
 					//The first item is the one that needs to be disposed of
 					root = new Item(root.next.getType(), root.next.x, root.next.y, root.next.next);
+					root.defineActive();
+					root.defineSprite();
 					return;
 				}
 				else if (runner.next == null) {

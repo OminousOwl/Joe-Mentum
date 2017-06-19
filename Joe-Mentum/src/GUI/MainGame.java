@@ -1,7 +1,7 @@
 /**
  *@Name Cosmin Baciu, Quinn Fisher, Olivier Hébert
  *@DateCreated: May 30th, 2017
- *@DateModified: June 16th, 2017
+ *@DateModified: June 19th, 2017
  *@Description: The class used to handle the actual game physics and gameplay
  */
 
@@ -61,6 +61,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 	private MonsterSet enemies = new MonsterSet();
 	private DialogQueue narrative;
 	private ItemSet levelItems;
+	private boolean itemsChanged = false;
 	GraphicsConsole gc = new GraphicsConsole();
 	MP3Player spagoogi = new MP3Player();
 	
@@ -73,6 +74,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 	BufferedImage hpHeart;
 	BufferedImage exp;
 	BufferedImage lvlStar;
+	BufferedImage itemFrame;
 
 	public static void main(String[] args) {
 		new MainGame();
@@ -108,6 +110,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 			hpHeart = ImageIO.read(new File("gui/heart.png"));
 			exp = ImageIO.read(new File("gui/exp.png"));
 			lvlStar = ImageIO.read(new File("gui/Level.png"));
+			itemFrame = ImageIO.read(new File("gui/dialog.png"));
 
 		} catch (IOException e) {
 			// catch
@@ -221,6 +224,16 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 			gc.drawImage(lvlStar, 10, 10, 50, 50);
 			gc.drawImage(hpHeart, 70, 10, 50, 50);
 			gc.drawImage(exp, 120, 10, 50, 50);
+			gc.drawImage(itemFrame, 180, 10, 50, 50);
+			
+			if (joe.getActive() != null) {
+				gc.drawImage(joe.getActive().getIcon(), 183, 14, 40, 40);
+				if (joe.getActive().cdRemaining > 0) {
+					gc.setColor(Color.GREEN);
+					gc.drawString(String.valueOf(joe.getActive().cdRemaining/100 + 1), 195, 40); //Display cooldown
+				}
+			}
+				
 			
 			gc.setColor(Color.BLACK);
 			if (joe.getHealth() < 10) {
@@ -296,8 +309,14 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 	public void paintItems(Item nextItem) {
 		if (nextItem == null)
 			return;
-		gc.setColor(Color.YELLOW);
-		gc.fillRect(nextItem.x, nextItem.y, 30, 30);
+		if (nextItem.getIcon() != null) {
+			gc.drawImage(nextItem.getIcon(), nextItem.x, nextItem.y, 30, 30);
+		}
+		else {
+			gc.setColor(Color.YELLOW);
+			gc.fillRect(nextItem.x, nextItem.y, 30, 30);			
+		}
+
 		paintItems(nextItem.next);
 	}
 
@@ -333,6 +352,8 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		deathCheck(joe);
 		dialogTriggerCheck(joe);
 		playerAnimReset(joe);
+		
+		itemsChanged = false;
 		
 		//Always keep animate() as the last function
 		animate();
@@ -501,7 +522,6 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 						
 						//Drop items
 						if (enemy.getDrop() != null) {
-							System.out.println(enemy.x + ", " + enemy.y);
 							enemy.getDrop().x = enemy.x;
 							enemy.getDrop().y = enemy.y;
 							levelItems.add(enemy.getDrop(), enemy.getDrop().x, enemy.getDrop().y).setItemGenID(levelItems.itemGenIDCounter);
@@ -530,35 +550,26 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		if (i == null)
 			return;
 		if (joe.intersects(i) && joe.isGrabbing()) {
-			System.out.println(i.getType());
 			if (i.isActive()) {
 				joe.setActive(i);
-				if (i.getType() == Item.HEALTH_POTION) {
-					System.out.println("Got health pot");
-				}
-				else if (i.getType() == Item.WINGS) {
-					System.out.println("Got wings");
-				}
-					
 			}
 			else {
 				joe.getPassives().add(i);
 				if (i.getType() == Item.SWORD) {
-					System.out.println("Got sword");
 					joe.setAttack(joe.getAttack() + 1);
 				}
 				else if (i.getType() == Item.ARMOUR) {
-					System.out.println("Got armour");
 					joe.setMaxHealth(joe.getMaxHealth() + 2);
 					joe.damage(-2);
 				}
 				else if (i.getType() == Item.BOOTS) {
-					System.out.println("Got boots");
 					joe.setSpeed(joe.getSpeed() + 0.1);
 				}
 			}
 			levelItems.remove(levelItems.getHead(), i.getItemGenID());
 			joe.setGrabbing(false);
+			itemsChanged = true;
+			return;
 		}
 		checkItemCollision(joe, i.next);
 	}
@@ -712,7 +723,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 	 Dependencies: Logic.Entity 
 	 Exceptions: N/A 
 	 Date Created: June 17th, 2017
-	 Date Modified: June 17th, 2017
+	 Date Modified: June 19th, 2017
 	 */
 	public void scroll(Player joe, Item a) {
 		if (a == null) {
@@ -721,7 +732,8 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		
 		//System.out.println(a.getText());
 		a.x -= joe.x - gc.getWidth()/2;
-		scroll(joe, a.next);
+		if (!itemsChanged);
+			scroll(joe, a.next);
 	}
 	
 	/*
@@ -785,7 +797,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 				if (narrative.getHead().getNext() != null)
 					dialogTriggerCheck(joe, narrative.getHead().getNext());
 				if (narrative.getHead().getDisplayTime() == 0) {
-					System.out.println("Dialog End");
+					//System.out.println("Dialog End");
 					narrative.dequeue();
 				}
 			}
@@ -914,6 +926,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 
 		if (key == KeyEvent.VK_D) {// Player moves right when the 'd' key is pressed
 			if (!(joe.getDirection() && joe.getAnimState() == Player.LEDGE)) {
+				pressed.remove(KeyEvent.VK_A);
 				joe.height = 70;
 				joe.moveSide(true);
 				joe.setDirection(true);
@@ -925,6 +938,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 
 		else if (key == KeyEvent.VK_A) {// Player moves left when the 'a' key is pressed
 			if (!(!joe.getDirection() && joe.getAnimState() == Player.LEDGE)) {
+				pressed.remove(KeyEvent.VK_D);
 				joe.height = 70;
 				joe.moveSide(false);
 				joe.setDirection(false);

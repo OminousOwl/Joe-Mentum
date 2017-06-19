@@ -1,7 +1,7 @@
 /*
 Name: Quinn Fisher
 Date Created: May 25th, 2017
-Date Modified: June 16th, 2017
+Date Modified: June 19th, 2017
 Description: The class used to handle the player's stats and motion
  */
 
@@ -22,7 +22,7 @@ public class Player extends LivingObject {
 	private int EXP = 0;
 	private int level = 1;
 	private ItemSet passives = new ItemSet();
-	private Item active; //We don't need a passive slot as it is included in LivingObject
+	private Item active;
 	private int maxHealth = 10;
 	private boolean grabbing = false;
 	

@@ -27,7 +27,6 @@ public class Item extends Entity {
 	/**** Variables ****/
 	private boolean active = false;//the flag to determine the type of item (consumable/equipment)
 	private int type;//the reference to the list of item effects
-	private String description;//a description of an item's effect
 	private BufferedImage icon;
 	
 	private int cooldown;
@@ -135,10 +134,10 @@ public class Item extends Entity {
 			else if (this.type == BOOTS) {
 				filepath += "boot.png";
 			}
-			else if (this.type == ARMOUR) {
-				filepath += "healthPotion.png";
+			else if (this.type == HEALTH_POTION) {
+				filepath += "health_potion.png";
 			}
-			else if (this.type == ARMOUR) {
+			else if (this.type == WINGS) {
 				filepath += "double_boot.png";
 			}
 			icon = ImageIO.read(new File(filepath));
@@ -148,6 +147,23 @@ public class Item extends Entity {
 		}
 		
 	}
+
+	public BufferedImage getIcon() {
+		return icon;
+	}
+	
+	public void defineActive() {
+		if (this.type >= HEALTH_POTION) {
+			this.setActive(true);
+			if (this.type == HEALTH_POTION) {
+				this.setCooldown(899);
+			}
+			else {
+				this.setCooldown(500);
+			}
+		}
+	}
+
 
 
 }

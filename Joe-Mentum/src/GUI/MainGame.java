@@ -65,7 +65,10 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 	private ItemSet levelItems;
 	private boolean itemsChanged = false;
 	GraphicsConsole gc = new GraphicsConsole();
-	MP3Player spagoogi = new MP3Player();
+	MP3Player audio = new MP3Player();
+	
+	private int victoryDelay = 300;
+	private boolean victoryFlag = false;
 	
 	private static final String floor = "images/floor.png";
 	private static final String sTile = "images/sTile.png";
@@ -103,9 +106,9 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		gc.setVisible(false);
 		
 		
-		spagoogi.addToPlayList(new File("music/StabCrabV2Orchestra.mp3"));
-		spagoogi.skipForward();
-		spagoogi.play();
+		audio.addToPlayList(new File("music/StabCrabV2Orchestra.mp3"));
+		audio.skipForward();
+		audio.play();
 		
 		try {
 			bg = ImageIO.read(new File("images/bg.png"));
@@ -840,17 +843,17 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 	
 	/*
 	 Name: deathCheck 
-	 Description: Checks to see if a game over state is needed in response to Joe's death
-	 Parameters: One Player
+	 Description: Checks to see if a victory state is needed in response to Stab Crab's death
+	 Parameters: One Monster
 	 Return Value/Type: N/A 
 	 Dependencies: Logic.Entity 
 	 Exceptions: N/A 
-	 Date Created: June 8th, 2017
-	 Date Modified: June 8th, 2017
+	 Date Created: June 19th, 2017
+	 Date Modified: June 19th, 2017
 	 */
 	public void deathCheck(Monster crab) {
 		if (crab.y >= gc.getHeight() + gc.getHeight()/6 || crab.getHealth() <= 0) {
-			this.setState(VICTORY);
+			this.victoryFlag = true;
 		}
 	}
 	
@@ -1060,10 +1063,10 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		if (key == KeyEvent.VK_M) { //Mute
 			muted = !muted;
 			if (muted) {
-				spagoogi.pause();
+				audio.pause();
 			}
 			else {
-				spagoogi.play();
+				audio.play();
 			}
 				
 		}

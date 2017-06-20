@@ -34,6 +34,8 @@ import Logic.Item;
 import Logic.LivingObject;
 import hsa2.GraphicsConsole;
 import jaco.mp3.player.MP3Player;
+import javafx.animation.FadeTransition;
+import javafx.util.Duration;
 
 /*
  *       __
@@ -83,6 +85,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 	BufferedImage exp;
 	BufferedImage lvlStar;
 	BufferedImage itemFrame;
+	PauseMenu pausemenu;
 
 	public static void main(String[] args) {
 		new MainGame();
@@ -97,7 +100,8 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		
 		// Sets up the game panel
 		JPanel game = new JPanel();
-
+		
+		//pausemenu = new PauseMenu();
 		
 		game.setDoubleBuffered(true);
 		add(game);
@@ -1102,6 +1106,21 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		if (key == KeyEvent.VK_P) {// pauses the game
 			if (this.state == 0) {
 				this.setState(1);
+				//TODO get shit done here --cosmin
+				if (!pausemenu.isVisible()){
+					FadeTransition ft = new FadeTransition(Duration.seconds(0.5), pausemenu);
+                    ft.setFromValue(0);
+                    ft.setToValue(1);
+
+                    pausemenu.setVisible(true);
+                    ft.play();
+				} else {
+					FadeTransition ft = new FadeTransition(Duration.seconds(0.5), pausemenu);
+                    ft.setFromValue(1);
+                    ft.setToValue(0);
+                    ft.setOnFinished(evt -> pausemenu.setVisible(false));
+                    ft.play();
+				}
 			}
 			else {
 				this.setState(0);
@@ -1142,4 +1161,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 	public void keyTyped(KeyEvent e) {
 		
 	}
+	
+	
+	
 }// end class

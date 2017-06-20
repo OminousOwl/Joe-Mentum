@@ -21,7 +21,7 @@ import javax.swing.JMenuItem;
 @SuppressWarnings("serial")
 public class GameMenu extends JFrame implements ActionListener{
 	
-	private static MainGame ech;
+	private static MainGame game;
 
 	// GUI components
 	JButton play;
@@ -37,7 +37,7 @@ public class GameMenu extends JFrame implements ActionListener{
 	BufferedImage logo;
 
 	public GameMenu(MainGame game) {
-		ech = game;
+		this.game = game;
 		frame = new JFrame();
 		setSize(768, 432);
 		setLocationRelativeTo(null);
@@ -66,8 +66,8 @@ public class GameMenu extends JFrame implements ActionListener{
 		// TODO Auto-generated method stub
 		if (e.getSource() == play) {
 			this.dispose();
-			ech.gc.setVisible(true);
-			ech.setState(0);
+			game.gc.setVisible(true);
+			game.setState(0);
 		}
 	}
 

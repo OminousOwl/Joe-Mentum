@@ -47,19 +47,19 @@ public class Spritesheet {
 	}
 
 	// Methods
-	public int getHeight() {
+	private int getHeight() {
 		return frameHeight;
 	}
 
-	public int getWidth() {
+	private int getWidth() {
 		return frameWidth;
 	}
 
-	public int getColumnCount() {
+	private int getColumnCount() {
 		return sheet.getWidth() / getWidth();
 	}
 
-	public int getRowCount() {
+	private int getRowCount() {
 		return sheet.getHeight() / getHeight();
 	}
 

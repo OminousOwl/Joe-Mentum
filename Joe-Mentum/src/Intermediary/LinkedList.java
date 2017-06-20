@@ -16,8 +16,6 @@ public class LinkedList {
 	
 	public LinkedEntity getHead(){return this.root;}
 	
-	//public LinkedEntity getTail(){return this.tail;}
-	
 	
 	/*
 	Name: add

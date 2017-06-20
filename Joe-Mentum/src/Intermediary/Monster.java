@@ -329,7 +329,7 @@ public class Monster extends LivingObject {
 	Date Created: June 11th, 2017
 	Date Modified: June 11th, 2017
 	 */
-	public void wander() {
+	private void wander() {
 		if (moveFrames > 0) { //If the entity still has frames left to move
 			if (Math.abs(this.getXSpeed()) > 0) { //Move frames in progress
 				moveSide(direction);

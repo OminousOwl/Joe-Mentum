@@ -67,6 +67,9 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 	GraphicsConsole gc = new GraphicsConsole();
 	MP3Player audio = new MP3Player();
 	
+	private int[] spawners;
+	private boolean[] spawnerFlags;
+	
 	private int victoryDelay = 300;
 	private boolean victoryFlag = false;
 	
@@ -115,7 +118,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 			hpHeart = ImageIO.read(new File("gui/heart.png"));
 			exp = ImageIO.read(new File("gui/exp.png"));
 			lvlStar = ImageIO.read(new File("gui/Level.png"));
-			itemFrame = ImageIO.read(new File("gui/dialog.png"));
+			itemFrame = ImageIO.read(new File("gui/item.png"));
 
 		} catch (IOException e) {
 			// catch
@@ -169,13 +172,19 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		//X, Y, Width, Height, Health, Attack Damage, Speed, EXP Reward, AI State, Sprite Type
 		enemies.add(new Monster(475, 100, 40, 60, 3, 2, 0.5, 50, Monster.WANDER, "skeleton")).setAssociatedTerrain(fetch(theLevel.getHead(), 0));
 		enemies.add(new Monster(850, 100, 20, 30, 3, 2, 0.5, 50, Monster.LgWANDER, "skeleton"));
-		enemies.add(new Monster(1500, 90, 40, 60, 12, 5, 0.8, 100, Monster.AgWANDER, "skeleton")); //OP one
 		
+		//First wave of birds
 		enemies.add(new Monster(900, 100, 65, 65, 3, 1, 0.5, 25, Monster.BIRD, "bird"));
 		enemies.add(new Monster(925, 100, 65, 65, 3, 1, 0.5, 25, Monster.BIRD, "bird")).offsetBird(15);
 		enemies.add(new Monster(950, 100, 65, 65, 3, 1, 0.5, 25, Monster.BIRD, "bird")).offsetBird(30);
 		
 		stabCrab = new Monster(6800, 200, 120, 90, 75, 8, 2.0, 100, Monster.DWAIT, "stabcrab");
+		
+		spawners = new int[2];
+		spawners[0] = 1000;
+		spawners[1] = 3500;
+		
+		spawnerFlags = new boolean[2];
 		
 		narrative = new DialogQueue();
 		narrative.enqueue(new DialogBox(450, "Where am I? How did I get here?", "Joe", 300));
@@ -371,6 +380,8 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		scroll(joe, stabCrab);
 		scroll(joe, narrative.getHead());
 		scroll(joe, levelItems.getHead());
+		scroll(joe, spawners);
+		spawnCheck(spawners);
 		joe.x = gc.getWidth()/2;
 		deathCheck(joe);
 		deathCheck(stabCrab);
@@ -635,6 +646,27 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		checkItemCollision(joe, i.next);
 	}
 	
+	public void spawnCheck(int[] spawners) {
+		if (spawners[0] < 0 && !spawnerFlags[0]) {
+			System.out.println("Spawner 0");
+			enemies = new MonsterSet();
+			enemies.add(new Monster(650, 90, 40, 60, 12, 5, 0.8, 100, Monster.AgWANDER, "skeleton"));
+			enemies.add(new Monster(2050, 250, 40, 60, 15, 3, 0.8, 25, Monster.LgWANDER, "skeleton"));
+			enemies.add(new Monster(2150, 250, 40, 60, 15, 3, 0.8, 25, Monster.LgWANDER, "skeleton"));
+			enemies.add(new Monster(2250, 250, 40, 60, 15, 3, 0.8, 25, Monster.LgWANDER, "skeleton"));
+			spawnerFlags[0] = true;
+		}
+		else if (spawners[1] < 0 && !spawnerFlags[1]) {
+			//TODO fix this shit (Too much memory used)
+			enemies = new MonsterSet();
+			enemies.add(new Monster(900, 100, 65, 65, 3, 1, 0.5, 25, Monster.BIRD, "bird"));
+			enemies.add(new Monster(925, 100, 65, 65, 3, 1, 0.5, 25, Monster.BIRD, "bird")).offsetBird(15);
+			enemies.add(new Monster(950, 100, 65, 65, 3, 1, 0.5, 25, Monster.BIRD, "bird")).offsetBird(30);
+			enemies.add(new Monster(975, 100, 65, 65, 3, 1, 0.5, 25, Monster.BIRD, "bird")).offsetBird(45);
+			enemies.add(new Monster(1000, 100, 65, 65, 3, 1, 0.5, 25, Monster.BIRD, "bird")).offsetBird(60);
+		}
+	}
+	
 	/*
 	 Name: manageCD 
 	 Description: Manages ledge cooldowns, reducing them on each frame
@@ -798,6 +830,22 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		a.x -= joe.x - gc.getWidth()/2;
 		if (!itemsChanged);
 			scroll(joe, a.next);
+	}
+	
+	/*
+	 Name: scroll 
+	 Description: Scrolls all enemy spawners in relation to Joe's current location, used to avoid overloading the system with enemies
+	 Parameters: One Player and One DialogBox
+	 Return Value/Type: N/A 
+	 Dependencies: Logic.Entity 
+	 Exceptions: N/A 
+	 Date Created: June 20th, 2017
+	 Date Modified: June 20th, 2017
+	 */
+	public void scroll(Player joe, int[] spawners) {
+		for (int i = 0; i < spawners.length; i++) {
+			spawners[i] -= joe.x - gc.getWidth()/2;
+		}
 	}
 	
 	/*

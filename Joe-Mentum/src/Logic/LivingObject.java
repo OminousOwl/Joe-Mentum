@@ -200,7 +200,7 @@ public class LivingObject extends Entity {
 			if (this.intersects(b.ledges[0]) && this.direction || this.intersects(b.ledges[1]) && !this.direction) {
 				
 				if (this.ledgeFlag && b.ledgeFlag) {
-					if (this.getySpeed() <= LivingObject.INIT_JUMP + 2*LivingObject.GRAV) {
+					if (this.getYSpeed() <= LivingObject.INIT_JUMP + 2*LivingObject.GRAV) {
 						b.ledgeFlag = false;
 						b.resetCounter = 40;
 					}
@@ -208,8 +208,8 @@ public class LivingObject extends Entity {
 						//System.out.println("Triggered at " + System.currentTimeMillis());
 						this.animState = Player.LEDGE;
 						this.height = 84;
-						this.setxSpeed(0);
-						this.setySpeed(0);
+						this.setXSpeed(0);
+						this.setYSpeed(0);
 						this.y = b.ledges[0].y - 14;
 						
 						if (this.intersects(b.ledges[0])) {
@@ -224,10 +224,10 @@ public class LivingObject extends Entity {
 		}
 		
 		else if(b.getCollideType() == BOUNCE){
-			this.setySpeed((getySpeed()*-1));
+			this.setYSpeed((getYSpeed()*-1));
 		}
 		else if(b.getCollideType() == SKIP){
-			this.setySpeed((getySpeed()*-1)/2);
+			this.setYSpeed((getYSpeed()*-1)/2);
 		}
 	}
 
@@ -252,7 +252,7 @@ public class LivingObject extends Entity {
 			b.resetCounter = 10;
 		}
 		else if (this.y > b.y + 5 && b.resetCounter <= 0) { //If collision takes place outside the wall's surface
-			this.setxSpeed(0);
+			this.setXSpeed(0);
 			if (this.x < b.x + b.width/2) { //Collision from left, judging from mid point
 				this.x = b.x - this.width;
 			}
@@ -261,10 +261,10 @@ public class LivingObject extends Entity {
 		}
 		
 		else if (b.resetCounter <= 0 || !this.isJoe) {
-			if (this.getySpeed() > 0) { //Only collides on drop, otherwise jumping is impossible
-				this.setySpeed(0);
+			if (this.getYSpeed() > 0) { //Only collides on drop, otherwise jumping is impossible
+				this.setYSpeed(0);
 					
-				if (this.intersects(b.floorbox) && this.getySpeed() >= -6.6)
+				if (this.intersects(b.floorbox) && this.getYSpeed() >= -6.6)
 					this.y = b.y - this.height;
 			}
 

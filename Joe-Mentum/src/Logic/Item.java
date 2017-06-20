@@ -78,7 +78,7 @@ public class Item extends Entity {
 			}
 			
 			else if (this.getType() == Item.WINGS) {
-				joe.setySpeed(0);
+				joe.setYSpeed(0);
 				joe.setAnimState(LivingObject.IDLE);
 				joe.jump();
 				joe.setAnimState(Player.VERT);

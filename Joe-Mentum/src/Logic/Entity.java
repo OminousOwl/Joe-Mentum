@@ -20,14 +20,11 @@ public class Entity extends Rectangle {
 	public static final char WALL = 'w';
 	
 	/**** Variables ****/
-	private Rectangle hitbox;//the rectangle object indicating the physical edges of the object
 	public Rectangle floorbox;//the rectangle object defining the surface of an object
 	public Rectangle[] ledges = new Rectangle[2]; //The ledges of an object
 	public boolean ledgeFlag = true; //A flag used to prevent autosnap to a ledge immediately after jumping form one
 	public int resetCounter; //Used to countdown frames until the ledgeFlag resets
-	private Image[] sprite;//the images, frame by frame, for the objet's animation
 	private char collideType = SOLID;//used in collision() to determine the appropriate handling
-	private int frame = 0;//the preceding image in the animation
 	private double xSpeed = 0;//the horizontal speed of the object
 	private double ySpeed = 0;//the vertical speed of the object
 
@@ -73,10 +70,6 @@ public class Entity extends Rectangle {
 
 	/**** Getters & Setters ****/
 	public void setCollide(char collideType){this.collideType = collideType;}
-	public double getXSpeed(){return getxSpeed();}
-	public void setXSpeed(double xSpeed){this.setxSpeed(xSpeed);}
-	public double getYSpeed(){return this.getySpeed();}
-	public void setYSpeed(double ySpeed){this.setySpeed(ySpeed);}
 	
 	//public Image getAnimation(){//TODO
 		//if(this.frame<this.sprite.length)this.frame++;
@@ -86,11 +79,11 @@ public class Entity extends Rectangle {
 	
 	/**** Methods ****/
 
-	public double getySpeed() {
+	public double getYSpeed() {
 		return ySpeed;
 	}
 
-	public void setySpeed(double ySpeed) {
+	public void setYSpeed(double ySpeed) {
 		this.ySpeed = ySpeed;
 	}
 	
@@ -124,11 +117,11 @@ public class Entity extends Rectangle {
 		return collideType;
 	}
 
-	public double getxSpeed() {
+	public double getXSpeed() {
 		return xSpeed;
 	}
 
-	public void setxSpeed(double xSpeed) {
+	public void setXSpeed(double xSpeed) {
 		this.xSpeed = xSpeed;
 	}
 	

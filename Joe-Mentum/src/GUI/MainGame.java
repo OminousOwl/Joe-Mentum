@@ -814,12 +814,12 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		if (a == null)
 			return;
 		if (a.getYScroll() != 0) {
-			a.y += a.getySpeed();
-			a.floorbox.y += a.getySpeed();
-			a.ledges[0].y += a.getySpeed();
-			a.ledges[1].y += a.getySpeed();
+			a.y += a.getYSpeed();
+			a.floorbox.y += a.getYSpeed();
+			a.ledges[0].y += a.getYSpeed();
+			a.ledges[1].y += a.getYSpeed();
 			if (a.y == a.getDefaultY() + a.getYScroll() || a.y == a.getDefaultY()) {
-				a.setySpeed(a.getYSpeed() * -1);
+				a.setYSpeed(a.getYSpeed() * -1);
 			}
 		}
 		platformScroll(a.next);
@@ -916,10 +916,10 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 	 */
 	public void playerAnimReset(Player joe) {
 		if (joe.getAnimState() != Player.LEDGE) {
-			if (joe.getXSpeed() == 0 && (joe.getYSpeed() == 0 || joe.getySpeed() == 0.2)) {
+			if (joe.getXSpeed() == 0 && (joe.getYSpeed() == 0 || joe.getYSpeed() == 0.2)) {
 				joe.setAnimState(Player.IDLE);
 			}
-			else if (joe.getYSpeed() == 0 || joe.getySpeed() == 0.2) {
+			else if (joe.getYSpeed() == 0 || joe.getYSpeed() == 0.2) {
 				joe.setAnimState(Player.MOVE);
 			}
 		}

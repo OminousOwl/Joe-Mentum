@@ -62,7 +62,7 @@ public class Player extends LivingObject {
 					frame = overflowProtect(frame + 1);
 				}
 				else if (getAnimState() == VERT) {
-					if (getySpeed() <= -6.6) {
+					if (getYSpeed() <= -6.6) {
 						setCurrentFrame(flipHorizontal(sprites[2].getSprite(0)));
 					}
 					else if (getYSpeed() < -0.2) {

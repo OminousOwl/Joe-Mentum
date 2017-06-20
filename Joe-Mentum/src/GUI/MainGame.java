@@ -50,6 +50,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 	private final int PAUSED = 1;// the ID# for the game's paused state with the basic menu.
 	private final int PAUSED_OPTIONS = 2;// the ID# for the game's paused state with the options menu.
 	private final int GAME_OVER = 3;
+	private final int VICTORY = 4;
 	
 	private final Set<Integer> pressed = new HashSet<Integer>(); //Stores all currently pressed keys. This allows momentum to be maintained when releasing A or D when holding the other
 
@@ -59,6 +60,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 	public static Player joe = new Player(); // The man, the myth, the legend himself, Joe
 	private LinkedList theLevel;
 	private MonsterSet enemies = new MonsterSet();
+	private Monster stabCrab;
 	private DialogQueue narrative;
 	private ItemSet levelItems;
 	private boolean itemsChanged = false;
@@ -170,6 +172,8 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		enemies.add(new Monster(925, 100, 65, 65, 3, 1, 0.5, 25, Monster.BIRD, "bird")).offsetBird(15);
 		enemies.add(new Monster(950, 100, 65, 65, 3, 1, 0.5, 25, Monster.BIRD, "bird")).offsetBird(30);
 		
+		stabCrab = new Monster(6800, 200, 120, 90, 75, 8, 2.0, 100, Monster.DWAIT, "stabcrab");
+		
 		narrative = new DialogQueue();
 		narrative.enqueue(new DialogBox(450, "Where am I? How did I get here?", "Joe", 300));
 		narrative.enqueue(new DialogBox(450, "Walk right if you ever want to see", "Disembodied Voice", 300));
@@ -202,6 +206,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 			
 			paintLevelComponent(theLevel.getHead());
 			paintEnemy(enemies.getHead());
+			paintEnemy(stabCrab);
 			paintItems(levelItems.getHead());
 			
 			gc.setColor(Color.RED);
@@ -212,6 +217,14 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 			if (this.state == GAME_OVER) {
 				gc.drawString("GAME OVER", gc.getWidth()/2 - 50, gc.getHeight()/2 - 25);
 				gc.drawString("PRESS R TO RESTART", gc.getWidth()/2 - 110, gc.getHeight()/2 + 25);
+				gc.drawString("PRESS Q TO QUIT", gc.getWidth()/2 - 90, gc.getHeight()/2 + 75);
+			}
+			else if (this.state == VICTORY) {
+				gc.setColor(Color.WHITE);
+				gc.drawString("STAB CRAB IS DEAD! YOU WIN!", gc.getWidth()/2 - 195, gc.getHeight()/2 - 75);
+				gc.drawString("JOE IS ALLOWED TO GO HOME NOW!", gc.getWidth()/2 - 235, gc.getHeight()/2 - 25);
+				gc.drawString("PRESS R TO PLAY AGAIN", gc.getWidth()/2 - 155, gc.getHeight()/2 + 25);
+				gc.drawString("PRESS Q TO QUIT", gc.getWidth()/2 - 110, gc.getHeight()/2 + 75);
 			}
 			
 			/*//Outdated Debug Code
@@ -333,23 +346,31 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 	public void run() {
 		gravity(joe);
 		gravity(enemies.getHead());
+		gravity(stabCrab);
 		move(joe);
 		move(enemies.getHead());
+		move(stabCrab);
 		platformScroll(theLevel.getHead());
 		checkLevelCollision(joe, theLevel.getHead());
 		checkLevelCollision(enemies.getHead(), theLevel.getHead());
+		checkLevelCollision(stabCrab, theLevel.getHead());
 		checkEnemyCollision(joe, enemies.getHead());
+		checkEnemyCollision(joe, stabCrab);
 		checkItemCollision(joe, levelItems.getHead());
 		manageEnemyBehavior(enemies.getHead());
+		manageEnemyBehavior(stabCrab);
 		manageCD(theLevel.getHead());
 		manageCD(enemies.getHead());
+		manageCD(stabCrab);
 		manageItemCD();
 		scroll(joe, theLevel.getHead());
 		scroll(joe, enemies.getHead());
+		scroll(joe, stabCrab);
 		scroll(joe, narrative.getHead());
 		scroll(joe, levelItems.getHead());
 		joe.x = gc.getWidth()/2;
 		deathCheck(joe);
+		deathCheck(stabCrab);
 		dialogTriggerCheck(joe);
 		playerAnimReset(joe);
 		
@@ -498,13 +519,26 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		
 	}
 	
+	/*
+	 Name: checkEnemyCollision 
+	 Description: Checks to see if any enemies collide with Joe, and handles damage
+	 Parameters: One player, and one enemy 
+	 Return Value/Type: N/A 
+	 Dependencies: Logic.Entity 
+	 Exceptions: N/A 
+	 Date Created: June 8th, 2017 
+	 Date Modified: June 19th, 2017 
+	 */
 	public void checkEnemyCollision(Player joe, Monster enemy) {
 		if (enemy == null) {
 			return;
 		}
 		else if (enemy.getHealth() > 0) {
 			if (joe.intersects(enemy) && enemy.damageCD == 0) {
-				if (joe.getYSpeed() >= 0.4) {
+				if (enemy.getAnimState() == Monster.FIGHT) {
+					damageJoe(joe, enemy);
+				}
+				else if (joe.getYSpeed() >= 0.4) {
 					enemy.damage(joe.getAttack());
 					joe.setYSpeed(-6.0);
 					
@@ -534,11 +568,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 				}
 				//Handles enemy hit
 				else {
-					joe.damage(enemy.getAttack());
-					if (joe.getHealth() < 0) {
-						joe.setHealth(0);
-					}
-					joe.setDamageFrames(5);
+					damageJoe(joe, enemy);
 				}
 				enemy.damageCD = 70;
 			}
@@ -546,6 +576,34 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		checkEnemyCollision(joe, enemy.next);
 	}
 	
+	/*
+	 Name: damageJoe 
+	 Description: Deals an enemy's damage to Joe and prevents negative life
+	 Parameters: One player, and one enemy 
+	 Return Value/Type: N/A 
+	 Dependencies: Logic.Entity 
+	 Exceptions: N/A 
+	 Date Created: June 8th, 2017 
+	 Date Modified: June 19th, 2017 
+	 */
+	public void damageJoe(Player joe, Monster enemy) {
+		joe.damage(enemy.getAttack());
+		if (joe.getHealth() < 0) {
+			joe.setHealth(0);
+		}
+		joe.setDamageFrames(5);
+	}
+	
+	/*
+	 Name: checkItemCollision 
+	 Description: Checks to see if any items collide with Joe, and handles pickup
+	 Parameters: One player, and one Item 
+	 Return Value/Type: N/A 
+	 Dependencies: Logic.Entity 
+	 Exceptions: N/A 
+	 Date Created: June 17th, 2017 
+	 Date Modified: June 19th, 2017 
+	 */
 	public void checkItemCollision(Player joe, Item i) {
 		if (i == null)
 			return;
@@ -611,8 +669,11 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		if (a == null){
 			return;
 		}
-		else if (a.damageCD > 0) {
+		if (a.damageCD > 0) {
 			a.damageCD--;
+		}
+		if (a.attackCD > 0) {
+			a.attackCD--;
 		}
 		manageCD(a.next);
 	}
@@ -774,6 +835,22 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 	public void deathCheck(Player joe) {
 		if (joe.y >= gc.getHeight() + gc.getHeight()/6 || joe.getHealth() <= 0) {
 			this.setState(GAME_OVER);
+		}
+	}
+	
+	/*
+	 Name: deathCheck 
+	 Description: Checks to see if a game over state is needed in response to Joe's death
+	 Parameters: One Player
+	 Return Value/Type: N/A 
+	 Dependencies: Logic.Entity 
+	 Exceptions: N/A 
+	 Date Created: June 8th, 2017
+	 Date Modified: June 8th, 2017
+	 */
+	public void deathCheck(Monster crab) {
+		if (crab.y >= gc.getHeight() + gc.getHeight()/6 || crab.getHealth() <= 0) {
+			this.setState(VICTORY);
 		}
 	}
 	
@@ -948,7 +1025,8 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		}
 
 		if (key == KeyEvent.VK_Q) {//
-			if (this.state == GAME_OVER) {
+			if (this.state == GAME_OVER || this.state == VICTORY) {
+				System.out.println("Quit");
 				this.dispose();
 			}
 			else if (joe.getActive() != null) {
@@ -990,7 +1068,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 				
 		}
 		
-		if (key == KeyEvent.VK_R && this.state == GAME_OVER) {
+		if (key == KeyEvent.VK_R && (this.state == GAME_OVER || this.state == VICTORY)) {
 			setup();
 		}
 	}// end keyPressed

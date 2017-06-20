@@ -32,7 +32,7 @@ public class Monster extends LivingObject {
 	public static final char LgWANDER = 'l';
 	public static final char BIRD = 'b';
 	public static final char SADBIRD = 's';
-	public static final char DWANDER = 'd';
+	public static final char DWAIT = 'd';
 	public static final char DUEL = 'u';
 	public static final char ATTACK = 'a';
 	
@@ -42,7 +42,10 @@ public class Monster extends LivingObject {
 	private int moveFrames;
 	public LinkedEntity associatedTerrain;
 	public int damageCD;
+	public int attackCD;
 	private boolean deathAnimFlag = false;
+	private boolean stabCrabDrawn = false;
+	private boolean stabCrabSwingStart = false;
 	
 	private int expGain;
 	private Item drop;
@@ -74,6 +77,9 @@ public class Monster extends LivingObject {
 			else if (enemyType == "bird") {
 				filepaths[i] += "Bird/";
 			}
+			else if (enemyType == "stabcrab") {
+				filepaths[i] += "StabCrab/";
+			}
 				
 		}
 		
@@ -95,6 +101,15 @@ public class Monster extends LivingObject {
 		else if (enemyType == "bird") {
 			sprites[0] = sprites[1] = sprites[2] = sprites[3] = new Spritesheet(filepaths[1], 3072/6, 512);
 		}
+		else if (enemyType == "stabcrab") {
+			sprites[0] = new Spritesheet(filepaths[0], 960/2, 238);
+			sprites[1] = new Spritesheet(filepaths[1], 960/2, 238);
+			sprites[2] = new Spritesheet(filepaths[2], 7200/15, 238);
+			sprites[3] = sprites[0];
+		}
+		
+		
+		
 		if (enemyType != null)
 			setCurrentFrame(sprites[0].getSprite(0));
 		
@@ -112,11 +127,25 @@ public class Monster extends LivingObject {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
-				if (getXSpeed() == 0 && getYSpeed() == 0 && getHealth() > 0) {
-					setAnimState(IDLE);
+				if (aiState == ATTACK) {
+					setAnimState(FIGHT);
+				}
+				else if (getXSpeed() == 0 && getYSpeed() == 0 && getHealth() > 0) {
+					if (stabCrabDrawn) {
+						setAnimState(MOVE);
+					}
+					else {
+						setAnimState(IDLE);
+					}
+
 				}
 				else if (Math.abs(getXSpeed()) > 0 && getHealth() > 0) {
-					setAnimState(MOVE);
+					if (!stabCrabDrawn && enemyType == "stabcrab") {
+						setAnimState(IDLE);
+					}
+					else {
+						setAnimState(MOVE);
+					}
 				}
 				
 				if (getEnemyType() != null) {
@@ -131,6 +160,19 @@ public class Monster extends LivingObject {
 					}
 					else if (getAnimState() == MOVE) {
 						setCurrentFrame(flipHorizontal(sprites[1].getSprite(frame % sprites[1].getFrameCount())));
+						frame = overflowProtect(frame + 1);
+					}
+					else if (getAnimState() == FIGHT) {
+						if (!stabCrabDrawn) {
+							stabCrabSwingStart = true;
+							stabCrabDrawn = true;
+							setFrame(0);
+						}
+						else if (!stabCrabSwingStart) {
+							stabCrabSwingStart = true;
+							setFrame(5);
+						}
+						setCurrentFrame(flipHorizontal(sprites[2].getSprite(frame % sprites[2].getFrameCount())));
 						frame = overflowProtect(frame + 1);
 					}
 					else if (getAnimState() == DEAD) {
@@ -209,27 +251,46 @@ public class Monster extends LivingObject {
 				this.setYSpeed(this.getYSpeed() - LivingObject.GRAV + Math.sin(this.x));
 				moveSide(false);
 				break;
-			case DWANDER: //Wander triggering fight
-				wander();
-				if (Math.abs(joe.x - this.x) <= 300)
-					this.setAIState(DUEL);
+			case DWAIT: //Wait for fight
+				if (Math.abs(joe.x - this.x) <= 300) {
+					if (!stabCrabDrawn) {
+						this.setAIState(ATTACK);
+						stabCrabDrawn = true;
+					}
+					else {
+						this.setAIState(DUEL);
+					}
+				}
 				break;
 			case DUEL:
-				if (joe.x - this.x >= 100) {
-					moveSide(true);
+				if (joe.x - this.x >= 150) {
+					direction = true;
+					moveSide(direction);
 				}
-				else if (joe.x - this.x <= -100) {
-					moveSide(false);
+				else if (joe.x - this.x <= -150) {
+					direction = false;
+					moveSide(direction);
 				}
-				else if (Math.abs(joe.x - this.x) >= 300) {
-					setAIState(DWANDER);
+				else if (Math.abs(joe.x - this.x) >= 800) {
+					setAIState(DWAIT);
 				}
-				else 
+				else if (attackCD <= 0) {
 					this.setAIState(ATTACK);
+				}
 				break;
-			case ATTACK: //TODO update with animation code
-				if (this.frame > sprites[3].getFrameCount())
+			case ATTACK:
+				this.setXSpeed(0);
+				if (joe.x - this.x <= 0) {
+					direction = false;
+				}
+				else {
+					direction = true;
+				}
+				if (this.frame >= 15) {
+					this.attackCD = 15;
 					this.setAIState(DUEL);
+					this.stabCrabSwingStart = false;
+				}
 				break;
  			}
  		}

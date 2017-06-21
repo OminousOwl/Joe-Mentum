@@ -133,7 +133,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		animate();
 		
 		//TODO reimplement when GameMenu is remade
-		//new GameMenu(this);
+		new GameMenu(this);
 		gc.setVisible(true);
 		this.state = 0;
 		startGame();

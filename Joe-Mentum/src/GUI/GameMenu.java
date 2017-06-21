@@ -1,15 +1,23 @@
 package GUI;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.Graphics;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 /*
  *       __
@@ -19,46 +27,97 @@ import javax.swing.JMenuItem;
  */
 
 @SuppressWarnings("serial")
-public class GameMenu extends JFrame implements ActionListener{
-	
+public class GameMenu extends JFrame implements ActionListener {
+
+	public static void main(String[] args) {
+		new GameMenu(game);
+	}
+
 	private static MainGame game;
 
 	// GUI components
 	JButton play;
 	JButton exit;
-	
-	JMenuBar menuBar;
-	JMenu menu;
-	JMenuItem menuItem;
-	
-	JFrame frame;
-	//images
+	JTextField joeName;
+
+	// images
 	BufferedImage bg;
 	BufferedImage logo;
 
+	@SuppressWarnings("static-access")
 	public GameMenu(MainGame game) {
 		this.game = game;
-		frame = new JFrame();
+		// Basic JFrame Setup
 		setSize(768, 432);
 		setLocationRelativeTo(null);
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		setTitle("Joe-Mentum");
 		setResizable(false);
-		//create the menu bar
-		menuBar = new JMenuBar();
-		
-		//build the first menu
-		menu = 	new JMenu("Play");
-		menuBar.add(menu);
-		
-		//JMenuItems show the menu items
-		menuItem = new JMenuItem("New", new ImageIcon("images/bg.png"));
-		menu.add(menuItem);
-		
-		menuItem = new JMenuItem("Exit", new ImageIcon("images/sTile.png"));
-		menu.add(menuItem);
-		
-		//add menu bar to the the frame
-		frame.add(menu);
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+		// import background image
+		try {
+			bg = ImageIO.read(new File("images/bg.png"));
+			logo = ImageIO.read(new File("gui/logo.png"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		// create image header for the mainmenu
+		JPanel headerPanel = new JPanel();
+		headerPanel.setLayout(new FlowLayout());
+		headerPanel.setBackground(Color.BLACK);
+		JLabel joeIcon = new JLabel("");
+		joeIcon.setIcon(new ImageIcon("images/bg.png"));
+
+		add(headerPanel, BorderLayout.NORTH);
+
+		// Create the panel which will contain the central elements and absorb
+		// any vertical stretch
+		JPanel stretchPanel = new JPanel();
+		stretchPanel.setLayout(new BorderLayout());
+
+		// Create the panel containing the controls
+		JPanel buttonsPanel = new JPanel();
+		GridLayout buttonsLayout = new GridLayout(0, 1);
+		buttonsLayout.setVgap(5);
+		buttonsPanel.setLayout(buttonsLayout);
+		stretchPanel.add(buttonsPanel, BorderLayout.NORTH);
+
+		// create text field which contains game name
+		joeName = new JTextField("Joe-Mentum");
+		joeName.setEditable(false);
+		joeName.setBackground(Color.DARK_GRAY);
+		joeName.setForeground(Color.WHITE);
+		joeName.setBorder(null);
+		joeName.setHorizontalAlignment(JTextField.CENTER);
+		buttonsPanel.add(joeName);
+
+		// Create the play game button
+		play = new JButton("Play");
+		play.addActionListener(this);
+		play.setBackground(Color.GREEN);
+		buttonsPanel.add(play);
+
+		// Create the padding below the play game buttons
+		JPanel basePadding = new JPanel() {
+			protected void paintComponent(Graphics g) {
+				Graphics g2 = g.create();
+				g2.drawImage(bg, 0, 0, this.getWidth(), this.getHeight(), null);
+				g2.drawImage(logo, 250, 65, null);
+			}
+		};
+		stretchPanel.add(basePadding, BorderLayout.CENTER);
+
+		add(stretchPanel, BorderLayout.CENTER);
+
+		// Create the quit button
+		exit = new JButton("Quit Game");
+		exit.addActionListener(this);
+		exit.setBackground(Color.LIGHT_GRAY);
+		add(exit, BorderLayout.SOUTH);
+
+		// pack the elements
 		setVisible(true);
 	}
 
@@ -68,6 +127,8 @@ public class GameMenu extends JFrame implements ActionListener{
 			this.dispose();
 			game.gc.setVisible(true);
 			game.setState(0);
+		} else if (e.getSource() == exit) {
+			this.dispose();
 		}
 	}
 

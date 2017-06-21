@@ -252,27 +252,22 @@ public class Monster extends LivingObject {
 				moveSide(false);
 				break;
 			case DWAIT: //Wait for fight
-				if (Math.abs(joe.x - this.x) <= 300) {
-					if (!stabCrabDrawn) {
-						this.setAIState(ATTACK);
-						stabCrabDrawn = true;
-					}
-					else {
-						this.setAIState(DUEL);
-					}
+				if (this.getHealth() < 75) {
+					this.setAIState(ATTACK);
+					this.setFrame(0);
 				}
 				break;
 			case DUEL:
-				if (joe.x - this.x >= 150) {
+				if (joe.x - this.x >= 95) {
 					direction = true;
 					moveSide(direction);
 				}
-				else if (joe.x - this.x <= -150) {
+				else if (joe.x - this.x <= -65) {
 					direction = false;
 					moveSide(direction);
 				}
 				else if (Math.abs(joe.x - this.x) >= 800) {
-					setAIState(DWAIT);
+					this.setXSpeed(0);
 				}
 				else if (attackCD <= 0) {
 					this.setAIState(ATTACK);

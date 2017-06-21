@@ -59,6 +59,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 	/**** Variables ****/
 	private int state = RUNNING;// the flag that triggers different behaviors in the program
 	private boolean muted = false;
+	private boolean devMode = false;
 	public static Player joe = new Player(); // The man, the myth, the legend himself, Joe
 	private LinkedList theLevel;
 	private MonsterSet enemies = new MonsterSet();
@@ -85,7 +86,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 	BufferedImage exp;
 	BufferedImage lvlStar;
 	BufferedImage itemFrame;
-	PauseMenu pausemenu;
+	//PauseMenu pausemenu;
 
 	public static void main(String[] args) {
 		new MainGame();
@@ -154,8 +155,8 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		theLevel.add(new LinkedEntity(1180, 332, 100, 100, Color.BLACK, 's', sTile));
 		theLevel.add(new LinkedEntity(1325, 150, 100, 100, Color.BLACK, 's', lTile)).setYScroll(400, 1.0);
 		theLevel.add(new LinkedEntity(1450, 100, 755, 80, Color.BLACK, 's', floor));
-		theLevel.add(new LinkedEntity(2000, 300, 377, 80, Color.BLACK, 's', floor));
-		theLevel.add(new LinkedEntity(2400, 332, 755, 80, Color.BLACK, 's', floor));
+		theLevel.add(new LinkedEntity(1900, 350, 377, 80, Color.BLACK, 's', floor));
+		theLevel.add(new LinkedEntity(2400, 332, 740, 80, Color.BLACK, 's', floor));
 		theLevel.add(new LinkedEntity(2800, 100, 377, 80, Color.BLACK, 's', floor)).setYScroll(50, 1.0);
 		theLevel.add(new LinkedEntity(3300, 100, 95, 80, Color.BLACK, 's', sTile));
 		theLevel.add(new LinkedEntity(3200, 332, 189, 80, Color.BLACK, 's', floor));
@@ -164,7 +165,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		theLevel.add(new LinkedEntity(4000, 80, 377, 80, Color.BLACK, 's', floor)).setYScroll(100, 1.0);
 		theLevel.add(new LinkedEntity(4500, 350, 189, 80, Color.BLACK, 's', floor));
 		theLevel.add(new LinkedEntity(4200, 332, 755, 80, Color.BLACK, 's', floor));
-		theLevel.add(new LinkedEntity(4800, 100, 189, 80, Color.BLACK, 's', floor)).setYScroll(50,1.0);
+		theLevel.add(new LinkedEntity(4750, 100, 189, 80, Color.BLACK, 's', floor)).setYScroll(50,1.0);
 		theLevel.add(new LinkedEntity(4900, 332, 189, 80, Color.BLACK, 's', floor));
 		theLevel.add(new LinkedEntity(5000, 100, 377, 80, Color.BLACK, 's', floor));
 		theLevel.add(new LinkedEntity(5600, 332, 189, 80, Color.BLACK, 's', floor));
@@ -184,11 +185,12 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		
 		stabCrab = new Monster(6800, 200, 120, 90, 75, 8, 2.0, 100, Monster.DWAIT, "stabcrab");
 		
-		spawners = new int[2];
+		spawners = new int[3];
 		spawners[0] = 1000;
 		spawners[1] = 3500;
+		spawners[2] = 5800;
 		
-		spawnerFlags = new boolean[2];
+		spawnerFlags = new boolean[3];
 		
 		narrative = new DialogQueue();
 		narrative.enqueue(new DialogBox(450, "Where am I? How did I get here?", "Joe", 300));
@@ -236,7 +238,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 				gc.drawString("PRESS Q TO QUIT", gc.getWidth()/2 - 90, gc.getHeight()/2 + 75);
 			}
 			else if (this.state == VICTORY) {
-				gc.setColor(Color.WHITE);
+				gc.setColor(Color.YELLOW);
 				gc.drawString("STAB CRAB IS DEAD! YOU WIN!", gc.getWidth()/2 - 195, gc.getHeight()/2 - 75);
 				gc.drawString("JOE IS ALLOWED TO GO HOME NOW!", gc.getWidth()/2 - 235, gc.getHeight()/2 - 25);
 				gc.drawString("PRESS R TO PLAY AGAIN", gc.getWidth()/2 - 155, gc.getHeight()/2 + 25);
@@ -279,10 +281,23 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 				gc.drawString(String.valueOf(joe.getEXP()), 132, 40);
 			}
 			
-			gc.drawString(String.valueOf(joe.getLevel()), 28, 40);
+			if (joe.getLevel() < 10) {
+				gc.drawString(String.valueOf(joe.getLevel()), 28, 40);
+			}
+			else {
+				gc.drawString(String.valueOf(joe.getLevel()), 23, 40);
+			}
+			
+			gc.setColor(Color.WHITE);
+			
+			gc.drawString(joe.levelStrings[0], 10, 80);
+			gc.drawString(joe.levelStrings[1], 10, 110);
+			gc.drawString(joe.levelStrings[2], 10, 140);
+			gc.drawString(joe.levelStrings[3], 10, 170);
 			
 			if (narrative.getHead() != null) {
 				if (narrative.getHead().isQueued() && narrative.getHead().getDisplayTime() > 0) {
+					gc.setColor(Color.WHITE);
 					gc.drawImage(narrative.getHead().frame, 10, gc.getHeight() - gc.getHeight()/4 - 10, gc.getWidth() - 20, gc.getHeight()/6);
 					gc.drawString(narrative.getHead().getSpeaker() + ":", 37, gc.getHeight() - gc.getHeight()/6 - 15);
 					gc.drawString(narrative.getHead().getText(), 35, gc.getHeight() - gc.getHeight()/6 + 10);
@@ -379,6 +394,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		manageCD(enemies.getHead());
 		manageCD(stabCrab);
 		manageItemCD();
+		resetLevelString();
 		scroll(joe, theLevel.getHead());
 		scroll(joe, enemies.getHead());
 		scroll(joe, stabCrab);
@@ -389,6 +405,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		joe.x = gc.getWidth()/2;
 		deathCheck(joe);
 		deathCheck(stabCrab);
+		victoryTrigger();
 		dialogTriggerCheck(joe);
 		playerAnimReset(joe);
 		
@@ -654,20 +671,30 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		if (spawners[0] < 0 && !spawnerFlags[0]) {
 			System.out.println("Spawner 0");
 			enemies = new MonsterSet();
-			enemies.add(new Monster(650, 90, 40, 60, 12, 5, 0.8, 100, Monster.AgWANDER, "skeleton"));
-			enemies.add(new Monster(2050, 250, 40, 60, 15, 3, 0.8, 25, Monster.LgWANDER, "skeleton"));
-			enemies.add(new Monster(2150, 250, 40, 60, 15, 3, 0.8, 25, Monster.LgWANDER, "skeleton"));
-			enemies.add(new Monster(2250, 250, 40, 60, 15, 3, 0.8, 25, Monster.LgWANDER, "skeleton"));
+			enemies.add(new Monster(650, 90, 40, 60, 10, 5, 0.8, 50, Monster.AgWANDER, "skeleton"));
+			enemies.add(new Monster(1000, 250, 40, 60, 10, 5, 0.8, 75, Monster.RtWANDER, "skeleton"));
+			enemies.add(new Monster(2050, 0, 40, 60, 15, 3, 0.8, 25, Monster.AgWANDER, "skeleton"));
+			enemies.add(new Monster(2150, 250, 40, 60, 20, 5, 0.8, 25, Monster.LgWANDER, "skeleton"));
+			enemies.add(new Monster(2250, 250, 40, 60, 20, 5, 0.8, 25, Monster.LgWANDER, "skeleton"));
 			spawnerFlags[0] = true;
 		}
 		else if (spawners[1] < 0 && !spawnerFlags[1]) {
-			//TODO fix this shit (Too much memory used)
+			enemies = new MonsterSet();
+			enemies.add(new Monster(800, 0, 40, 60, 20, 5, 0.8, 25, Monster.LgWANDER, "skeleton"));
+			enemies.add(new Monster(1000, 200, 40, 60, 22, 6, 0.8, 25, Monster.AgWANDER, "skeleton"));
+			enemies.add(new Monster(1100, 200, 40, 60, 22, 6, 0.8, 25, Monster.WANDER, "skeleton"));
+			enemies.add(new Monster(1200, 200, 40, 60, 22, 6, 0.8, 25, Monster.LgWANDER, "skeleton"));
+			enemies.add(new Monster(1300, 200, 40, 60, 22, 6, 0.8, 25, Monster.WANDER, "skeleton"));
+			spawnerFlags[1] = true;
+		}
+		else if (spawners[2] < 0 && !spawnerFlags[2]) {
 			enemies = new MonsterSet();
 			enemies.add(new Monster(900, 100, 65, 65, 3, 1, 0.5, 25, Monster.BIRD, "bird"));
 			enemies.add(new Monster(925, 100, 65, 65, 3, 1, 0.5, 25, Monster.BIRD, "bird")).offsetBird(15);
 			enemies.add(new Monster(950, 100, 65, 65, 3, 1, 0.5, 25, Monster.BIRD, "bird")).offsetBird(30);
 			enemies.add(new Monster(975, 100, 65, 65, 3, 1, 0.5, 25, Monster.BIRD, "bird")).offsetBird(45);
 			enemies.add(new Monster(1000, 100, 65, 65, 3, 1, 0.5, 25, Monster.BIRD, "bird")).offsetBird(60);
+			spawnerFlags[2] = true;
 		}
 	}
 	
@@ -733,6 +760,18 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		}
 		else if (joe.getActive().cdRemaining > 0) {
 			joe.getActive().cdRemaining--;
+		}
+	}
+	
+	public void resetLevelString() {
+		if (joe.levelStringCD > 0) {
+			joe.levelStringCD--;
+		}
+		else if (joe.levelStringCD <= 0) {
+			joe.levelStrings[0] = "";
+			joe.levelStrings[1] = "";
+			joe.levelStrings[2] = "";
+			joe.levelStrings[3] = "";
 		}
 	}
 	
@@ -909,6 +948,14 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		}
 	}
 	
+	
+	public void victoryTrigger() {
+		if (victoryFlag)
+			victoryDelay--;
+		if (victoryDelay <= 0)
+			this.setState(VICTORY);
+	}
+	
 	/*
 	 Name: dialogTriggerCheck 
 	 Description: Checks to see if the next narrative event must be triggered
@@ -1079,10 +1126,9 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 			}
 		}
 
-		if (key == KeyEvent.VK_Q) {//
+		if (key == KeyEvent.VK_Q) {//Quit or use item depending on context
 			if (this.state == GAME_OVER || this.state == VICTORY) {
-				System.out.println("Quit");
-				this.dispose();
+				System.exit(0);
 			}
 			else if (joe.getActive() != null) {
 				joe.getActive().use(joe);
@@ -1107,7 +1153,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 			if (this.state == 0) {
 				this.setState(1);
 				//TODO get shit done here --cosmin
-				if (!pausemenu.isVisible()){
+				/*if (!pausemenu.isVisible()){
 					FadeTransition ft = new FadeTransition(Duration.seconds(0.5), pausemenu);
                     ft.setFromValue(0);
                     ft.setToValue(1);
@@ -1120,8 +1166,8 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
                     ft.setToValue(0);
                     ft.setOnFinished(evt -> pausemenu.setVisible(false));
                     ft.play();
-				}
-			}
+				}*/
+			} 
 			else {
 				this.setState(0);
 			}
@@ -1140,6 +1186,36 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		
 		if (key == KeyEvent.VK_R && (this.state == GAME_OVER || this.state == VICTORY)) {
 			setup();
+		}
+		
+		//Dev Commands
+		if (pressed.contains(KeyEvent.VK_CONTROL) && pressed.contains(KeyEvent.VK_SHIFT) && pressed.contains(KeyEvent.VK_C) && !devMode) {
+			devMode = true;
+			pressed.remove(KeyEvent.VK_C);
+		}
+		if (pressed.contains(KeyEvent.VK_CONTROL) && pressed.contains(KeyEvent.VK_SHIFT) && pressed.contains(KeyEvent.VK_C)  && devMode) {
+			joe.x = 6800;
+			pressed.remove(KeyEvent.VK_C);
+		}
+		if (pressed.contains(KeyEvent.VK_CONTROL) && pressed.contains(KeyEvent.VK_SHIFT) && pressed.contains(KeyEvent.VK_X)  && devMode) {
+			joe.setActive(new Item(Item.HEALTH_POTION));
+			joe.getActive().defineSprite();
+			joe.getActive().defineActive();
+			pressed.remove(KeyEvent.VK_X);
+		}
+		if (pressed.contains(KeyEvent.VK_CONTROL) && pressed.contains(KeyEvent.VK_SHIFT) && pressed.contains(KeyEvent.VK_Z)  && devMode) {
+			joe.setActive(new Item(Item.WINGS));
+			joe.getActive().defineSprite();
+			joe.getActive().defineActive();
+			pressed.remove(KeyEvent.VK_Z);
+		}
+		if (pressed.contains(KeyEvent.VK_CONTROL) && pressed.contains(KeyEvent.VK_SHIFT) && pressed.contains(KeyEvent.VK_V)  && devMode) {
+			joe.setEXP(joe.getEXP() + 100);
+			joe.levelUp();
+			pressed.remove(KeyEvent.VK_V);
+		}
+		if (pressed.contains(KeyEvent.VK_CONTROL) && pressed.contains(KeyEvent.VK_SHIFT) && pressed.contains(KeyEvent.VK_BACK_SLASH)  && devMode) {
+			joe.setHealth(9999);
 		}
 	}// end keyPressed
 

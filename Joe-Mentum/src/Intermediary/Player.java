@@ -26,6 +26,9 @@ public class Player extends LivingObject {
 	private int maxHealth = 10;
 	private boolean grabbing = false;
 	
+	public String levelStrings[] = new String[4];
+	public int levelStringCD;
+	
 	public final static int VERT = 2;
 	public final static int LEDGE = 3;
 	
@@ -48,6 +51,11 @@ public class Player extends LivingObject {
 		sprites[1] = new Spritesheet(filepaths[1], 23, 34);
 		sprites[2] = new Spritesheet(filepaths[2], 22, 38);
 		sprites[3] = new Spritesheet(filepaths[3], 22, 42);
+		
+		levelStrings[0] = "";
+		levelStrings[1] = "";
+		levelStrings[2] = "";
+		levelStrings[3] = "";
 		 
 		Timer timer = new Timer(100, new ActionListener() {
 			
@@ -149,19 +157,20 @@ public class Player extends LivingObject {
 			switch(stat) {
 			case 1:
 				maxHealth += 5;
-				System.out.println("HP up");
+				levelStrings[i] = "+5 Health";
 				break;
 			case 2:
 				this.setAttack(this.getAttack() + 2);
-				System.out.println("Atk up");
+				levelStrings[i] = "+2 Attack";
 				break;
 			case 3:
 				this.setSpeed(this.getSpeed() + 0.4);
-				System.out.println("Spd up");
+				levelStrings[i] = "+0.4 Speed";
 				break;
 			}
 		}
 		
+		levelStringCD = 175;
 		this.setHealth(maxHealth);
 		
 	}

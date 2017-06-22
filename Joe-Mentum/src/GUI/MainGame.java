@@ -60,6 +60,7 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 	private int state = RUNNING;// the flag that triggers different behaviors in the program
 	private boolean muted = false;
 	private boolean devMode = false;
+	private boolean bossTheme = false;
 	public static Player joe = new Player(); // The man, the myth, the legend himself, Joe
 	private LinkedList theLevel;
 	private MonsterSet enemies = new MonsterSet();
@@ -113,11 +114,6 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		gc.addKeyListener(this);
 		gc.setVisible(false);
 		
-		
-		audio.addToPlayList(new File("music/StabCrabV2Orchestra.mp3"));
-		audio.skipForward();
-		audio.play();
-		
 		try {
 			bg = ImageIO.read(new File("images/bg.png"));
 			hpHeart = ImageIO.read(new File("gui/heart.png"));
@@ -132,10 +128,9 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		setup();
 		animate();
 		
-		//TODO reimplement when GameMenu is remade
 		new GameMenu(this);
-		gc.setVisible(true);
-		this.state = 0;
+		gc.setVisible(false);
+		this.state = PAUSED;
 		startGame();
 	}
 	
@@ -184,6 +179,8 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		enemies.add(new Monster(950, 100, 65, 65, 3, 1, 0.5, 25, Monster.BIRD, "bird")).offsetBird(30);
 		
 		stabCrab = new Monster(6800, 200, 120, 90, 75, 8, 2.0, 100, Monster.DWAIT, "stabcrab");
+		victoryFlag = false;
+		victoryDelay = 300;
 		
 		spawners = new int[3];
 		spawners[0] = 1000;
@@ -199,6 +196,15 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		narrative.enqueue(new DialogBox(450, "lol ok", "Joe", 300));
 		
 		levelItems = new ItemSet();
+		
+		audio.pause();
+		audio = new MP3Player();
+		audio.addToPlayList(new File("music/maintheme.mp3"));
+		audio.skipForward();
+		audio.play();
+		audio.setRepeat(true);
+		
+		bossTheme = false;
 		
 		this.setState(RUNNING);
 	}
@@ -408,7 +414,6 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 		victoryTrigger();
 		dialogTriggerCheck(joe);
 		playerAnimReset(joe);
-		
 		itemsChanged = false;
 		
 		//Always keep animate() as the last function
@@ -695,6 +700,13 @@ public class MainGame extends JFrame implements EventListener, KeyListener {
 			enemies.add(new Monster(975, 100, 65, 65, 3, 1, 0.5, 25, Monster.BIRD, "bird")).offsetBird(45);
 			enemies.add(new Monster(1000, 100, 65, 65, 3, 1, 0.5, 25, Monster.BIRD, "bird")).offsetBird(60);
 			spawnerFlags[2] = true;
+			
+			audio.pause();
+			audio = new MP3Player();
+			audio.addToPlayList(new File("music/stabCrabV2.mp3"));
+			audio.skipForward();
+			audio.play();
+			audio.setRepeat(true);
 		}
 	}
 	

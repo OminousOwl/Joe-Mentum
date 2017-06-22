@@ -29,10 +29,6 @@ import javax.swing.JTextField;
 @SuppressWarnings("serial")
 public class GameMenu extends JFrame implements ActionListener {
 
-	public static void main(String[] args) {
-		new GameMenu(game);
-	}
-
 	private static MainGame game;
 
 	// GUI components
@@ -128,7 +124,7 @@ public class GameMenu extends JFrame implements ActionListener {
 			game.gc.setVisible(true);
 			game.setState(0);
 		} else if (e.getSource() == exit) {
-			this.dispose();
+			System.exit(0);
 		}
 	}
 

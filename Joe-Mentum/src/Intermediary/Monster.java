@@ -127,7 +127,7 @@ public class Monster extends LivingObject {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
-				if (aiState == ATTACK) {
+				if (aiState == ATTACK && getAnimState() != DEAD) {
 					setAnimState(FIGHT);
 				}
 				else if (getXSpeed() == 0 && getYSpeed() == 0 && getHealth() > 0) {

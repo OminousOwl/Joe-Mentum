@@ -1,7 +1,7 @@
 /*
 Name: Quinn Fisher
 Date Created: May 25th, 2017
-Date Modified: June 14th, 2017
+Date Modified: June 16th, 2017
 Description: The class containing data and methods to handle moving entities in game (Player, bosses, enemies, etc.)
  */
 
@@ -15,8 +15,9 @@ import Intermediary.Player;
 import anim.Spritesheet;
 
 public class LivingObject extends Entity {
+
+	private static final long serialVersionUID = -2488364476039279905L;
 	
-	//TODO Move these constants to Entity.Java
 	private static final double ACC = 1.0; //Constant used to define acceleration rate
 	public static final double GRAV = 0.2; //Constant used as gravitational acceleration
 	static final double INIT_JUMP = -7.2; //Constant used to define initial jump speed
@@ -32,7 +33,8 @@ public class LivingObject extends Entity {
 	private int attack;
 	private double maxSpeed;
 	private boolean attackState;
-	private Item item;
+	
+	protected boolean isJoe = false;
 	
 	private int damageFrames;
 	
@@ -104,7 +106,6 @@ public class LivingObject extends Entity {
 			this.setXSpeed(this.getXSpeed() * -1);
 		}
 		
-		System.out.println(this.getXSpeed());
 		
 	}
 	
@@ -120,7 +121,6 @@ public class LivingObject extends Entity {
 	Date Modified: June 10th, 2017
 	 */
 	public void jump() {
-		//System.out.println("Jump " + System.currentTimeMillis()); //TODO reimplement as debug tool
 		if (this.getYSpeed() == 0 || this.animState != Player.VERT)
 			this.setYSpeed(INIT_JUMP);
 	}
@@ -163,6 +163,7 @@ public class LivingObject extends Entity {
 	public int getAnimState() { return this.animState; }
 	public void setAnimState(int animState) { this.animState = animState;}
 	
+	
 	public BufferedImage flipHorizontal(BufferedImage source) {
 		if (!this.direction) {
 			AffineTransform at = AffineTransform.getScaleInstance(-1, 1);
@@ -191,7 +192,7 @@ public class LivingObject extends Entity {
 	Dependencies: None
 	Exceptions: N/A
 	Date Created: May 29th, 2017
-	Date Modified: June 14th, 2017
+	Date Modified: June 15th, 2017
 	 */
 	public void collide(Entity b){
 		if(b.getCollideType() == SOLID){
@@ -199,7 +200,7 @@ public class LivingObject extends Entity {
 			if (this.intersects(b.ledges[0]) && this.direction || this.intersects(b.ledges[1]) && !this.direction) {
 				
 				if (this.ledgeFlag && b.ledgeFlag) {
-					if (this.getySpeed() <= LivingObject.INIT_JUMP + 2*LivingObject.GRAV) {
+					if (this.getYSpeed() <= LivingObject.INIT_JUMP + 2*LivingObject.GRAV) {
 						b.ledgeFlag = false;
 						b.resetCounter = 40;
 					}
@@ -207,8 +208,8 @@ public class LivingObject extends Entity {
 						//System.out.println("Triggered at " + System.currentTimeMillis());
 						this.animState = Player.LEDGE;
 						this.height = 84;
-						this.setxSpeed(0);
-						this.setySpeed(0);
+						this.setXSpeed(0);
+						this.setYSpeed(0);
 						this.y = b.ledges[0].y - 14;
 						
 						if (this.intersects(b.ledges[0])) {
@@ -223,10 +224,10 @@ public class LivingObject extends Entity {
 		}
 		
 		else if(b.getCollideType() == BOUNCE){
-			this.setySpeed((getySpeed()*-1));
+			this.setYSpeed((getYSpeed()*-1));
 		}
 		else if(b.getCollideType() == SKIP){
-			this.setySpeed((getySpeed()*-1)/2);
+			this.setYSpeed((getYSpeed()*-1)/2);
 		}
 	}
 
@@ -241,28 +242,69 @@ public class LivingObject extends Entity {
 	Dependencies: None
 	Exceptions: N/A
 	Date Created: June 4th, 2017
-	Date Modified: June 11th, 2017
+	Date Modified: June 16th, 2017
 	 */
 	public void solidCollide(Entity b) {
 		
-		if (this.y > b.y + 5) { //If collision takes place outside the wall's surface
-			this.setxSpeed(0);
+		
+		if (this.y >= b.y + b.height - b.height/10 && this.getYSpeed() < 0.2 && b.resetCounter <= 0) {
+			this.setYSpeed(1.0);
+			b.resetCounter = 10;
+		}
+		else if (this.y > b.y + 5 && b.resetCounter <= 0) { //If collision takes place outside the wall's surface
+			this.setXSpeed(0);
 			if (this.x < b.x + b.width/2) { //Collision from left, judging from mid point
 				this.x = b.x - this.width;
 			}
 			else //Collision from right
 				this.x = b.x + b.width;
-			}
-			
-			else {
-				if (this.getySpeed() > 0) { //Only collides on drop, otherwise jumping is impossible
-					this.setySpeed(0);
+		}
+		
+		else if (b.resetCounter <= 0 || !this.isJoe) {
+			if (this.getYSpeed() > 0) { //Only collides on drop, otherwise jumping is impossible
+				this.setYSpeed(0);
 					
-					if (this.intersects(b.floorbox) && this.getySpeed() >= -6.6)
-						this.y = b.y - this.height;
+				if (this.intersects(b.floorbox) && this.getYSpeed() >= -6.6)
+					this.y = b.y - this.height;
 			}
 
 		}
+	}
+	
+	/*
+	Name: overflowProtect
+	Description: Prevents frame counters from exceeding int limitations
+	Parameters: One Integer
+	Return Value/Type: One Integer
+	Dependencies: N/A
+	Exceptions: N/A
+	Date Created: June 16th, 2017
+	Date Modified: June 16th, 2017
+	 */
+	public int overflowProtect(int frame) {
+		if (frame == Integer.MAX_VALUE) {
+			return Integer.MIN_VALUE + 1;
+		}
+		else if (frame == Integer.MIN_VALUE) {
+			return Integer.MAX_VALUE - 1;
+		}
+		else {
+			return frame;
+		}
+	}
+	
+	/*
+	 Name: randNumber
+	 Description: Generates a random number
+	 Parameters: Two Integers
+	 Return Value/Type: A random number within the range of the parameters
+	 Dependencies: Java.Math
+	 Creation Date: October 23rd, 2015
+	 Modification Date: April 13th, 2017
+	 Throws: None
+	*/
+	public static int randNumber(int min, int max) {
+		return min + (int) (Math.random() * ((max - min) + 1));
 	}
 
 	

@@ -1,14 +1,8 @@
 package GUI;
 
-/**
- *@Name Cosmin Baciu, Quinn Fisher, Olivier Hébert
- *@DateCreated: May 30th, 2017
- *@DateModified: June 8th, 2017
- *@Description: This Class is the main menu, which loads the game, and allows quick changes to the game's settings
- */
-
 import java.awt.BorderLayout;
-import java.awt.Dimension;
+import java.awt.Color;
+import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -18,10 +12,12 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
+import javax.swing.JTextField;
 
 /*
  *       __
@@ -31,106 +27,104 @@ import javax.swing.SwingUtilities;
  */
 
 @SuppressWarnings("serial")
-public class GameMenu extends JFrame implements ActionListener{
-	
-	private static MainGame ech;
-	
-	/*private static JButton play;
-	
-	public GameMenu() {
-		
+public class GameMenu extends JFrame implements ActionListener {
 
-		
-		
-		JPanel pane = new JPanel();
-		setContentPane(pane);
-		
-		play = new JButton("pls work");
-		pane.add(play);
-		play.addActionListener(this);
-		
-		setVisible(true);
-		setSize(new Dimension(500, 500));
-		
-		
-	}
+	private static MainGame game;
 
-	
-	public static void main (String[] args) {
-		new GameMenu();
-		
-	} */
-	// images
-	BufferedImage i1;
-	BufferedImage i2;
-	BufferedImage i3;
-	BufferedImage i4;
-	BufferedImage i5;
 	// GUI components
 	JButton play;
 	JButton exit;
-	JFrame guiFrame;
+	JTextField joeName;
 
+	// images
+	BufferedImage bg;
+	BufferedImage logo;
+
+	@SuppressWarnings("static-access")
 	public GameMenu(MainGame game) {
-		ech = game;
-		try {
-			i1 = ImageIO.read(new File("images/1.png"));
-			i2 = ImageIO.read(new File("images/2.png"));
-			i3 = ImageIO.read(new File("images/3.png"));
-			i4 = ImageIO.read(new File("images/4.png"));
-			i5 = ImageIO.read(new File("images/5.png"));
-		} catch (IOException e) {
-			// catch
-		}
-		// ================== BASIC FRAME SETUP ===============================
-		guiFrame = new JFrame("Joe-Mentum");
-		guiFrame.setResizable(false);
-		guiFrame.setLayout(new BorderLayout());
-		guiFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		guiFrame.setSize(1080, 720);
+		this.game = game;
+		// Basic JFrame Setup
+		setSize(768, 432);
+		setLocationRelativeTo(null);
+		setTitle("Joe-Mentum");
+		setResizable(false);
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-		// ================== DRAWING THE BACKGROUND ==========================
-		final JPanel pane = new JPanel() { // TODO make images become endless
-											// background + parallax
-			
-			
+		// import background image
+		try {
+			bg = ImageIO.read(new File("images/bg.png"));
+			logo = ImageIO.read(new File("gui/logo.png"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		// create image header for the mainmenu
+		JPanel headerPanel = new JPanel();
+		headerPanel.setLayout(new FlowLayout());
+		headerPanel.setBackground(Color.BLACK);
+		JLabel joeIcon = new JLabel("");
+		joeIcon.setIcon(new ImageIcon("images/bg.png"));
+
+		add(headerPanel, BorderLayout.NORTH);
+
+		// Create the panel which will contain the central elements and absorb
+		// any vertical stretch
+		JPanel stretchPanel = new JPanel();
+		stretchPanel.setLayout(new BorderLayout());
+
+		// Create the panel containing the controls
+		JPanel buttonsPanel = new JPanel();
+		GridLayout buttonsLayout = new GridLayout(0, 1);
+		buttonsLayout.setVgap(5);
+		buttonsPanel.setLayout(buttonsLayout);
+		stretchPanel.add(buttonsPanel, BorderLayout.NORTH);
+
+		// create text field which contains game name
+		joeName = new JTextField("Joe-Mentum");
+		joeName.setEditable(false);
+		joeName.setBackground(Color.DARK_GRAY);
+		joeName.setForeground(Color.WHITE);
+		joeName.setBorder(null);
+		joeName.setHorizontalAlignment(JTextField.CENTER);
+		buttonsPanel.add(joeName);
+
+		// Create the play game button
+		play = new JButton("Play");
+		play.addActionListener(this);
+		play.setBackground(Color.GREEN);
+		buttonsPanel.add(play);
+
+		// Create the padding below the play game buttons
+		JPanel basePadding = new JPanel() {
 			protected void paintComponent(Graphics g) {
 				Graphics g2 = g.create();
-				g2.drawImage(i1, 0, 0, guiFrame.getWidth(), guiFrame.getHeight(), null);
-				g2.drawImage(i2, 0, 0, guiFrame.getWidth(), guiFrame.getHeight(), null);
-				g2.drawImage(i3, 0, 0, guiFrame.getWidth(), guiFrame.getHeight(), null);
-				g2.drawImage(i4, 0, 0, guiFrame.getWidth(), guiFrame.getHeight(), null);
-				g2.drawImage(i5, 0, 0, guiFrame.getWidth(), guiFrame.getHeight(), null);
-				g2.dispose();
-				System.out.println(guiFrame.getWidth() + ", " + guiFrame.getHeight());
+				g2.drawImage(bg, 0, 0, this.getWidth(), this.getHeight(), null);
+				g2.drawImage(logo, 250, 65, null);
 			}
-			
-			
 		};
-		guiFrame.setContentPane(pane); // added this to the background of the guiFrame
-		
-		// declaring buttons
-		play = new JButton("Play");
-		exit = new JButton("Pause");
+		stretchPanel.add(basePadding, BorderLayout.CENTER);
 
-		// add action listeners
-		play.addActionListener(this);
+		add(stretchPanel, BorderLayout.CENTER);
+
+		// Create the quit button
+		exit = new JButton("Quit Game");
 		exit.addActionListener(this);
+		exit.setBackground(Color.LIGHT_GRAY);
+		add(exit, BorderLayout.SOUTH);
 
-		// adding button pane to the guiFrame, and packing.
-		JPanel buttonPane = new JPanel(new GridLayout(1, 2));
-		buttonPane.add(play);
-		guiFrame.add(buttonPane, BorderLayout.CENTER);
-		guiFrame.setVisible(true);
+		// pack the elements
+		setVisible(true);
 	}
-
 
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		if (e.getSource() == play) {
 			this.dispose();
-			ech.gc.setVisible(true);
-			ech.setState(0);
+			game.gc.setVisible(true);
+			game.setState(0);
+		} else if (e.getSource() == exit) {
+			System.exit(0);
 		}
 	}
 

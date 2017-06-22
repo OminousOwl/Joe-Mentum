@@ -7,8 +7,8 @@ public class MonsterSet {
 	
 	public Monster getHead(){return this.root;}
 	
-	public MonsterSet(int x, int y, int width, int height, int health, int attack, double maxSpeed, char AIstate, String enemyType){
-		root = new Monster(x, y, width, height, health, attack, maxSpeed, AIstate, enemyType);
+	public MonsterSet(int x, int y, int width, int height, int health, int attack, double maxSpeed, int exp, char AIstate, String enemyType){
+		root = new Monster(x, y, width, height, health, attack, maxSpeed, exp, AIstate, enemyType);
 	}//end constructor
 	
 	public MonsterSet(){
@@ -28,7 +28,7 @@ public class MonsterSet {
 	public Monster add(Monster node){//adds a node to the list
 		
 		if (root == null) {
-			root = new Monster(node.x, node.y, node.width, node.height, node.getAttack(), node.getHealth(), node.getSpeed(), node.getAIState(), node.getEnemyType());
+			root = new Monster(node.x, node.y, node.width, node.height, node.getAttack(), node.getHealth(), node.getSpeed(), node.getExpGain(), node.getAIState(), node.getEnemyType());
 			return node;
 		}
 		

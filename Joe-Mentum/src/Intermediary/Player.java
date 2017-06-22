@@ -1,7 +1,7 @@
 /*
 Name: Quinn Fisher
 Date Created: May 25th, 2017
-Date Modified: June 14th, 2017
+Date Modified: June 19th, 2017
 Description: The class used to handle the player's stats and motion
  */
 
@@ -19,9 +19,15 @@ import anim.Spritesheet;
 
 public class Player extends LivingObject {
 
-	private static int EXP = 0;
-	private static int level = 1;
-	private static Item active; //We don't need a passive slot as it is included in LivingObject
+	private int EXP = 0;
+	private int level = 1;
+	private ItemSet passives = new ItemSet();
+	private Item active;
+	private int maxHealth = 10;
+	private boolean grabbing = false;
+	
+	public String levelStrings[] = new String[4];
+	public int levelStringCD;
 	
 	public final static int VERT = 2;
 	public final static int LEDGE = 3;
@@ -29,6 +35,8 @@ public class Player extends LivingObject {
 	private static final double ACC = 1.0; //Constant used to define acceleration rate
 	
 	public Player() {
+		
+		this.isJoe = true;
 		
 		this.filepaths = new String[4];
 		this.sprites = new Spritesheet[4];
@@ -43,6 +51,11 @@ public class Player extends LivingObject {
 		sprites[1] = new Spritesheet(filepaths[1], 23, 34);
 		sprites[2] = new Spritesheet(filepaths[2], 22, 38);
 		sprites[3] = new Spritesheet(filepaths[3], 22, 42);
+		
+		levelStrings[0] = "";
+		levelStrings[1] = "";
+		levelStrings[2] = "";
+		levelStrings[3] = "";
 		 
 		Timer timer = new Timer(100, new ActionListener() {
 			
@@ -50,14 +63,14 @@ public class Player extends LivingObject {
 			public void actionPerformed(ActionEvent e) {
 				if (getAnimState() == IDLE) {
 					setCurrentFrame(flipHorizontal(sprites[0].getSprite(frame % sprites[0].getFrameCount())));
-					frame++;
+					frame = overflowProtect(frame + 1);
 				}
 				else if (getAnimState() == MOVE) {
 					setCurrentFrame(flipHorizontal(sprites[1].getSprite(frame % sprites[1].getFrameCount())));
-					frame++;
+					frame = overflowProtect(frame + 1);
 				}
 				else if (getAnimState() == VERT) {
-					if (getySpeed() <= -6.6) {
+					if (getYSpeed() <= -6.6) {
 						setCurrentFrame(flipHorizontal(sprites[2].getSprite(0)));
 					}
 					else if (getYSpeed() < -0.2) {
@@ -78,7 +91,7 @@ public class Player extends LivingObject {
 						frame = 0;
 					setCurrentFrame(flipHorizontal(sprites[3].getSprite(frame % sprites[3].getFrameCount())));
 					if (frame < 4) {
-						frame++;
+						frame = overflowProtect(frame + 1);
 					}
 					
 				}
@@ -89,19 +102,10 @@ public class Player extends LivingObject {
 		
 		//TODO Update Values
 		this.setAttack(3);
-		this.setHealth(10);
+		this.setHealth(maxHealth);
 		this.setSpeed(3.0);
 		
 	}//end constructor
-	
-
-	
-	public void pickupItem(){//TODO
-		//determine if colliding with an object. if colliding & object is of type item...
-			//if passive, add to inventory
-			//otherwise if Joe has no active item move the item to his active item slot
-				//otherwise swap the items (move the colliding item to inventory & the other to the outside)
-	}//end pickupItem
 	
 	/*
 	Name: moveSide
@@ -131,6 +135,85 @@ public class Player extends LivingObject {
 			this.setXSpeed(this.getXSpeed() * -1);
 		}
 		
+	}
+	
+	/*
+	Name: levelUp
+	Description: Handles stat increases on level up
+	Parameters: One boolean (direction)
+	Return Value/Type: N/A
+	Dependencies: N/A
+	Exceptions: N/A
+	Date Created: June 16th, 2017
+	Date Modified: June 16th, 2017
+	 */
+	public void levelUp() {
+		setEXP(getEXP() - 100);
+		level++;
+		
+		int points = randNumber(1, 4);
+		for (int i = 0; i < points; i++) {
+			int stat = randNumber(1, 3);
+			switch(stat) {
+			case 1:
+				maxHealth += 5;
+				levelStrings[i] = "+5 Health";
+				break;
+			case 2:
+				this.setAttack(this.getAttack() + 2);
+				levelStrings[i] = "+2 Attack";
+				break;
+			case 3:
+				this.setSpeed(this.getSpeed() + 0.4);
+				levelStrings[i] = "+0.4 Speed";
+				break;
+			}
+		}
+		
+		levelStringCD = 175;
+		this.setHealth(maxHealth);
+		
+	}
+
+
+
+	public int getEXP() { return EXP; }
+	public void setEXP(int eXP) { EXP = eXP; }
+	public int getLevel() { return level; }
+	public void setLevel(int level) { this.level = level;}
+	public Item getActive() { return active; }
+	public void setActive(Item active) { this.active = active; }
+
+
+
+	public ItemSet getPassives() {
+		return passives;
+	}
+
+
+
+	public void setPassives(ItemSet passives) {
+		this.passives = passives;
+	}
+
+
+
+	public boolean isGrabbing() {
+		return grabbing;
+	}
+
+
+
+	public void setGrabbing(boolean grabbing) {
+		this.grabbing = grabbing;
+	}
+	
+	public int getMaxHealth() {
+		return maxHealth;
+	}
+	
+	public void setMaxHealth(int newMax) {
+		maxHealth = newMax;
 	}
 	
 }

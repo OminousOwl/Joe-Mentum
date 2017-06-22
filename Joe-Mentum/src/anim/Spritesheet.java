@@ -47,19 +47,19 @@ public class Spritesheet {
 	}
 
 	// Methods
-	public int getHeight() {
+	private int getHeight() {
 		return frameHeight;
 	}
 
-	public int getWidth() {
+	private int getWidth() {
 		return frameWidth;
 	}
 
-	public int getColumnCount() {
+	private int getColumnCount() {
 		return sheet.getWidth() / getWidth();
 	}
 
-	public int getRowCount() {
+	private int getRowCount() {
 		return sheet.getHeight() / getHeight();
 	}
 
@@ -82,14 +82,10 @@ public class Spritesheet {
 		int frameCount = getFrameCount();
 		BufferedImage[] sprites = new BufferedImage[frameCount];
 		int index = 0;
-		System.out.println("cols = " + cols);
-		System.out.println("rows = " + rows);
-		System.out.println("frameCount = " + frameCount);
 		for (int row = 0; row < getRowCount(); row++) {
 			for (int col = 0; col < getColumnCount(); col++) {
 				int x = col * getWidth();
 				int y = row * getHeight();
-				System.out.println(index + " " + x + "x" + y);
 				BufferedImage currentSprite = getSprite(x, y, getWidth(), getHeight());
 				sprites[index] = currentSprite;
 				index++;

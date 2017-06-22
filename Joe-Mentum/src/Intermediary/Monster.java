@@ -1,7 +1,7 @@
 /*
 Name: Quinn Fisher
 Date Created: May 26th, 2017
-Date Modified: June 14th, 2017
+Date Modified: June 16th, 2017
 Description: The class used to handle enemy AI
  */
 
@@ -13,6 +13,7 @@ import java.util.Random;
 
 import javax.swing.Timer;
 
+import Logic.Item;
 import Logic.LivingObject;
 import anim.Spritesheet;
 
@@ -31,7 +32,7 @@ public class Monster extends LivingObject {
 	public static final char LgWANDER = 'l';
 	public static final char BIRD = 'b';
 	public static final char SADBIRD = 's';
-	public static final char DWANDER = 'd';
+	public static final char DWAIT = 'd';
 	public static final char DUEL = 'u';
 	public static final char ATTACK = 'a';
 	
@@ -41,11 +42,17 @@ public class Monster extends LivingObject {
 	private int moveFrames;
 	public LinkedEntity associatedTerrain;
 	public int damageCD;
+	public int attackCD;
 	private boolean deathAnimFlag = false;
+	private boolean stabCrabDrawn = false;
+	private boolean stabCrabSwingStart = false;
+	
+	private int expGain;
+	private Item drop;
 	
 	private int sineValue = 0;
 	
-	public Monster(int x, int y, int width, int height, int health, int attack, double maxSpeed, char AIstate, String enemyType) {
+	public Monster(int x, int y, int width, int height, int health, int attack, double maxSpeed, int expVal, char AIstate, String enemyType) {
 		this.x = x;
 		this.y = y;
 		this.defaultY = y;
@@ -54,6 +61,7 @@ public class Monster extends LivingObject {
 		this.setHealth(health);
 		this.setAttack(attack);
 		this.setSpeed(maxSpeed);
+		this.setExpGain(expVal);
 		this.aiState = AIstate;
 		this.setEnemyType(enemyType);
 		this.ledgeFlag = false;
@@ -63,8 +71,16 @@ public class Monster extends LivingObject {
 		
 		for (int i = 0; i < filepaths.length; i++) {
 			filepaths[i] = "SpriteSheets/";
-			if (enemyType == "skeleton")
+			if (enemyType == "skeleton") {
 				filepaths[i] += "Skeleton/";
+			}
+			else if (enemyType == "bird") {
+				filepaths[i] += "Bird/";
+			}
+			else if (enemyType == "stabcrab") {
+				filepaths[i] += "StabCrab/";
+			}
+				
 		}
 		
 		filepaths[0] += "Idle";
@@ -76,26 +92,60 @@ public class Monster extends LivingObject {
 			filepaths[i] += ".png";
 		}
 		
-		System.out.println(filepaths[0]);
 		if (enemyType == "skeleton") {
 				sprites[0] = new Spritesheet(filepaths[0], 264/11, 32);
 				sprites[1] = new Spritesheet(filepaths[1], 286/13, 33);
 				sprites[2] = new Spritesheet(filepaths[2], 774/18, 37);
 				sprites[3] = new Spritesheet(filepaths[3], 495/15, 32);
 		}
+		else if (enemyType == "bird") {
+			sprites[0] = sprites[1] = sprites[2] = sprites[3] = new Spritesheet(filepaths[1], 3072/6, 512);
+		}
+		else if (enemyType == "stabcrab") {
+			sprites[0] = new Spritesheet(filepaths[0], 960/2, 238);
+			sprites[1] = new Spritesheet(filepaths[1], 960/2, 238);
+			sprites[2] = new Spritesheet(filepaths[2], 7200/15, 238);
+			sprites[3] = sprites[0];
+		}
+		
+		
+		
 		if (enemyType != null)
 			setCurrentFrame(sprites[0].getSprite(0));
+		
+		//Assigns random item drops
+		int itemChance = randNumber(1, 100);
+		if (itemChance < expGain/2) {
+			Item newDrop = new Item(randNumber(1, 5));
+			newDrop.defineActive();
+			newDrop.defineSprite();
+			setDrop(newDrop);
+		}
 		
 		Timer timer = new Timer(100, new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
-				if (getXSpeed() == 0 && getYSpeed() == 0 && getHealth() > 0) {
-					setAnimState(IDLE);
+				if (aiState == ATTACK && getAnimState() != DEAD) {
+					setAnimState(FIGHT);
+				}
+				else if (getXSpeed() == 0 && getYSpeed() == 0 && getHealth() > 0) {
+					if (stabCrabDrawn) {
+						setAnimState(MOVE);
+					}
+					else {
+						setAnimState(IDLE);
+					}
+
 				}
 				else if (Math.abs(getXSpeed()) > 0 && getHealth() > 0) {
-					setAnimState(MOVE);
+					if (!stabCrabDrawn && enemyType == "stabcrab") {
+						setAnimState(IDLE);
+					}
+					else {
+						setAnimState(MOVE);
+					}
 				}
 				
 				if (getEnemyType() != null) {
@@ -106,16 +156,29 @@ public class Monster extends LivingObject {
 					}
 					else if (getAnimState() == IDLE) {
 						setCurrentFrame(flipHorizontal(sprites[0].getSprite(frame % sprites[0].getFrameCount())));
-						frame++;
+						frame = overflowProtect(frame + 1);
 					}
 					else if (getAnimState() == MOVE) {
 						setCurrentFrame(flipHorizontal(sprites[1].getSprite(frame % sprites[1].getFrameCount())));
-						frame++;
+						frame = overflowProtect(frame + 1);
+					}
+					else if (getAnimState() == FIGHT) {
+						if (!stabCrabDrawn) {
+							stabCrabSwingStart = true;
+							stabCrabDrawn = true;
+							setFrame(0);
+						}
+						else if (!stabCrabSwingStart) {
+							stabCrabSwingStart = true;
+							setFrame(5);
+						}
+						setCurrentFrame(flipHorizontal(sprites[2].getSprite(frame % sprites[2].getFrameCount())));
+						frame = overflowProtect(frame + 1);
 					}
 					else if (getAnimState() == DEAD) {
 						if (!deathAnimFlag) {
 							setCurrentFrame(flipHorizontal(sprites[3].getSprite(frame % sprites[3].getFrameCount())));
-							frame++;
+							frame = overflowProtect(frame + 1);
 							if (frame >= sprites[3].getFrameCount()) {
 								deathAnimFlag = true;
 							}
@@ -177,36 +240,52 @@ public class Monster extends LivingObject {
 				moveSide(direction);
 				break;
 			case BIRD:
+				direction = false;
 				this.y = this.getDefaultY() + (int)(100 * Math.sin(((2*Math.PI * sineValue)/(150))));
 				sineValue--;
-				moveSide(false);
+				if (this.x < 750 && this.x > -750)
+					moveSide(direction); //Prevents birds from rushing you down until you are near their location
 				setYSpeed(-0.2);
 				break;
 			case SADBIRD: //Screwed up old bird code that we kept because it's funny
 				this.setYSpeed(this.getYSpeed() - LivingObject.GRAV + Math.sin(this.x));
 				moveSide(false);
 				break;
-			case DWANDER: //Wander triggering fight
-				wander();
-				if (Math.abs(joe.x - this.x) <= 300)
-					this.setAIState(DUEL);
+			case DWAIT: //Wait for fight
+				if (this.getHealth() < 75) {
+					this.setAIState(ATTACK);
+					this.setFrame(0);
+				}
 				break;
 			case DUEL:
-				if (joe.x - this.x >= 100) {
-					moveSide(true);
+				if (joe.x - this.x >= 95) {
+					direction = true;
+					moveSide(direction);
 				}
-				else if (joe.x - this.x <= -100) {
-					moveSide(false);
+				else if (joe.x - this.x <= -65) {
+					direction = false;
+					moveSide(direction);
 				}
-				else if (Math.abs(joe.x - this.x) >= 300) {
-					setAIState(DWANDER);
+				else if (Math.abs(joe.x - this.x) >= 800) {
+					this.setXSpeed(0);
 				}
-				else 
+				else if (attackCD <= 0) {
 					this.setAIState(ATTACK);
+				}
 				break;
-			case ATTACK: //TODO update with animation code
-				if (this.frame > sprites[3].getFrameCount())
+			case ATTACK:
+				this.setXSpeed(0);
+				if (joe.x - this.x <= 0) {
+					direction = false;
+				}
+				else {
+					direction = true;
+				}
+				if (this.frame >= 15) {
+					this.attackCD = 15;
 					this.setAIState(DUEL);
+					this.stabCrabSwingStart = false;
+				}
 				break;
  			}
  		}
@@ -245,7 +324,7 @@ public class Monster extends LivingObject {
 	Date Created: June 11th, 2017
 	Date Modified: June 11th, 2017
 	 */
-	public void wander() {
+	private void wander() {
 		if (moveFrames > 0) { //If the entity still has frames left to move
 			if (Math.abs(this.getXSpeed()) > 0) { //Move frames in progress
 				moveSide(direction);
@@ -265,20 +344,6 @@ public class Monster extends LivingObject {
 				moveFrames = randNumber(15, 100);
 			}
 		}
-	}
-	
-	/*
-	 Name: randNumber
-	 Description: Generates a random number
-	 Parameters: Two Integers
-	 Return Value/Type: A random number within the range of the parameters
-	 Dependencies: Java.Math
-	 Creation Date: October 23rd, 2015
-	 Modification Date: April 13th, 2017
-	 Throws: None
-	*/
-	public static int randNumber(int min, int max) {
-		return min + (int) (Math.random() * ((max - min) + 1));
 	}
 
 	/*
@@ -325,6 +390,36 @@ public class Monster extends LivingObject {
 
 	public void setFrame(int i) {
 		frame = i;
+	}
+
+	public int getExpGain() {
+		return expGain;
+	}
+
+	public void setExpGain(int expGain) {
+		this.expGain = expGain;
+	}
+	
+	public Item getDrop() {
+		return drop;
+	}
+
+	public void setDrop(Item drop) {
+		this.drop = drop;
+	}
+	
+	/*
+	Name: offsetBird
+	Description: Offsets a bird's sine value to allow for birds in non-linear groups
+	Parameters: One LinkedEntity
+	Return Value/Type: N/A
+	Dependencies: Logic.Entity
+	Exceptions: N/A
+	Date Created: June 17th, 2017
+	Date Modified: June 17th, 2017
+	 */
+	public void offsetBird(int offsetFactor) {
+		sineValue += offsetFactor;
 	}
 	
 }

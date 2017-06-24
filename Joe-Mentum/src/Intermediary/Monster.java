@@ -70,7 +70,7 @@ public class Monster extends LivingObject {
 		this.sprites = new Spritesheet[4];
 		
 		for (int i = 0; i < filepaths.length; i++) {
-			filepaths[i] = "SpriteSheets/";
+			filepaths[i] = "res/SpriteSheets/";
 			if (enemyType == "skeleton") {
 				filepaths[i] += "Skeleton/";
 			}

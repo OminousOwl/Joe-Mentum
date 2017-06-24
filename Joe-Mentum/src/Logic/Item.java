@@ -124,7 +124,7 @@ public class Item extends Entity {
 	//June 19
 	public void defineSprite() {
 		try {
-			String filepath = "items/";
+			String filepath = "res/items/";
 			if (this.type == SWORD) {
 				filepath += "sword.png";
 			}

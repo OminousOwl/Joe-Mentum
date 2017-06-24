@@ -41,10 +41,10 @@ public class Player extends LivingObject {
 		this.filepaths = new String[4];
 		this.sprites = new Spritesheet[4];
 		
-		filepaths[0] = "SpriteSheets/Joe/idle.png";
-		filepaths[1] = "SpriteSheets/Joe/run.png";
-		filepaths[2] = "SpriteSheets/Joe/jump.png";
-		filepaths[3] = "SpriteSheets/Joe/ledge grab outline.png";
+		filepaths[0] = "res/SpriteSheets/Joe/idle.png";
+		filepaths[1] = "res/SpriteSheets/Joe/run.png";
+		filepaths[2] = "res/SpriteSheets/Joe/jump.png";
+		filepaths[3] = "res/SpriteSheets/Joe/ledge grab outline.png";
 		
 		
 		sprites[0] = new Spritesheet(filepaths[0], 21, 35);
